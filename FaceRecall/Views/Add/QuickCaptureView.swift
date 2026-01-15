@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import CoreLocation
 
 struct QuickCaptureView: View {
     @Environment(\.dismiss) private var dismiss
@@ -10,6 +11,8 @@ struct QuickCaptureView: View {
     @State private var showingReview = false
     @State private var detectedFaces: [DetectedFace] = []
     @State private var isProcessing = false
+    @State private var capturedLocation: CLLocation?
+    @StateObject private var locationManager = LocationManager()
 
     var body: some View {
         NavigationStack {
@@ -18,12 +21,14 @@ struct QuickCaptureView: View {
                     QuickCaptureReviewView(
                         image: image,
                         detectedFaces: detectedFaces,
-                        onSave: { name, context in
-                            savePersonWithFace(name: name, context: context)
+                        location: capturedLocation,
+                        onSave: { name, context, locationName in
+                            savePersonWithFace(name: name, context: context, locationName: locationName)
                         },
                         onRetake: {
                             capturedImage = nil
                             detectedFaces = []
+                            capturedLocation = nil
                         },
                         onCancel: {
                             dismiss()
@@ -33,6 +38,7 @@ struct QuickCaptureView: View {
                     CameraPreviewView(
                         onCapture: { image in
                             capturedImage = image
+                            capturedLocation = locationManager.lastLocation
                             detectFaces(in: image)
                         }
                     )
@@ -78,14 +84,19 @@ struct QuickCaptureView: View {
         }
     }
 
-    private func savePersonWithFace(name: String, context: String?) {
+    private func savePersonWithFace(name: String, context: String?, locationName: String?) {
         guard capturedImage != nil else { return }
         isProcessing = true
 
         Task {
             do {
-                // Create person
+                // Create person with location info
                 let person = Person(name: name, contextTag: context)
+
+                // Store where we met this person
+                if let locationName = locationName, !locationName.isEmpty {
+                    person.howWeMet = "Met at \(locationName)"
+                }
 
                 // Get first detected face and create embedding
                 if let detectedFace = detectedFaces.first {
@@ -107,8 +118,20 @@ struct QuickCaptureView: View {
                 srData.person = person
                 person.spacedRepetitionData = srData
 
+                // Create an encounter to record the meeting with GPS
+                let encounter = Encounter(
+                    occasion: "Met \(name)",
+                    location: locationName,
+                    latitude: capturedLocation?.coordinate.latitude,
+                    longitude: capturedLocation?.coordinate.longitude,
+                    date: Date()
+                )
+                encounter.people.append(person)
+                person.encounters.append(encounter)
+
                 await MainActor.run {
                     modelContext.insert(person)
+                    modelContext.insert(encounter)
                     try? modelContext.save()
                     isProcessing = false
                     dismiss()
@@ -196,12 +219,15 @@ struct CameraPreviewView: View {
 struct QuickCaptureReviewView: View {
     let image: UIImage
     let detectedFaces: [DetectedFace]
-    let onSave: (String, String?) -> Void
+    let location: CLLocation?
+    let onSave: (String, String?, String?) -> Void
     let onRetake: () -> Void
     let onCancel: () -> Void
 
     @State private var name = ""
     @State private var contextNote = ""
+    @State private var locationName = ""
+    @State private var isLoadingLocation = false
     @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
@@ -231,55 +257,97 @@ struct QuickCaptureReviewView: View {
                     }
                 }
             }
-            .frame(maxHeight: 400)
+            .frame(maxHeight: 350)
 
             // Form
-            VStack(spacing: 16) {
-                if detectedFaces.isEmpty {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle")
-                            .foregroundStyle(.orange)
-                        Text("No face detected. Try retaking the photo.")
-                            .font(.subheadline)
-                            .foregroundStyle(.orange)
+            ScrollView {
+                VStack(spacing: 16) {
+                    if detectedFaces.isEmpty {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundStyle(.orange)
+                            Text("No face detected. Try retaking the photo.")
+                                .font(.subheadline)
+                                .foregroundStyle(.orange)
+                        }
+                        .padding()
+                        .background(Color.orange.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        HStack {
+                            Image(systemName: "checkmark.circle")
+                                .foregroundStyle(.green)
+                            Text("\(detectedFaces.count) face\(detectedFaces.count == 1 ? "" : "s") detected")
+                                .font(.subheadline)
+                                .foregroundStyle(.green)
+                        }
                     }
-                    .padding()
-                    .background(Color.orange.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                } else {
+
+                    TextField("Name (required)", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                        .focused($nameFieldFocused)
+
+                    TextField("Context (e.g., Met at conference)", text: $contextNote)
+                        .textFieldStyle(.roundedBorder)
+
                     HStack {
-                        Image(systemName: "checkmark.circle")
-                            .foregroundStyle(.green)
-                        Text("\(detectedFaces.count) face\(detectedFaces.count == 1 ? "" : "s") detected")
-                            .font(.subheadline)
-                            .foregroundStyle(.green)
+                        Image(systemName: "mappin")
+                            .foregroundStyle(.secondary)
+                        if isLoadingLocation {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                        TextField("Location (e.g., Coffee shop downtown)", text: $locationName)
+                            .textFieldStyle(.roundedBorder)
+                    }
+
+                    if location != nil && locationName.isEmpty {
+                        Text("GPS captured - add a location name above")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HStack(spacing: 12) {
+                        Button("Retake") {
+                            onRetake()
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button("Save") {
+                            onSave(name, contextNote.isEmpty ? nil : contextNote, locationName.isEmpty ? nil : locationName)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(name.isEmpty || detectedFaces.isEmpty)
                     }
                 }
-
-                TextField("Name (required)", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($nameFieldFocused)
-
-                TextField("Context (e.g., Met at conference)", text: $contextNote)
-                    .textFieldStyle(.roundedBorder)
-
-                HStack(spacing: 12) {
-                    Button("Retake") {
-                        onRetake()
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button("Save") {
-                        onSave(name, contextNote.isEmpty ? nil : contextNote)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(name.isEmpty || detectedFaces.isEmpty)
-                }
+                .padding()
             }
-            .padding()
         }
         .onAppear {
             nameFieldFocused = true
+            reverseGeocodeIfNeeded()
+        }
+    }
+
+    private func reverseGeocodeIfNeeded() {
+        guard let location = location else { return }
+        isLoadingLocation = true
+
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+            isLoadingLocation = false
+            if let placemark = placemarks?.first {
+                var components: [String] = []
+                if let name = placemark.name {
+                    components.append(name)
+                }
+                if let locality = placemark.locality {
+                    components.append(locality)
+                }
+                if !components.isEmpty {
+                    locationName = components.joined(separator: ", ")
+                }
+            }
         }
     }
 }
@@ -407,6 +475,41 @@ class CameraPreviewUIView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         previewLayer.frame = bounds
+    }
+}
+
+// MARK: - Location Manager
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+
+    @Published var lastLocation: CLLocation?
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+
+    override init() {
+        super.init()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        lastLocation = locations.last
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        authorizationStatus = status
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            manager.startUpdatingLocation()
+        }
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
+        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+            manager.startUpdatingLocation()
+        }
     }
 }
 

@@ -113,9 +113,16 @@ struct HomeView: View {
                     // Recent Activity
                     if !recentEncounters.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Recent Encounters")
-                                .font(.headline)
-                                .padding(.horizontal)
+                            HStack {
+                                Text("Recent Encounters")
+                                    .font(.headline)
+                                Spacer()
+                                NavigationLink("See All") {
+                                    EncounterListView()
+                                }
+                                .font(.subheadline)
+                            }
+                            .padding(.horizontal)
 
                             VStack(spacing: 8) {
                                 ForEach(recentEncounters) { encounter in
@@ -310,6 +317,13 @@ struct RecentEncounterRow: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+                if let location = encounter.location, !location.isEmpty {
+                    Label(location, systemImage: "mappin")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()

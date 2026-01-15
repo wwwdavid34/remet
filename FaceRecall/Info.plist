@@ -31,6 +31,8 @@
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Face Recall needs camera access to capture photos for face identification.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Face Recall uses your location to record where you met people.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Face Recall can save processed photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
