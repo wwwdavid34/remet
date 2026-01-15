@@ -11,6 +11,14 @@
 		C3D4E5F6789012345678901B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F67890123456789012BC /* SettingsView.swift */; };
 		E6F7890123456789012345DE /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7890123456789012345678F /* Tag.swift */; };
 		F89012345678901234567890 /* TagViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08901234567890123456789A /* TagViews.swift */; };
+		AA12345678901234ABCD1111 /* InteractionNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12345678901234ABCD1111 /* InteractionNote.swift */; };
+		AA12345678901234ABCD2222 /* SpacedRepetitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12345678901234ABCD2222 /* SpacedRepetitionData.swift */; };
+		AA12345678901234ABCD3333 /* QuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12345678901234ABCD3333 /* QuizAttempt.swift */; };
+		CC12345678901234ABCD4444 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD4444 /* HomeView.swift */; };
+		CC12345678901234ABCD5555 /* PracticeHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD5555 /* PracticeHomeView.swift */; };
+		CC12345678901234ABCD6666 /* FaceQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD6666 /* FaceQuizView.swift */; };
+		CC12345678901234ABCD7777 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD7777 /* AddView.swift */; };
+		CC12345678901234ABCD8888 /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD8888 /* QuickCaptureView.swift */; };
 		08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5847FC983C046C83926E8 /* PhotoImportView.swift */; };
 		151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D72EB0E3E569F7446794DCB /* PeopleListView.swift */; };
 		18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */; };
@@ -72,6 +80,14 @@
 		E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7890123456789012345678F /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		08901234567890123456789A /* TagViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViews.swift; sourceTree = "<group>"; };
+		BB12345678901234ABCD1111 /* InteractionNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionNote.swift; sourceTree = "<group>"; };
+		BB12345678901234ABCD2222 /* SpacedRepetitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionData.swift; sourceTree = "<group>"; };
+		BB12345678901234ABCD3333 /* QuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizAttempt.swift; sourceTree = "<group>"; };
+		DD12345678901234ABCD4444 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		DD12345678901234ABCD5555 /* PracticeHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHomeView.swift; sourceTree = "<group>"; };
+		DD12345678901234ABCD6666 /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
+		DD12345678901234ABCD7777 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
+		DD12345678901234ABCD8888 /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
 		F00B1011B712E7D328924F89 /* EncounterPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterPhoto.swift; sourceTree = "<group>"; };
 		F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
 		FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
@@ -114,7 +130,10 @@
 				F00B1011B712E7D328924F89 /* EncounterPhoto.swift */,
 				7D3ED702FD11BFDD7E180682 /* FaceEmbedding.swift */,
 				E5AA8997CA72E4E2ABCC94EA /* ImportedPhoto.swift */,
+				BB12345678901234ABCD1111 /* InteractionNote.swift */,
 				C4E6058371775D524BED9450 /* Person.swift */,
+				BB12345678901234ABCD3333 /* QuizAttempt.swift */,
+				BB12345678901234ABCD2222 /* SpacedRepetitionData.swift */,
 				F7890123456789012345678F /* Tag.swift */,
 			);
 			path = Models;
@@ -195,9 +214,12 @@
 			isa = PBXGroup;
 			children = (
 				7009BB5788005DCA09E9BFD7 /* ContentView.swift */,
+				EE12345678901234ABCDBBBB /* Add */,
 				1696A6D6EB005A9CCA04D3C3 /* Encounters */,
+				EE12345678901234ABCD9999 /* Home */,
 				F59944A0F4855F8DCD9AFD81 /* People */,
 				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
+				EE12345678901234ABCDAAAA /* Practice */,
 				E5F6789012345678901234CD /* Settings */,
 				0FFB4409C3A484BFB6CCCDC5 /* Shared */,
 			);
@@ -212,6 +234,32 @@
 				B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */,
 			);
 			path = People;
+			sourceTree = "<group>";
+		};
+		EE12345678901234ABCD9999 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				DD12345678901234ABCD4444 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		EE12345678901234ABCDAAAA /* Practice */ = {
+			isa = PBXGroup;
+			children = (
+				DD12345678901234ABCD6666 /* FaceQuizView.swift */,
+				DD12345678901234ABCD5555 /* PracticeHomeView.swift */,
+			);
+			path = Practice;
+			sourceTree = "<group>";
+		};
+		EE12345678901234ABCDBBBB /* Add */ = {
+			isa = PBXGroup;
+			children = (
+				DD12345678901234ABCD7777 /* AddView.swift */,
+				DD12345678901234ABCD8888 /* QuickCaptureView.swift */,
+			);
+			path = Add;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,6 +332,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F00C55E349B36E9AA7CE6E9 /* AddPersonView.swift in Sources */,
+				CC12345678901234ABCD7777 /* AddView.swift in Sources */,
 				A1B2C3D4E5F6789012345678 /* AppSettings.swift in Sources */,
 				C3D4E5F6789012345678901B /* SettingsView.swift in Sources */,
 				5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */,
@@ -303,11 +352,18 @@
 				485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */,
 				A7173A1AA579DC624C2AC503 /* FaceReviewView.swift in Sources */,
 				436C2A7CA5EAE9C218C0BD41 /* FaceReviewViewModel.swift in Sources */,
+				CC12345678901234ABCD6666 /* FaceQuizView.swift in Sources */,
 				DCDBDC3B2B154FBDC0FBB670 /* FaceThumbnailView.swift in Sources */,
+				CC12345678901234ABCD4444 /* HomeView.swift in Sources */,
 				238F85E4341D8C9CA76CBCFE /* ImportedPhoto.swift in Sources */,
+				AA12345678901234ABCD1111 /* InteractionNote.swift in Sources */,
 				151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */,
 				FDBA47C827868812A0C7611A /* Person.swift in Sources */,
+				AA12345678901234ABCD3333 /* QuizAttempt.swift in Sources */,
+				AA12345678901234ABCD2222 /* SpacedRepetitionData.swift in Sources */,
 				DBA114D1B847321CB5AE5B0B /* PersonDetailView.swift in Sources */,
+				CC12345678901234ABCD5555 /* PracticeHomeView.swift in Sources */,
+				CC12345678901234ABCD8888 /* QuickCaptureView.swift in Sources */,
 				E6F7890123456789012345DE /* Tag.swift in Sources */,
 				F89012345678901234567890 /* TagViews.swift in Sources */,
 				08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */,

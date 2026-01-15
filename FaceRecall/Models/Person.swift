@@ -22,6 +22,11 @@ final class Person {
     var linkedIn: String?
     var twitter: String?
 
+    // Relationship building fields
+    var howWeMet: String?
+    var interestsData: Data?  // JSON array of strings
+    var talkingPointsData: Data?  // JSON array of strings
+
     @Relationship(deleteRule: .cascade, inverse: \FaceEmbedding.person)
     var embeddings: [FaceEmbedding] = []
 
@@ -31,8 +36,49 @@ final class Person {
     @Relationship(deleteRule: .nullify)
     var tags: [Tag] = []
 
+    // Relationship memory features
+    @Relationship(deleteRule: .cascade)
+    var interactionNotes: [InteractionNote] = []
+
+    @Relationship(deleteRule: .cascade)
+    var quizAttempts: [QuizAttempt] = []
+
+    @Relationship(deleteRule: .cascade)
+    var spacedRepetitionData: SpacedRepetitionData?
+
     var encounterCount: Int {
         encounters.count
+    }
+
+    // Computed properties for interests and talking points
+    var interests: [String] {
+        get {
+            guard let data = interestsData else { return [] }
+            return (try? JSONDecoder().decode([String].self, from: data)) ?? []
+        }
+        set {
+            interestsData = try? JSONEncoder().encode(newValue)
+        }
+    }
+
+    var talkingPoints: [String] {
+        get {
+            guard let data = talkingPointsData else { return [] }
+            return (try? JSONDecoder().decode([String].self, from: data)) ?? []
+        }
+        set {
+            talkingPointsData = try? JSONEncoder().encode(newValue)
+        }
+    }
+
+    /// Whether this person needs review based on spaced repetition
+    var needsReview: Bool {
+        spacedRepetitionData?.needsReview ?? true
+    }
+
+    /// Recent interaction notes (last 5)
+    var recentNotes: [InteractionNote] {
+        interactionNotes.sorted { $0.createdAt > $1.createdAt }.prefix(5).map { $0 }
     }
 
     init(

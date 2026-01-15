@@ -14,6 +14,9 @@ struct PersonDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
+    @State private var showAddNoteSheet = false
+    @State private var showQuiz = false
+    @State private var expandedSections: Set<String> = ["talkingPoints", "timeline"]
 
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 12)
@@ -28,7 +31,12 @@ struct PersonDetailView: View {
         ScrollView {
             VStack(spacing: 24) {
                 headerSection
+                quickActionsSection
                 tagsSection
+                talkingPointsSection
+                interestsSection
+                howWeMetSection
+                interactionTimelineSection
                 personalDetailsSection
                 encountersSection
                 facesSection
@@ -87,6 +95,66 @@ struct PersonDetailView: View {
         }) {
             TagPickerView(selectedTags: $selectedTags, title: "Tags for \(person.name)")
         }
+        .sheet(isPresented: $showAddNoteSheet) {
+            AddNoteSheet(person: person)
+        }
+        .fullScreenCover(isPresented: $showQuiz) {
+            FaceQuizView(people: [person])
+        }
+    }
+
+    @ViewBuilder
+    private var quickActionsSection: some View {
+        HStack(spacing: 12) {
+            Button {
+                showAddNoteSheet = true
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "note.text.badge.plus")
+                        .font(.title3)
+                    Text("Add Note")
+                        .font(.caption)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue.opacity(0.1))
+                .foregroundStyle(.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+
+            Button {
+                showQuiz = true
+            } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "brain.head.profile")
+                        .font(.title3)
+                    Text("Practice")
+                        .font(.caption)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.purple.opacity(0.1))
+                .foregroundStyle(.purple)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .disabled(person.embeddings.isEmpty)
+
+            if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
+                Link(destination: url) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "phone")
+                            .font(.title3)
+                        Text("Call")
+                            .font(.caption)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.green.opacity(0.1))
+                    .foregroundStyle(.green)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -107,6 +175,226 @@ struct PersonDetailView: View {
             )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var talkingPointsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Talking Points")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    addTalkingPoint()
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+            }
+
+            if person.talkingPoints.isEmpty {
+                Text("Add talking points to remember for your next conversation")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
+            } else {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(Array(person.talkingPoints.enumerated()), id: \.offset) { index, point in
+                        HStack(alignment: .top) {
+                            Image(systemName: "lightbulb")
+                                .foregroundStyle(.yellow)
+                                .font(.caption)
+                            Text(point)
+                                .font(.subheadline)
+                            Spacer()
+                            Button {
+                                removeTalkingPoint(at: index)
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var interestsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Interests")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    addInterest()
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+            }
+
+            if person.interests.isEmpty {
+                Text("Add interests to find common ground")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                FlowLayout(spacing: 8) {
+                    ForEach(Array(person.interests.enumerated()), id: \.offset) { index, interest in
+                        HStack(spacing: 4) {
+                            Text(interest)
+                                .font(.caption)
+                            Button {
+                                removeInterest(at: index)
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.caption2)
+                            }
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.blue.opacity(0.15))
+                        .foregroundStyle(.blue)
+                        .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var howWeMetSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("How We Met")
+                .font(.headline)
+
+            if isEditing {
+                TextField("Where did you meet?", text: Binding(
+                    get: { person.howWeMet ?? "" },
+                    set: { person.howWeMet = $0.isEmpty ? nil : $0 }
+                ))
+                .textFieldStyle(.roundedBorder)
+            } else if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
+                HStack {
+                    Image(systemName: "person.2")
+                        .foregroundStyle(.secondary)
+                    Text(howWeMet)
+                        .font(.subheadline)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            } else {
+                Button {
+                    isEditing = true
+                } label: {
+                    Text("Add how you met")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var interactionTimelineSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Interaction Timeline")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    showAddNoteSheet = true
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+            }
+
+            if person.interactionNotes.isEmpty && person.encounters.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "text.bubble")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                    Text("No interactions yet")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            } else {
+                VStack(spacing: 12) {
+                    // Show recent notes
+                    ForEach(person.recentNotes) { note in
+                        InteractionNoteRow(note: note, onDelete: {
+                            deleteNote(note)
+                        })
+                    }
+
+                    // Show encounters in timeline
+                    ForEach(person.encounters.prefix(3)) { encounter in
+                        EncounterTimelineRow(encounter: encounter) {
+                            selectedEncounter = encounter
+                            showEncounterDetail = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper methods for editing
+    private func addTalkingPoint() {
+        let alert = UIAlertController(title: "Add Talking Point", message: nil, preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "Something to discuss next time" }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Add", style: .default) { _ in
+            if let text = alert.textFields?.first?.text, !text.isEmpty {
+                var points = person.talkingPoints
+                points.append(text)
+                person.talkingPoints = points
+            }
+        })
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let viewController = windowScene.windows.first?.rootViewController {
+            viewController.present(alert, animated: true)
+        }
+    }
+
+    private func removeTalkingPoint(at index: Int) {
+        var points = person.talkingPoints
+        points.remove(at: index)
+        person.talkingPoints = points
+    }
+
+    private func addInterest() {
+        let alert = UIAlertController(title: "Add Interest", message: nil, preferredStyle: .alert)
+        alert.addTextField { $0.placeholder = "e.g., Photography, Hiking" }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Add", style: .default) { _ in
+            if let text = alert.textFields?.first?.text, !text.isEmpty {
+                var interests = person.interests
+                interests.append(text)
+                person.interests = interests
+            }
+        })
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let viewController = windowScene.windows.first?.rootViewController {
+            viewController.present(alert, animated: true)
+        }
+    }
+
+    private func removeInterest(at index: Int) {
+        var interests = person.interests
+        interests.remove(at: index)
+        person.interests = interests
+    }
+
+    private func deleteNote(_ note: InteractionNote) {
+        modelContext.delete(note)
     }
 
     @ViewBuilder
@@ -723,6 +1011,157 @@ struct FaceSourceBoxOverlay: View {
         }
         .frame(width: width, height: height)
         .position(x: x + width / 2, y: y + height / 2)
+    }
+}
+
+// MARK: - Interaction Note Row
+
+struct InteractionNoteRow: View {
+    let note: InteractionNote
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: note.category.icon)
+                .font(.caption)
+                .foregroundStyle(.white)
+                .padding(6)
+                .background(Circle().fill(categoryColor))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(note.content)
+                    .font(.subheadline)
+
+                Text(note.createdAt.formatted(.relative(presentation: .named)))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .contextMenu {
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+    }
+
+    private var categoryColor: Color {
+        switch note.category {
+        case .conversation: return .blue
+        case .interest: return .yellow
+        case .reminder: return .orange
+        case .followUp: return .purple
+        case .milestone: return .green
+        case .general: return .gray
+        }
+    }
+}
+
+// MARK: - Encounter Timeline Row
+
+struct EncounterTimelineRow: View {
+    let encounter: Encounter
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                if let imageData = encounter.thumbnailData ?? encounter.displayImageData,
+                   let image = UIImage(data: imageData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                } else {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 40, height: 40)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(encounter.occasion ?? "Encounter")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+
+                    Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Add Note Sheet
+
+struct AddNoteSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    let person: Person
+
+    @State private var noteContent = ""
+    @State private var selectedCategory: InteractionCategory = .general
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Category") {
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(InteractionCategory.allCases) { category in
+                            Label(category.rawValue, systemImage: category.icon)
+                                .tag(category)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+
+                Section("Note") {
+                    TextEditor(text: $noteContent)
+                        .frame(minHeight: 100)
+                }
+            }
+            .navigationTitle("Add Note")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveNote()
+                    }
+                    .disabled(noteContent.isEmpty)
+                }
+            }
+        }
+    }
+
+    private func saveNote() {
+        let note = InteractionNote(content: noteContent, category: selectedCategory)
+        note.person = person
+        person.interactionNotes.append(note)
+        modelContext.insert(note)
+        dismiss()
     }
 }
 

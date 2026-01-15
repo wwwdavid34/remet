@@ -17,7 +17,10 @@ struct FaceRecallApp: App {
             FaceEmbedding.self,
             ImportedPhoto.self,
             Encounter.self,
-            Tag.self
+            Tag.self,
+            InteractionNote.self,
+            SpacedRepetitionData.self,
+            QuizAttempt.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -5,7 +5,6 @@ struct PhotoImportView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppState.self) private var appState: AppState?
     @State private var viewModel = PhotoImportViewModel()
-    @State private var showCamera = false
     @State private var showScanner = false
 
     var body: some View {
@@ -38,16 +37,6 @@ struct PhotoImportView: View {
                     // Single photo picker
                     PhotosPicker(selection: $viewModel.selectedItem, matching: .images) {
                         Label("Choose Single Photo", systemImage: "photo.on.rectangle")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-
-                    // Camera
-                    Button {
-                        showCamera = true
-                    } label: {
-                        Label("Take a Photo", systemImage: "camera")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -88,16 +77,6 @@ struct PhotoImportView: View {
                     detectedFaces: viewModel.detectedFaces
                 ) {
                     viewModel.reset()
-                }
-            }
-            .fullScreenCover(isPresented: $showCamera) {
-                CameraCaptureView { image in
-                    if let image = image {
-                        Task {
-                            await processCamera(image: image)
-                        }
-                    }
-                    showCamera = false
                 }
             }
             .sheet(isPresented: $showScanner) {

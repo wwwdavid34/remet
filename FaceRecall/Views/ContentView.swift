@@ -3,9 +3,9 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            EncounterListView()
+            HomeView()
                 .tabItem {
-                    Label("Encounters", systemImage: "person.2.crop.square.stack")
+                    Label("Home", systemImage: "house")
                 }
 
             PeopleListView()
@@ -13,9 +13,14 @@ struct ContentView: View {
                     Label("People", systemImage: "person.3")
                 }
 
-            PhotoImportView()
+            PracticeHomeView()
                 .tabItem {
-                    Label("Import", systemImage: "photo.badge.plus")
+                    Label("Practice", systemImage: "brain.head.profile")
+                }
+
+            AddView()
+                .tabItem {
+                    Label("Add", systemImage: "plus.circle.fill")
                 }
 
             SettingsView()
