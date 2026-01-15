@@ -1,0 +1,500 @@
+import SwiftUI
+import SwiftData
+import Photos
+
+struct EncounterScannerView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @Query private var people: [Person]
+
+    @State private var isScanning = false
+    @State private var scanProgress = 0
+    @State private var scanTotal = 0
+    @State private var photoGroups: [PhotoGroup] = []
+    @State private var selectedGroup: PhotoGroup?
+    @State private var showGroupReview = false
+
+    // Time range selection
+    @State private var selectedTimeRange: ScanTimeRange = .lastWeek
+    @State private var useCustomDateRange = false
+    @State private var customStartDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+    @State private var customEndDate = Date()
+    @State private var photoLimit = 200
+
+    // Limit reached notification
+    @State private var showLimitReachedAlert = false
+    @State private var totalPhotosInRange = 0
+    @State private var scannedPhotosCount = 0
+
+    // Track scanned assets to allow continuation
+    @State private var scannedAssetIds: Set<String> = []
+    @State private var previouslyScannedCount = 0
+
+    private let scannerService = PhotoLibraryScannerService()
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if isScanning {
+                    scanningView
+                } else if photoGroups.isEmpty {
+                    emptyStateView
+                } else {
+                    groupedPhotosGrid
+                }
+            }
+            .navigationTitle("Scan Photos")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+
+                if !isScanning && !photoGroups.isEmpty {
+                    ToolbarItem(placement: .primaryAction) {
+                        Menu {
+                            Button {
+                                startScan()
+                            } label: {
+                                Label("Rescan", systemImage: "arrow.clockwise")
+                            }
+
+                            Button {
+                                photoGroups = []
+                            } label: {
+                                Label("Change Settings", systemImage: "slider.horizontal.3")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showGroupReview) {
+                if let group = selectedGroup {
+                    EncounterGroupReviewView(
+                        photoGroup: group,
+                        people: people
+                    ) { encounter in
+                        modelContext.insert(encounter)
+                        // Remove processed group
+                        photoGroups.removeAll { $0.id == group.id }
+                        selectedGroup = nil
+                    }
+                }
+            }
+            .alert("Photo Limit Reached", isPresented: $showLimitReachedAlert) {
+                let remainingPhotos = totalPhotosInRange - scannedPhotosCount
+                let additionalToScan = min(remainingPhotos, 200)
+                Button("Scan \(additionalToScan) More Photos") {
+                    // Continue scanning from where we left off
+                    continueScan(additionalCount: additionalToScan)
+                }
+                Button("Keep Current Results", role: .cancel) {}
+            } message: {
+                Text("Scanned \(scannedPhotosCount) of \(totalPhotosInRange) photos. Continue scanning more?")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var scanningView: some View {
+        VStack(spacing: 24) {
+            ProgressView()
+                .scaleEffect(1.5)
+
+            Text("Scanning photos...")
+                .font(.headline)
+
+            if scanTotal > 0 {
+                Text("\(scanProgress) of \(scanTotal)")
+                    .foregroundStyle(.secondary)
+
+                ProgressView(value: Double(scanProgress), total: Double(scanTotal))
+                    .padding(.horizontal, 40)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateView: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(spacing: 8) {
+                    Image(systemName: "photo.stack")
+                        .font(.system(size: 60))
+                        .foregroundStyle(.secondary)
+
+                    Text("Scan Photos")
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    Text("Find photos with faces and group them into encounters")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 40)
+
+                // Time Range Selection
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Time Range")
+                        .font(.headline)
+
+                    if useCustomDateRange {
+                        // Custom date range pickers
+                        VStack(spacing: 12) {
+                            DatePicker(
+                                "From",
+                                selection: $customStartDate,
+                                in: ...customEndDate,
+                                displayedComponents: .date
+                            )
+
+                            DatePicker(
+                                "To",
+                                selection: $customEndDate,
+                                in: customStartDate...,
+                                displayedComponents: .date
+                            )
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        Button("Use Preset Range") {
+                            useCustomDateRange = false
+                        }
+                        .font(.subheadline)
+                    } else {
+                        // Preset time range picker
+                        Picker("Time Range", selection: $selectedTimeRange) {
+                            ForEach(ScanTimeRange.allCases) { range in
+                                Text(range.rawValue).tag(range)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        Button("Use Custom Date Range") {
+                            useCustomDateRange = true
+                        }
+                        .font(.subheadline)
+                    }
+                }
+                .padding(.horizontal)
+
+                // Photo Limit
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Photo Limit")
+                        .font(.headline)
+
+                    HStack {
+                        Text("\(photoLimit) photos max")
+                            .foregroundStyle(.secondary)
+
+                        Spacer()
+
+                        Stepper("", value: $photoLimit, in: 50...2000, step: 50)
+                            .labelsHidden()
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    Text("Higher limits may take longer to scan")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.horizontal)
+
+                // Scan Button
+                Button {
+                    startScan()
+                } label: {
+                    Label("Start Scan", systemImage: "magnifyingglass")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+
+                Spacer()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var groupedPhotosGrid: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(photoGroups) { group in
+                    GroupThumbnailCard(group: group)
+                        .onTapGesture {
+                            selectedGroup = group
+                            showGroupReview = true
+                        }
+                }
+            }
+            .padding()
+        }
+        .overlay(alignment: .bottom) {
+            VStack(spacing: 4) {
+                if scannedPhotosCount < totalPhotosInRange && scannedPhotosCount >= photoLimit {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Text("Showing \(scannedPhotosCount) of \(totalPhotosInRange) photos")
+                    }
+                    .font(.caption)
+                    .padding(8)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                }
+
+                Text("\(photoGroups.count) potential encounters found")
+                    .font(.caption)
+                    .padding(8)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+            }
+            .padding(.bottom, 8)
+        }
+    }
+
+    private func startScan() {
+        isScanning = true
+        scanProgress = 0
+        totalPhotosInRange = 0
+        scannedPhotosCount = 0
+        scannedAssetIds = []
+        previouslyScannedCount = 0
+
+        Task {
+            let groups: [PhotoGroup]
+            var scannedIds: [String] = []
+
+            if useCustomDateRange {
+                // Count total photos in range first
+                let totalCount = await scannerService.countPhotos(from: customStartDate, to: customEndDate)
+
+                // Use custom date range
+                let assets = await scannerService.fetchPhotos(
+                    from: customStartDate,
+                    to: customEndDate,
+                    limit: photoLimit
+                )
+                scanTotal = assets.count
+                scannedIds = assets.map { $0.localIdentifier }
+
+                await MainActor.run {
+                    totalPhotosInRange = totalCount
+                    scannedPhotosCount = assets.count
+                }
+
+                groups = await scannerService.scanAndGroupPhotos(assets: assets) { current, total in
+                    Task { @MainActor in
+                        scanProgress = current
+                    }
+                }
+            } else {
+                // Count total photos in range first
+                let totalCount = await scannerService.countPhotos(timeRange: selectedTimeRange)
+
+                // Use preset time range
+                let assets = await scannerService.fetchRecentPhotos(
+                    limit: photoLimit,
+                    timeRange: selectedTimeRange
+                )
+                scanTotal = assets.count
+                scannedIds = assets.map { $0.localIdentifier }
+
+                await MainActor.run {
+                    totalPhotosInRange = totalCount
+                    scannedPhotosCount = assets.count
+                }
+
+                groups = await scannerService.scanAndGroupPhotos(assets: assets) { current, total in
+                    Task { @MainActor in
+                        scanProgress = current
+                    }
+                }
+            }
+
+            // Add location names via reverse geocoding
+            let groupsWithLocations = await scannerService.addLocationNames(to: groups)
+
+            await MainActor.run {
+                photoGroups = groupsWithLocations
+                scannedAssetIds = Set(scannedIds)
+                isScanning = false
+
+                // Show alert if limit was reached
+                if scannedPhotosCount < totalPhotosInRange {
+                    showLimitReachedAlert = true
+                }
+            }
+        }
+    }
+
+    private func continueScan(additionalCount: Int) {
+        isScanning = true
+        previouslyScannedCount = scannedPhotosCount
+        scanProgress = 0
+
+        Task {
+            // Fetch more photos, skipping already scanned ones
+            let newLimit = scannedPhotosCount + additionalCount
+            var newAssets: [PHAsset] = []
+            var scannedIds: [String] = []
+
+            if useCustomDateRange {
+                let allAssets = await scannerService.fetchPhotos(
+                    from: customStartDate,
+                    to: customEndDate,
+                    limit: newLimit
+                )
+                // Filter out already scanned assets
+                newAssets = allAssets.filter { !scannedAssetIds.contains($0.localIdentifier) }
+                scannedIds = allAssets.map { $0.localIdentifier }
+            } else {
+                let allAssets = await scannerService.fetchRecentPhotos(
+                    limit: newLimit,
+                    timeRange: selectedTimeRange
+                )
+                // Filter out already scanned assets
+                newAssets = allAssets.filter { !scannedAssetIds.contains($0.localIdentifier) }
+                scannedIds = allAssets.map { $0.localIdentifier }
+            }
+
+            scanTotal = newAssets.count
+
+            await MainActor.run {
+                scannedPhotosCount = previouslyScannedCount + newAssets.count
+            }
+
+            // Scan only the new photos
+            var newGroups = await scannerService.scanAndGroupPhotos(assets: newAssets) { current, total in
+                Task { @MainActor in
+                    scanProgress = current
+                }
+            }
+
+            // Add location names via reverse geocoding
+            newGroups = await scannerService.addLocationNames(to: newGroups)
+
+            await MainActor.run {
+                // Merge new groups with existing ones
+                mergePhotoGroups(newGroups)
+                scannedAssetIds = Set(scannedIds)
+                isScanning = false
+
+                // Show alert if still more photos to scan
+                if scannedPhotosCount < totalPhotosInRange {
+                    showLimitReachedAlert = true
+                }
+            }
+        }
+    }
+
+    private func mergePhotoGroups(_ newGroups: [PhotoGroup]) {
+        // For now, simply append new groups
+        // In future, could merge groups that are close in time/location
+        photoGroups.append(contentsOf: newGroups)
+
+        // Sort all groups by date
+        photoGroups.sort { $0.date > $1.date }
+    }
+}
+
+struct GroupThumbnailCard: View {
+    let group: PhotoGroup
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 2),
+        GridItem(.flexible(), spacing: 2),
+        GridItem(.flexible(), spacing: 2)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Photo grid preview (up to 6 photos)
+            LazyVGrid(columns: columns, spacing: 2) {
+                ForEach(Array(group.photos.prefix(6).enumerated()), id: \.element.id) { index, photo in
+                    Group {
+                        if let image = photo.image {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 80)
+                                .clipped()
+                                .overlay {
+                                    if index == 5 && group.photos.count > 6 {
+                                        Color.black.opacity(0.5)
+                                        Text("+\(group.photos.count - 6)")
+                                            .font(.headline)
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+                        } else {
+                            // Placeholder for loading photos (e.g., from iCloud)
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.2))
+                                .frame(height: 80)
+                                .overlay {
+                                    ProgressView()
+                                        .scaleEffect(0.7)
+                                }
+                        }
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            // Group info
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(group.date.formatted(date: .abbreviated, time: .omitted))
+                        .font(.headline)
+
+                    Text(group.dateRange)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if let locationName = group.locationName {
+                        Label(locationName, systemImage: "location.fill")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                // Stats
+                HStack(spacing: 12) {
+                    Label("\(group.photos.count)", systemImage: "photo")
+                    Label("\(group.totalFaces)", systemImage: "person.fill")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+#Preview {
+    EncounterScannerView()
+}

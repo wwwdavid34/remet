@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1B2C3D4E5F6789012345678 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F67890123456789A /* AppSettings.swift */; };
+		C3D4E5F6789012345678901B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F67890123456789012BC /* SettingsView.swift */; };
+		08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5847FC983C046C83926E8 /* PhotoImportView.swift */; };
+		151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D72EB0E3E569F7446794DCB /* PeopleListView.swift */; };
+		18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */; };
+		238F85E4341D8C9CA76CBCFE /* ImportedPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AA8997CA72E4E2ABCC94EA /* ImportedPhoto.swift */; };
+		23CBFB2433634936E314E427 /* FaceEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3ED702FD11BFDD7E180682 /* FaceEmbedding.swift */; };
+		29E483FBA4DDF34FBA58C307 /* FaceDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7721CC6021EBA1BD7660260 /* FaceDetectionService.swift */; };
+		2B3F40404949E448D027EF57 /* EncounterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */; };
+		2EB835459DF73FA979B09C53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7009BB5788005DCA09E9BFD7 /* ContentView.swift */; };
+		436C2A7CA5EAE9C218C0BD41 /* FaceReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3288E08FA232E739309636BC /* FaceReviewViewModel.swift */; };
+		485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */; };
+		5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */; };
+		5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */; };
+		64B3A403F33CA30EFE1083F1 /* EncounterPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00B1011B712E7D328924F89 /* EncounterPhoto.swift */; };
+		86694CAB9CF2B96CDF1831B2 /* PhotoLibraryScannerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */; };
+		8C36C829234EC13B893C9CB7 /* Encounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348E869ACF2525A268D748AD /* Encounter.swift */; };
+		8DEA8FBB7FD29614B1F1CBB7 /* EncounterScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 136678A83EB1FE26EC1E66DF /* EncounterScannerView.swift */; };
+		98A3959331427B49C4503362 /* EncounterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB0B5CEB3DEDE4544E11EEF /* EncounterListView.swift */; };
+		9F00C55E349B36E9AA7CE6E9 /* AddPersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1936AE11B96771B5BA23123 /* AddPersonView.swift */; };
+		A0E4D627C6A490706B71196C /* EncounterGroupReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */; };
+		A7173A1AA579DC624C2AC503 /* FaceReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CB1E6F47D93C532D56DE9A /* FaceReviewView.swift */; };
+		C30250918A319C48A67A62F4 /* FaceNet512.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 342685126FF08FC204A9FCD9 /* FaceNet512.mlpackage */; };
+		CC6F33998C45CA17EA49C884 /* FaceMatchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97598B0F79F458D52747CC36 /* FaceMatchingService.swift */; };
+		DBA114D1B847321CB5AE5B0B /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */; };
+		DCDBDC3B2B154FBDC0FBB670 /* FaceThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6BEE42CD12C0D0ADD45306 /* FaceThumbnailView.swift */; };
+		F0E4CA6473B9BB4F3ACDE1FE /* EncounterReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB195FC695B0732BBC46031 /* EncounterReviewView.swift */; };
+		FB20244AA42C9DB84934B4CC /* PhotoImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */; };
+		FDBA47C827868812A0C7611A /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E6058371775D524BED9450 /* Person.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02112CCAA67194FC17030246 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportViewModel.swift; sourceTree = "<group>"; };
+		B2C3D4E5F67890123456789A /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		D4E5F67890123456789012BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		136678A83EB1FE26EC1E66DF /* EncounterScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterScannerView.swift; sourceTree = "<group>"; };
+		1D72EB0E3E569F7446794DCB /* PeopleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleListView.swift; sourceTree = "<group>"; };
+		3288E08FA232E739309636BC /* FaceReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReviewViewModel.swift; sourceTree = "<group>"; };
+		342685126FF08FC204A9FCD9 /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
+		348E869ACF2525A268D748AD /* Encounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encounter.swift; sourceTree = "<group>"; };
+		4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterDetailView.swift; sourceTree = "<group>"; };
+		5C6BEE42CD12C0D0ADD45306 /* FaceThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceThumbnailView.swift; sourceTree = "<group>"; };
+		5EB0B5CEB3DEDE4544E11EEF /* EncounterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterListView.swift; sourceTree = "<group>"; };
+		6BAB90AEB170530790EE0A22 /* FaceRecall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceRecall.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7009BB5788005DCA09E9BFD7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7D3ED702FD11BFDD7E180682 /* FaceEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbedding.swift; sourceTree = "<group>"; };
+		84E5847FC983C046C83926E8 /* PhotoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportView.swift; sourceTree = "<group>"; };
+		8BB195FC695B0732BBC46031 /* EncounterReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterReviewView.swift; sourceTree = "<group>"; };
+		97598B0F79F458D52747CC36 /* FaceMatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingService.swift; sourceTree = "<group>"; };
+		9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRecallApp.swift; sourceTree = "<group>"; };
+		A5DD6B7A59F959F26C22F51C /* FaceRecall.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FaceRecall.entitlements; sourceTree = "<group>"; };
+		A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
+		AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterGroupReviewView.swift; sourceTree = "<group>"; };
+		B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
+		C4E6058371775D524BED9450 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		C7721CC6021EBA1BD7660260 /* FaceDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetectionService.swift; sourceTree = "<group>"; };
+		D1936AE11B96771B5BA23123 /* AddPersonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPersonView.swift; sourceTree = "<group>"; };
+		D8CB1E6F47D93C532D56DE9A /* FaceReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReviewView.swift; sourceTree = "<group>"; };
+		E5AA8997CA72E4E2ABCC94EA /* ImportedPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedPhoto.swift; sourceTree = "<group>"; };
+		E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F00B1011B712E7D328924F89 /* EncounterPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterPhoto.swift; sourceTree = "<group>"; };
+		F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
+		FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		067AFB102C3A64EBE04F62C1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6BAB90AEB170530790EE0A22 /* FaceRecall.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0FFB4409C3A484BFB6CCCDC5 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				5C6BEE42CD12C0D0ADD45306 /* FaceThumbnailView.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		1696A6D6EB005A9CCA04D3C3 /* Encounters */ = {
+			isa = PBXGroup;
+			children = (
+				4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */,
+				AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */,
+				5EB0B5CEB3DEDE4544E11EEF /* EncounterListView.swift */,
+				8BB195FC695B0732BBC46031 /* EncounterReviewView.swift */,
+				136678A83EB1FE26EC1E66DF /* EncounterScannerView.swift */,
+			);
+			path = Encounters;
+			sourceTree = "<group>";
+		};
+		17304AF23F62CBD871866F08 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				348E869ACF2525A268D748AD /* Encounter.swift */,
+				F00B1011B712E7D328924F89 /* EncounterPhoto.swift */,
+				7D3ED702FD11BFDD7E180682 /* FaceEmbedding.swift */,
+				E5AA8997CA72E4E2ABCC94EA /* ImportedPhoto.swift */,
+				C4E6058371775D524BED9450 /* Person.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		425E550BA668DAE1A5FF9976 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				3288E08FA232E739309636BC /* FaceReviewViewModel.swift */,
+				0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5876ADEB366D7A960A28735F /* FaceRecall */ = {
+			isa = PBXGroup;
+			children = (
+				E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */,
+				A5DD6B7A59F959F26C22F51C /* FaceRecall.entitlements */,
+				9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */,
+				02112CCAA67194FC17030246 /* Info.plist */,
+				17304AF23F62CBD871866F08 /* Models */,
+				AC72687B36ED8335762E4E5E /* Resources */,
+				6A8A3854AF6914AD996CE1F2 /* Services */,
+				425E550BA668DAE1A5FF9976 /* ViewModels */,
+				EA6737EBEF54C006EF984C8B /* Views */,
+			);
+			path = FaceRecall;
+			sourceTree = "<group>";
+		};
+		631360D3EC3915C65DE557EA = {
+			isa = PBXGroup;
+			children = (
+				5876ADEB366D7A960A28735F /* FaceRecall */,
+				067AFB102C3A64EBE04F62C1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6A8A3854AF6914AD996CE1F2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B2C3D4E5F67890123456789A /* AppSettings.swift */,
+				C7721CC6021EBA1BD7660260 /* FaceDetectionService.swift */,
+				F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */,
+				97598B0F79F458D52747CC36 /* FaceMatchingService.swift */,
+				FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		6F88FCBCD71F83940BAEFC55 /* PhotoImport */ = {
+			isa = PBXGroup;
+			children = (
+				A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */,
+				D8CB1E6F47D93C532D56DE9A /* FaceReviewView.swift */,
+				84E5847FC983C046C83926E8 /* PhotoImportView.swift */,
+			);
+			path = PhotoImport;
+			sourceTree = "<group>";
+		};
+		AC72687B36ED8335762E4E5E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				342685126FF08FC204A9FCD9 /* FaceNet512.mlpackage */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E5F6789012345678901234CD /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D4E5F67890123456789012BC /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		EA6737EBEF54C006EF984C8B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				7009BB5788005DCA09E9BFD7 /* ContentView.swift */,
+				1696A6D6EB005A9CCA04D3C3 /* Encounters */,
+				F59944A0F4855F8DCD9AFD81 /* People */,
+				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
+				E5F6789012345678901234CD /* Settings */,
+				0FFB4409C3A484BFB6CCCDC5 /* Shared */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F59944A0F4855F8DCD9AFD81 /* People */ = {
+			isa = PBXGroup;
+			children = (
+				D1936AE11B96771B5BA23123 /* AddPersonView.swift */,
+				1D72EB0E3E569F7446794DCB /* PeopleListView.swift */,
+				B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */,
+			);
+			path = People;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CC15D6D8AC1449DA2B052FF3 /* FaceRecall */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "FaceRecall" */;
+			buildPhases = (
+				8884B2D9F3595E7E39008512 /* Sources */,
+				D7871B3E1A233CAE58A5F574 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FaceRecall;
+			packageProductDependencies = (
+			);
+			productName = FaceRecall;
+			productReference = 6BAB90AEB170530790EE0A22 /* FaceRecall.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BDC4D98C29CC6021705BDE76 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					CC15D6D8AC1449DA2B052FF3 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "FaceRecall" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 631360D3EC3915C65DE557EA;
+			minimizedProjectReferenceProxies = 1;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CC15D6D8AC1449DA2B052FF3 /* FaceRecall */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D7871B3E1A233CAE58A5F574 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8884B2D9F3595E7E39008512 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F00C55E349B36E9AA7CE6E9 /* AddPersonView.swift in Sources */,
+				A1B2C3D4E5F6789012345678 /* AppSettings.swift in Sources */,
+				C3D4E5F6789012345678901B /* SettingsView.swift in Sources */,
+				5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */,
+				2EB835459DF73FA979B09C53 /* ContentView.swift in Sources */,
+				8C36C829234EC13B893C9CB7 /* Encounter.swift in Sources */,
+				2B3F40404949E448D027EF57 /* EncounterDetailView.swift in Sources */,
+				A0E4D627C6A490706B71196C /* EncounterGroupReviewView.swift in Sources */,
+				98A3959331427B49C4503362 /* EncounterListView.swift in Sources */,
+				64B3A403F33CA30EFE1083F1 /* EncounterPhoto.swift in Sources */,
+				F0E4CA6473B9BB4F3ACDE1FE /* EncounterReviewView.swift in Sources */,
+				8DEA8FBB7FD29614B1F1CBB7 /* EncounterScannerView.swift in Sources */,
+				29E483FBA4DDF34FBA58C307 /* FaceDetectionService.swift in Sources */,
+				23CBFB2433634936E314E427 /* FaceEmbedding.swift in Sources */,
+				18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */,
+				CC6F33998C45CA17EA49C884 /* FaceMatchingService.swift in Sources */,
+				C30250918A319C48A67A62F4 /* FaceNet512.mlpackage in Sources */,
+				485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */,
+				A7173A1AA579DC624C2AC503 /* FaceReviewView.swift in Sources */,
+				436C2A7CA5EAE9C218C0BD41 /* FaceReviewViewModel.swift in Sources */,
+				DCDBDC3B2B154FBDC0FBB670 /* FaceThumbnailView.swift in Sources */,
+				238F85E4341D8C9CA76CBCFE /* ImportedPhoto.swift in Sources */,
+				151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */,
+				FDBA47C827868812A0C7611A /* Person.swift in Sources */,
+				DBA114D1B847321CB5AE5B0B /* PersonDetailView.swift in Sources */,
+				08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */,
+				FB20244AA42C9DB84934B4CC /* PhotoImportViewModel.swift in Sources */,
+				86694CAB9CF2B96CDF1831B2 /* PhotoLibraryScannerService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1E90B84062FD60E1AD71BD0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RX44K7NF89;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = FaceRecall/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Face Recall needs camera access to capture photos for face identification.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Face Recall can save processed photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Face Recall needs access to your photos to identify people.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.facerecall.app;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		53D9005ADF7B9A44DA98F622 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RX44K7NF89;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = FaceRecall/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Face Recall needs camera access to capture photos for face identification.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Face Recall can save processed photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Face Recall needs access to your photos to identify people.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.facerecall.app;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9ED51E5535ACA930980A2960 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DF86C18C8C26EB3457E4C641 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "FaceRecall" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9ED51E5535ACA930980A2960 /* Debug */,
+				DF86C18C8C26EB3457E4C641 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "FaceRecall" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E90B84062FD60E1AD71BD0D /* Debug */,
+				53D9005ADF7B9A44DA98F622 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BDC4D98C29CC6021705BDE76 /* Project object */;
+}
