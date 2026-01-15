@@ -19,6 +19,7 @@
 		CC12345678901234ABCD6666 /* FaceQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD6666 /* FaceQuizView.swift */; };
 		CC12345678901234ABCD7777 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD7777 /* AddView.swift */; };
 		CC12345678901234ABCD8888 /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD12345678901234ABCD8888 /* QuickCaptureView.swift */; };
+		AABB12345678901234CDBB00 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF12345678901234ABCD9999 /* AppTheme.swift */; };
 		08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5847FC983C046C83926E8 /* PhotoImportView.swift */; };
 		151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D72EB0E3E569F7446794DCB /* PeopleListView.swift */; };
 		18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */; };
@@ -88,6 +89,7 @@
 		DD12345678901234ABCD6666 /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
 		DD12345678901234ABCD7777 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
 		DD12345678901234ABCD8888 /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
+		FF12345678901234ABCD9999 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		F00B1011B712E7D328924F89 /* EncounterPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterPhoto.swift; sourceTree = "<group>"; };
 		F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
 		FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
@@ -158,10 +160,19 @@
 				17304AF23F62CBD871866F08 /* Models */,
 				AC72687B36ED8335762E4E5E /* Resources */,
 				6A8A3854AF6914AD996CE1F2 /* Services */,
+				AABB12345678901234CDAA00 /* Theme */,
 				425E550BA668DAE1A5FF9976 /* ViewModels */,
 				EA6737EBEF54C006EF984C8B /* Views */,
 			);
 			path = FaceRecall;
+			sourceTree = "<group>";
+		};
+		AABB12345678901234CDAA00 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				FF12345678901234ABCD9999 /* AppTheme.swift */,
+			);
+			path = Theme;
 			sourceTree = "<group>";
 		};
 		631360D3EC3915C65DE557EA = {
@@ -334,6 +345,7 @@
 				9F00C55E349B36E9AA7CE6E9 /* AddPersonView.swift in Sources */,
 				CC12345678901234ABCD7777 /* AddView.swift in Sources */,
 				A1B2C3D4E5F6789012345678 /* AppSettings.swift in Sources */,
+				AABB12345678901234CDBB00 /* AppTheme.swift in Sources */,
 				C3D4E5F6789012345678901B /* SettingsView.swift in Sources */,
 				5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */,
 				2EB835459DF73FA979B09C53 /* ContentView.swift in Sources */,

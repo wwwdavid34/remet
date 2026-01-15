@@ -30,39 +30,46 @@ struct PracticeHomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    // Motivational Header
+                    if !peopleWithFaces.isEmpty {
+                        VStack(spacing: 8) {
+                            Text(WittyCopy.random(from: WittyCopy.quizGreetings))
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .multilineTextAlignment(.center)
+
+                            if totalAttempts > 0 {
+                                Text("You've practiced \(totalAttempts) times with \(Int(overallAccuracy * 100))% accuracy")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    }
+
                     // Stats Overview
-                    VStack(spacing: 16) {
-                        HStack(spacing: 16) {
-                            PracticeStatCard(
-                                title: "Due Today",
-                                value: "\(peopleNeedingReview.count)",
-                                subtitle: "people to review",
-                                color: peopleNeedingReview.isEmpty ? .green : .orange
-                            )
+                    HStack(spacing: 12) {
+                        PracticeStatCard(
+                            value: "\(peopleNeedingReview.count)",
+                            label: "Due Today",
+                            icon: "clock.badge",
+                            color: peopleNeedingReview.isEmpty ? AppColors.success : AppColors.warning
+                        )
 
-                            PracticeStatCard(
-                                title: "Accuracy",
-                                value: totalAttempts > 0 ? "\(Int(overallAccuracy * 100))%" : "-",
-                                subtitle: "\(totalCorrect)/\(totalAttempts) correct",
-                                color: overallAccuracy >= 0.8 ? .green : (overallAccuracy >= 0.5 ? .orange : .red)
-                            )
-                        }
+                        PracticeStatCard(
+                            value: totalAttempts > 0 ? "\(Int(overallAccuracy * 100))%" : "-",
+                            label: "Accuracy",
+                            icon: "target",
+                            color: overallAccuracy >= 0.8 ? AppColors.success : (overallAccuracy >= 0.5 ? AppColors.warning : AppColors.coral)
+                        )
 
-                        HStack(spacing: 16) {
-                            PracticeStatCard(
-                                title: "Total People",
-                                value: "\(peopleWithFaces.count)",
-                                subtitle: "with faces saved",
-                                color: .blue
-                            )
-
-                            PracticeStatCard(
-                                title: "Mastered",
-                                value: "\(masteredCount)",
-                                subtitle: "high accuracy",
-                                color: .purple
-                            )
-                        }
+                        PracticeStatCard(
+                            value: "\(masteredCount)",
+                            label: "Mastered",
+                            icon: "star.fill",
+                            color: AppColors.softPurple
+                        )
                     }
                     .padding(.horizontal)
 
@@ -72,35 +79,58 @@ struct PracticeHomeView: View {
                             Button {
                                 showingQuiz = true
                             } label: {
-                                HStack {
+                                HStack(spacing: 12) {
                                     Image(systemName: "brain.head.profile")
-                                    Text(peopleNeedingReview.isEmpty ? "Practice All" : "Start Review (\(peopleNeedingReview.count))")
+                                        .font(.title2)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(peopleNeedingReview.isEmpty ? "Practice All Faces" : "Start Review")
+                                            .font(.headline)
+                                        if !peopleNeedingReview.isEmpty {
+                                            Text("\(peopleNeedingReview.count) faces waiting for you")
+                                                .font(.caption)
+                                                .opacity(0.9)
+                                        }
+                                    }
+                                    Spacer()
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .font(.title2)
                                 }
-                                .font(.headline)
                                 .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.purple)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .background(
+                                    LinearGradient(
+                                        colors: [AppColors.teal, AppColors.teal.opacity(0.7)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .shadow(color: AppColors.teal.opacity(0.4), radius: 8, x: 0, y: 4)
                             }
                             .padding(.horizontal)
 
-                            if !peopleNeedingReview.isEmpty {
-                                Text("Review due people first for best memory retention")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                            Text("Spaced repetition helps cement faces in long-term memory")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .italic()
                         }
                     }
 
                     // People Due Section
                     if !peopleNeedingReview.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Due for Review")
-                                .font(.headline)
-                                .padding(.horizontal)
+                            HStack {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "person.crop.circle.badge.clock")
+                                        .foregroundStyle(AppColors.warning)
+                                    Text("Ready for Review")
+                                        .font(.headline)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal)
 
-                            LazyVStack(spacing: 8) {
+                            LazyVStack(spacing: 10) {
                                 ForEach(peopleNeedingReview.sorted { p1, p2 in
                                     (p1.spacedRepetitionData?.nextReviewDate ?? .distantPast) < (p2.spacedRepetitionData?.nextReviewDate ?? .distantPast)
                                 }) { person in
@@ -113,26 +143,17 @@ struct PracticeHomeView: View {
 
                     // Empty State
                     if peopleWithFaces.isEmpty {
-                        VStack(spacing: 16) {
-                            Image(systemName: "brain.head.profile")
-                                .font(.system(size: 60))
-                                .foregroundStyle(.secondary)
-
-                            Text("No People to Practice")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-
-                            Text("Add people with face photos to start practicing. The quiz will help you remember names through spaced repetition.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 32)
-                        }
-                        .padding(.top, 40)
+                        EmptyStateView(
+                            icon: "brain.head.profile",
+                            title: WittyCopy.emptyPracticeTitle,
+                            subtitle: WittyCopy.emptyPracticeSubtitle
+                        )
+                        .padding(.top, 20)
                     }
                 }
                 .padding(.vertical)
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Practice")
             .fullScreenCover(isPresented: $showingQuiz) {
                 FaceQuizView(
@@ -153,30 +174,30 @@ struct PracticeHomeView: View {
 // MARK: - Supporting Views
 
 struct PracticeStatCard: View {
-    let title: String
     let value: String
-    let subtitle: String
+    let label: String
+    let icon: String
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title3)
                 .foregroundStyle(color)
 
-            Text(subtitle)
-                .font(.caption2)
+            Text(value)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+
+            Text(label)
+                .font(.caption)
                 .foregroundStyle(.secondary)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: color.opacity(0.15), radius: 6, x: 0, y: 3)
     }
 }
 
@@ -186,58 +207,72 @@ struct ReviewPersonRow: View {
     var body: some View {
         HStack(spacing: 12) {
             // Face thumbnail
-            if let embedding = person.embeddings.first,
-               let uiImage = UIImage(data: embedding.faceCropData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(Circle())
-            } else {
-                Circle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 50, height: 50)
-                    .overlay {
-                        Image(systemName: "person.fill")
-                            .foregroundStyle(.gray)
-                    }
+            ZStack {
+                if let embedding = person.embeddings.first,
+                   let uiImage = UIImage(data: embedding.faceCropData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 50, height: 50)
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .foregroundStyle(.white)
+                        }
+                }
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(person.name)
                     .font(.subheadline)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
 
                 if let srData = person.spacedRepetitionData {
                     HStack(spacing: 8) {
                         if srData.daysUntilReview < 0 {
-                            Text("\(abs(srData.daysUntilReview))d overdue")
+                            Label("\(abs(srData.daysUntilReview))d overdue", systemImage: "exclamationmark.circle")
                                 .font(.caption)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(AppColors.warning)
                         } else if srData.daysUntilReview == 0 {
-                            Text("Due today")
+                            Label("Due today", systemImage: "clock")
                                 .font(.caption)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(AppColors.warning)
                         }
 
                         if srData.totalAttempts > 0 {
-                            Text("\(Int(srData.accuracy * 100))% accuracy")
+                            Text("\(Int(srData.accuracy * 100))%")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .fontWeight(.medium)
+                                .foregroundStyle(srData.accuracy >= 0.8 ? AppColors.success : .secondary)
                         }
                     }
                 } else {
-                    Text("New - never practiced")
+                    Label("New face - never practiced", systemImage: "sparkles")
                         .font(.caption)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(AppColors.teal)
                 }
             }
 
             Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(12)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
 

@@ -28,34 +28,49 @@ struct FaceQuizView: View {
                 } else if let currentPerson = currentPerson {
                     VStack(spacing: 20) {
                         // Progress
-                        ProgressView(value: Double(currentIndex), total: Double(shuffledPeople.count))
-                            .padding(.horizontal)
+                        VStack(spacing: 8) {
+                            ProgressView(value: Double(currentIndex), total: Double(shuffledPeople.count))
+                                .tint(AppColors.teal)
 
-                        Text("\(currentIndex + 1) of \(shuffledPeople.count)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            Text("\(currentIndex + 1) of \(shuffledPeople.count)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal)
 
                         Spacer()
 
                         // Face display
-                        if let embedding = currentPerson.embeddings.randomElement(),
-                           let uiImage = UIImage(data: embedding.faceCropData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 180, height: 180)
-                                .clipShape(Circle())
-                                .shadow(radius: 10)
-                        } else {
+                        ZStack {
                             Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 180, height: 180)
-                                .overlay {
-                                    Image(systemName: "person.fill")
-                                        .font(.system(size: 70))
-                                        .foregroundStyle(.gray)
-                                }
+                                .fill(
+                                    LinearGradient(
+                                        colors: [AppColors.coral.opacity(0.1), AppColors.teal.opacity(0.1)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 200, height: 200)
+
+                            if let embedding = currentPerson.embeddings.randomElement(),
+                               let uiImage = UIImage(data: embedding.faceCropData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 180, height: 180)
+                                    .clipShape(Circle())
+                            } else {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(width: 180, height: 180)
+                                    .overlay {
+                                        Image(systemName: "person.fill")
+                                            .font(.system(size: 70))
+                                            .foregroundStyle(.gray)
+                                    }
+                            }
                         }
+                        .shadow(color: AppColors.coral.opacity(0.2), radius: 20, x: 0, y: 10)
 
                         Spacer()
 
@@ -67,20 +82,31 @@ struct FaceQuizView: View {
                                 userGuess: selectedAnswer ?? ""
                             )
 
-                            Button(currentIndex < shuffledPeople.count - 1 ? "Next" : "Finish") {
+                            Button {
                                 if currentIndex < shuffledPeople.count - 1 {
                                     nextQuestion()
                                 } else {
                                     showingSessionComplete = true
                                 }
+                            } label: {
+                                HStack {
+                                    Text(currentIndex < shuffledPeople.count - 1 ? "Next Face" : "See Results")
+                                    Image(systemName: "arrow.right")
+                                }
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(AppColors.teal)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
                             }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.large)
+                            .padding(.horizontal)
                         } else {
                             // Multiple choice options
-                            VStack(spacing: 12) {
+                            VStack(spacing: 14) {
                                 Text("Who is this?")
-                                    .font(.headline)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
 
                                 ForEach(currentOptions, id: \.self) { option in
                                     Button {
@@ -90,39 +116,49 @@ struct FaceQuizView: View {
                                             .font(.body)
                                             .fontWeight(.medium)
                                             .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 14)
-                                            .background(Color(.systemGray6))
+                                            .padding(.vertical, 16)
+                                            .background(Color.white)
                                             .foregroundStyle(.primary)
-                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                                            .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
                                     }
                                     .buttonStyle(.plain)
                                 }
 
-                                Button("I Don't Know") {
+                                Button {
                                     selectAnswer(nil)
+                                } label: {
+                                    Text("I don't remember")
+                                        .font(.subheadline)
+                                        .foregroundStyle(AppColors.coral)
                                 }
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 8)
+                                .padding(.top, 4)
                             }
                             .padding(.horizontal)
                         }
                     }
                     .padding()
                 } else {
-                    Text("No people to quiz")
-                        .foregroundStyle(.secondary)
+                    EmptyStateView(
+                        icon: "person.crop.circle.badge.questionmark",
+                        title: "No faces to quiz",
+                        subtitle: "Add some people first, then come back for practice!"
+                    )
                 }
             }
+            .background(Color(.systemGroupedBackground))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("End") {
+                    Button {
                         if sessionStats.totalAttempts > 0 {
                             showingSessionComplete = true
                         } else {
                             dismiss()
                         }
+                    } label: {
+                        Text("End")
+                            .foregroundStyle(AppColors.coral)
                     }
                 }
             }
@@ -146,17 +182,14 @@ struct FaceQuizView: View {
     private func generateOptions() {
         guard let correctPerson = currentPerson else { return }
 
-        // Get wrong answers from other people
         var wrongAnswers = shuffledPeople
             .filter { $0.id != correctPerson.id }
             .map { $0.name }
             .shuffled()
 
-        // Take up to 3 wrong answers
         let wrongCount = min(3, wrongAnswers.count)
         wrongAnswers = Array(wrongAnswers.prefix(wrongCount))
 
-        // Combine and shuffle
         currentOptions = (wrongAnswers + [correctPerson.name]).shuffled()
     }
 
@@ -167,13 +200,11 @@ struct FaceQuizView: View {
         let responseTime = Int(Date().timeIntervalSince(quizStartTime) * 1000)
         wasCorrect = answer == person.name
 
-        // Update session stats
         sessionStats.totalAttempts += 1
         if wasCorrect {
             sessionStats.correctAttempts += 1
         }
 
-        // Record quiz attempt
         let attempt = QuizAttempt(
             wasCorrect: wasCorrect,
             responseTimeMs: responseTime,
@@ -183,7 +214,6 @@ struct FaceQuizView: View {
         person.quizAttempts.append(attempt)
         modelContext.insert(attempt)
 
-        // Update spaced repetition data
         updateSpacedRepetition(for: person, wasCorrect: wasCorrect)
 
         try? modelContext.save()
@@ -199,7 +229,6 @@ struct FaceQuizView: View {
             modelContext.insert(srData)
         }
 
-        // SM-2 Algorithm
         srData.totalAttempts += 1
         srData.lastReviewDate = Date()
 
@@ -215,13 +244,10 @@ struct FaceQuizView: View {
                 srData.interval = Int(Double(srData.interval) * srData.easeFactor)
             }
 
-            // Increase ease factor slightly for correct answers
             srData.easeFactor = min(2.5, srData.easeFactor + 0.1)
         } else {
             srData.repetitions = 0
             srData.interval = 1
-
-            // Decrease ease factor for incorrect answers
             srData.easeFactor = max(1.3, srData.easeFactor - 0.2)
         }
 
@@ -247,70 +273,68 @@ struct QuizResultView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            // Witty feedback
+            Text(wasCorrect ? WittyCopy.random(from: WittyCopy.quizCorrect) : WittyCopy.random(from: WittyCopy.quizIncorrect))
+                .font(.headline)
+                .foregroundStyle(wasCorrect ? AppColors.success : AppColors.coral)
+
+            // Result icon
             Image(systemName: wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .font(.system(size: 50))
-                .foregroundStyle(wasCorrect ? .green : .red)
+                .font(.system(size: 44))
+                .foregroundStyle(wasCorrect ? AppColors.success : AppColors.coral)
 
             Text(person.name)
                 .font(.title2)
                 .fontWeight(.bold)
 
             if !wasCorrect && !userGuess.isEmpty {
-                Text("You said: \(userGuess)")
+                Text("You guessed: \(userGuess)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
-            // Context info
-            VStack(alignment: .leading, spacing: 8) {
-                if let company = person.company {
-                    HStack {
-                        Image(systemName: "building.2")
-                        Text(company)
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-
-                if let howWeMet = person.howWeMet {
-                    HStack {
-                        Image(systemName: "person.2")
-                        Text(howWeMet)
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-
-                if let contextTag = person.contextTag {
-                    HStack {
-                        Image(systemName: "tag")
-                        Text(contextTag)
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-
-                // Talking points
-                if !person.talkingPoints.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Talking Points:")
-                            .font(.caption)
-                            .fontWeight(.medium)
-
-                        ForEach(person.talkingPoints.prefix(3), id: \.self) { point in
-                            HStack(alignment: .top) {
-                                Text("-")
-                                Text(point)
-                            }
-                            .font(.caption)
+            // Context info card
+            if person.company != nil || person.howWeMet != nil || person.contextTag != nil || !person.talkingPoints.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    if let company = person.company {
+                        Label(company, systemImage: "building.2")
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
+                    }
+
+                    if let howWeMet = person.howWeMet {
+                        Label(howWeMet, systemImage: "person.2")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let contextTag = person.contextTag {
+                        Label(contextTag, systemImage: "tag")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.teal)
+                    }
+
+                    if !person.talkingPoints.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Talking Points")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.coral)
+
+                            ForEach(person.talkingPoints.prefix(2), id: \.self) { point in
+                                Text("• \(point)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }
@@ -321,73 +345,102 @@ struct SessionCompleteView: View {
     let stats: QuizSessionStats
     let onDismiss: () -> Void
 
+    private var motivationalMessage: String {
+        if stats.accuracy >= 0.8 {
+            return WittyCopy.random(from: WittyCopy.sessionComplete80Plus)
+        } else if stats.accuracy >= 0.5 {
+            return WittyCopy.random(from: WittyCopy.sessionComplete50to80)
+        } else {
+            return WittyCopy.random(from: WittyCopy.sessionCompleteUnder50)
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(.green)
+        VStack(spacing: 28) {
+            // Trophy/celebration
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.warmYellow.opacity(0.3), AppColors.coral.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 120, height: 120)
 
-            Text("Session Complete!")
-                .font(.title)
-                .fontWeight(.bold)
-
-            VStack(spacing: 16) {
-                HStack(spacing: 32) {
-                    VStack {
-                        Text("\(stats.totalAttempts)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        Text("Total")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    VStack {
-                        Text("\(stats.correctAttempts)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.green)
-                        Text("Correct")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    VStack {
-                        Text("\(Int(stats.accuracy * 100))%")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundStyle(stats.accuracy >= 0.8 ? .green : (stats.accuracy >= 0.5 ? .orange : .red))
-                        Text("Accuracy")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-            if stats.accuracy >= 0.8 {
-                Text("Great job! Keep up the excellent work!")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            } else if stats.accuracy >= 0.5 {
-                Text("Good effort! Practice makes perfect.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("Don't worry, keep practicing! You'll improve.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                Image(systemName: stats.accuracy >= 0.8 ? "trophy.fill" : (stats.accuracy >= 0.5 ? "star.fill" : "heart.fill"))
+                    .font(.system(size: 50))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppColors.coral, AppColors.warmYellow],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             }
 
-            Button("Done") {
+            VStack(spacing: 8) {
+                Text("Session Complete!")
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                Text(motivationalMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Stats
+            HStack(spacing: 20) {
+                SessionStatBadge(value: "\(stats.totalAttempts)", label: "Attempted", color: AppColors.teal)
+                SessionStatBadge(value: "\(stats.correctAttempts)", label: "Correct", color: AppColors.success)
+                SessionStatBadge(value: "\(Int(stats.accuracy * 100))%", label: "Accuracy", color: stats.accuracy >= 0.8 ? AppColors.success : (stats.accuracy >= 0.5 ? AppColors.warning : AppColors.coral))
+            }
+            .padding(.horizontal)
+
+            Button {
                 onDismiss()
+            } label: {
+                Text("Done")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            colors: [AppColors.coral, AppColors.coral.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .padding(.horizontal, 40)
         }
         .padding()
+    }
+}
+
+struct SessionStatBadge: View {
+    let value: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text(value)
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(color.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

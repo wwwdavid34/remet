@@ -34,21 +34,42 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
+                    // Greeting Header
+                    if !people.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(WittyCopy.timeBasedGreeting)
+                                .font(.title2)
+                                .fontWeight(.bold)
+
+                            if reviewsDueToday > 0 {
+                                Text(WittyCopy.random(from: WittyCopy.reviewNudge))
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text(WittyCopy.random(from: WittyCopy.noReviewsNeeded))
+                                    .font(.subheadline)
+                                    .foregroundStyle(AppColors.success)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                    }
+
                     // Stats Cards
-                    HStack(spacing: 16) {
-                        StatCard(
+                    HStack(spacing: 12) {
+                        HomeStatCard(
                             title: "People",
                             value: "\(totalPeople)",
                             icon: "person.3.fill",
-                            color: .blue
+                            color: AppColors.coral
                         )
 
-                        StatCard(
-                            title: "Due for Review",
+                        HomeStatCard(
+                            title: "Due Today",
                             value: "\(reviewsDueToday)",
                             icon: "brain.head.profile",
-                            color: reviewsDueToday > 0 ? .orange : .green
+                            color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
                         )
                     }
                     .padding(.horizontal)
@@ -60,18 +81,20 @@ struct HomeView: View {
                             .padding(.horizontal)
 
                         HStack(spacing: 12) {
-                            QuickActionButton(
-                                title: "Add Person",
+                            HomeActionButton(
+                                title: "New Face",
+                                subtitle: "Capture someone new",
                                 icon: "person.badge.plus",
-                                color: .blue
+                                gradient: [AppColors.coral, AppColors.coral.opacity(0.7)]
                             ) {
                                 showQuickCapture = true
                             }
 
-                            QuickActionButton(
-                                title: "Start Practice",
+                            HomeActionButton(
+                                title: "Practice",
+                                subtitle: peopleWithFaces.isEmpty ? "Add people first" : "Train your memory",
                                 icon: "brain.head.profile",
-                                color: .purple
+                                gradient: [AppColors.teal, AppColors.teal.opacity(0.7)]
                             ) {
                                 showPractice = true
                             }
@@ -85,12 +108,20 @@ struct HomeView: View {
                     if !peopleNeedingReview.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Text("Due for Review")
-                                    .font(.headline)
+                                HStack(spacing: 6) {
+                                    Image(systemName: "clock.badge.exclamationmark")
+                                        .foregroundStyle(AppColors.warning)
+                                    Text("Needs Your Attention")
+                                        .font(.headline)
+                                }
                                 Spacer()
-                                Text("\(peopleNeedingReview.count) people")
-                                    .font(.subheadline)
+                                Text("\(peopleNeedingReview.count) waiting")
+                                    .font(.caption)
                                     .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(AppColors.warning.opacity(0.15))
+                                    .clipShape(Capsule())
                             }
                             .padding(.horizontal)
 
@@ -114,17 +145,24 @@ struct HomeView: View {
                     if !recentEncounters.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
-                                Text("Recent Encounters")
-                                    .font(.headline)
-                                Spacer()
-                                NavigationLink("See All") {
-                                    EncounterListView()
+                                HStack(spacing: 6) {
+                                    Image(systemName: "clock.arrow.circlepath")
+                                        .foregroundStyle(AppColors.teal)
+                                    Text("Recent Encounters")
+                                        .font(.headline)
                                 }
-                                .font(.subheadline)
+                                Spacer()
+                                NavigationLink {
+                                    EncounterListView()
+                                } label: {
+                                    Text("See All")
+                                        .font(.subheadline)
+                                        .foregroundStyle(AppColors.coral)
+                                }
                             }
                             .padding(.horizontal)
 
-                            VStack(spacing: 8) {
+                            VStack(spacing: 10) {
                                 ForEach(recentEncounters) { encounter in
                                     Button {
                                         selectedEncounter = encounter
@@ -140,34 +178,19 @@ struct HomeView: View {
 
                     // Empty State
                     if people.isEmpty {
-                        VStack(spacing: 16) {
-                            Image(systemName: "person.3")
-                                .font(.system(size: 60))
-                                .foregroundStyle(.secondary)
-
-                            Text("No People Yet")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-
-                            Text("Start by adding people you want to remember. Use the Add tab to capture a photo or import from your library.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 32)
-
-                            Button {
-                                showQuickCapture = true
-                            } label: {
-                                Label("Add Your First Person", systemImage: "person.badge.plus")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .padding(.top, 8)
-                        }
-                        .padding(.top, 40)
+                        EmptyStateView(
+                            icon: "face.smiling",
+                            title: WittyCopy.emptyPeopleTitle,
+                            subtitle: WittyCopy.emptyPeopleSubtitle,
+                            actionTitle: "Add Your First Person",
+                            action: { showQuickCapture = true }
+                        )
+                        .padding(.top, 20)
                     }
                 }
                 .padding(.vertical)
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Face Recall")
             .navigationDestination(item: $selectedPerson) { person in
                 PersonDetailView(person: person)
@@ -196,54 +219,69 @@ struct HomeView: View {
 
 // MARK: - Supporting Views
 
-struct StatCard: View {
+struct HomeStatCard: View {
     let title: String
     let value: String
     let icon: String
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
+                    .font(.title3)
                     .foregroundStyle(color)
                 Spacer()
             }
 
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
 
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(color.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: color.opacity(0.15), radius: 8, x: 0, y: 4)
     }
 }
 
-struct QuickActionButton: View {
+struct HomeActionButton: View {
     let title: String
+    let subtitle: String
     let icon: String
-    let color: Color
+    let gradient: [Color]
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: icon)
                     .font(.title2)
-                Text(title)
-                    .font(.caption)
+                    .fontWeight(.semibold)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.headline)
+                    Text(subtitle)
+                        .font(.caption)
+                        .opacity(0.9)
+                }
             }
-            .foregroundStyle(color)
-            .frame(maxWidth: .infinity)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
-            .background(color.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .background(
+                LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: gradient[0].opacity(0.4), radius: 8, x: 0, y: 4)
         }
     }
 }
@@ -253,35 +291,53 @@ struct PersonReviewCard: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            // Face thumbnail placeholder
-            if let embedding = person.embeddings.first,
-               let uiImage = UIImage(data: embedding.faceCropData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .clipShape(Circle())
-            } else {
-                Circle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 60, height: 60)
-                    .overlay {
-                        Image(systemName: "person.fill")
-                            .foregroundStyle(.gray)
-                    }
+            // Face thumbnail
+            ZStack {
+                if let embedding = person.embeddings.first,
+                   let uiImage = UIImage(data: embedding.faceCropData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 64, height: 64)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 64, height: 64)
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                        }
+                }
+
+                // Overdue indicator
+                if let daysOverdue = person.spacedRepetitionData?.daysUntilReview, daysOverdue < 0 {
+                    Circle()
+                        .fill(AppColors.warning)
+                        .frame(width: 20, height: 20)
+                        .overlay {
+                            Text("\(min(abs(daysOverdue), 99))")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                        .offset(x: 22, y: -22)
+                }
             }
 
             Text(person.name)
                 .font(.caption)
+                .fontWeight(.medium)
                 .lineLimit(1)
-
-            if let daysOverdue = person.spacedRepetitionData?.daysUntilReview, daysOverdue < 0 {
-                Text("\(abs(daysOverdue))d overdue")
-                    .font(.caption2)
-                    .foregroundStyle(.orange)
-            }
         }
         .frame(width: 80)
+        .padding(.vertical, 8)
     }
 }
 
@@ -289,30 +345,41 @@ struct RecentEncounterRow: View {
     let encounter: Encounter
 
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
             // Thumbnail
             if let photoData = encounter.displayImageData,
                let uiImage = UIImage(data: photoData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(width: 56, height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 50, height: 50)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 56, height: 56)
+                    .overlay {
+                        Image(systemName: "person.2")
+                            .foregroundStyle(AppColors.coral)
+                    }
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(encounter.occasion ?? "Encounter")
                     .font(.subheadline)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
 
-                HStack {
-                    Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                HStack(spacing: 12) {
+                    Label(encounter.date.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
                     if !encounter.people.isEmpty {
-                        Text("- \(encounter.people.count) people")
+                        Label("\(encounter.people.count)", systemImage: "person.fill")
                     }
                 }
                 .font(.caption)
@@ -321,7 +388,7 @@ struct RecentEncounterRow: View {
                 if let location = encounter.location, !location.isEmpty {
                     Label(location, systemImage: "mappin")
                         .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(AppColors.teal)
                         .lineLimit(1)
                 }
             }
@@ -329,11 +396,13 @@ struct RecentEncounterRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .foregroundStyle(.secondary)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(12)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
 
