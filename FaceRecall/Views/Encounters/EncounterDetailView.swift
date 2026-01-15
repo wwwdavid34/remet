@@ -22,6 +22,10 @@ struct EncounterDetailView: View {
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
 
+    // Tag editing state
+    @State private var showTagPicker = false
+    @State private var selectedTags: [Tag] = []
+
     // Check if this encounter has multiple photos
     private var hasMultiplePhotos: Bool {
         !encounter.photos.isEmpty
@@ -31,10 +35,14 @@ struct EncounterDetailView: View {
         ScrollView {
             VStack(spacing: 20) {
                 photoSection
+                tagsSection
                 peopleSection
                 detailsSection
             }
             .padding()
+            .onAppear {
+                selectedTags = encounter.tags
+            }
         }
         .navigationTitle(encounter.occasion ?? "Encounter")
         .navigationBarTitleDisplayMode(.inline)
@@ -70,6 +78,11 @@ struct EncounterDetailView: View {
         }
         .sheet(isPresented: $showNewPersonSheet) {
             newPersonSheet
+        }
+        .sheet(isPresented: $showTagPicker, onDismiss: {
+            encounter.tags = selectedTags
+        }) {
+            TagPickerView(selectedTags: $selectedTags, title: "Tags for Encounter")
         }
     }
 
@@ -445,6 +458,26 @@ struct EncounterDetailView: View {
 
         newPersonName = ""
         showNewPersonSheet = false
+    }
+
+    @ViewBuilder
+    private var tagsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Tags")
+                .font(.headline)
+
+            InlineTagEditor(
+                tags: encounter.tags,
+                onAddTag: {
+                    selectedTags = encounter.tags
+                    showTagPicker = true
+                },
+                onRemoveTag: { tag in
+                    encounter.tags.removeAll { $0.id == tag.id }
+                }
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder

@@ -28,6 +28,9 @@ final class Person {
     @Relationship(deleteRule: .nullify, inverse: \Encounter.people)
     var encounters: [Encounter] = []
 
+    @Relationship(deleteRule: .nullify)
+    var tags: [Tag] = []
+
     var encounterCount: Int {
         encounters.count
     }

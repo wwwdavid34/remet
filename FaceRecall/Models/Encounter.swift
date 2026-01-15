@@ -28,6 +28,9 @@ final class Encounter {
     @Relationship(deleteRule: .nullify)
     var people: [Person] = []
 
+    @Relationship(deleteRule: .nullify)
+    var tags: [Tag] = []
+
     init(
         id: UUID = UUID(),
         occasion: String? = nil,

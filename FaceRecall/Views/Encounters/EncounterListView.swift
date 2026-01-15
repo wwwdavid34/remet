@@ -7,16 +7,48 @@ struct EncounterListView: View {
 
     @State private var showScanner = false
     @State private var searchText = ""
+    @State private var selectedTagFilters: Set<UUID> = []
+
+    /// Tags that are currently assigned to at least one encounter
+    var tagsInUse: [Tag] {
+        var seenIds = Set<UUID>()
+        var result: [Tag] = []
+        for encounter in encounters {
+            for tag in encounter.tags {
+                if !seenIds.contains(tag.id) {
+                    seenIds.insert(tag.id)
+                    result.append(tag)
+                }
+            }
+        }
+        return result.sorted { $0.name < $1.name }
+    }
 
     var filteredEncounters: [Encounter] {
-        if searchText.isEmpty {
-            return encounters
+        var result = encounters
+
+        // Filter by search text
+        if !searchText.isEmpty {
+            result = result.filter { encounter in
+                encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
+                encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
+                encounter.people.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
         }
-        return encounters.filter { encounter in
-            encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
-            encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
-            encounter.people.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+
+        // Filter by selected tags
+        if !selectedTagFilters.isEmpty {
+            result = result.filter { encounter in
+                let encounterTagIds = Set(encounter.tags.map { $0.id })
+                return !selectedTagFilters.isDisjoint(with: encounterTagIds)
+            }
         }
+
+        return result
+    }
+
+    var hasAnyTags: Bool {
+        !tagsInUse.isEmpty
     }
 
     var body: some View {
@@ -56,13 +88,26 @@ struct EncounterListView: View {
 
     @ViewBuilder
     private var encountersList: some View {
-        List {
-            ForEach(filteredEncounters) { encounter in
-                NavigationLink(value: encounter) {
-                    EncounterRowView(encounter: encounter)
-                }
+        VStack(spacing: 0) {
+            // Tag filter bar
+            if hasAnyTags {
+                TagFilterView(
+                    availableTags: tagsInUse,
+                    selectedTags: $selectedTagFilters,
+                    onClear: { selectedTagFilters.removeAll() }
+                )
+                .padding(.vertical, 8)
+                .background(Color(.systemBackground))
             }
-            .onDelete(perform: deleteEncounters)
+
+            List {
+                ForEach(filteredEncounters) { encounter in
+                    NavigationLink(value: encounter) {
+                        EncounterRowView(encounter: encounter)
+                    }
+                }
+                .onDelete(perform: deleteEncounters)
+            }
         }
         .navigationDestination(for: Encounter.self) { encounter in
             EncounterDetailView(encounter: encounter)
@@ -84,8 +129,8 @@ struct EncounterRowView: View {
         encounter.photos.isEmpty ? 1 : encounter.photos.count
     }
 
-    private var faceCount: Int {
-        encounter.totalFaceCount
+    private var personCount: Int {
+        encounter.people.count
     }
 
     var body: some View {
@@ -119,10 +164,10 @@ struct EncounterRowView: View {
                         .foregroundStyle(.white)
                     }
 
-                    if faceCount > 0 {
+                    if personCount > 0 {
                         HStack(spacing: 2) {
                             Image(systemName: "person.fill")
-                            Text("\(faceCount)")
+                            Text("\(personCount)")
                         }
                         .font(.caption2)
                         .fontWeight(.bold)
@@ -151,6 +196,26 @@ struct EncounterRowView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                }
+
+                // Show tags
+                if !encounter.tags.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(encounter.tags.prefix(3)) { tag in
+                            Text(tag.name)
+                                .font(.caption2)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(tag.color.opacity(0.2))
+                                .foregroundStyle(tag.color)
+                                .clipShape(Capsule())
+                        }
+                        if encounter.tags.count > 3 {
+                            Text("+\(encounter.tags.count - 3)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
 
                 HStack {

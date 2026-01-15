@@ -6,12 +6,44 @@ struct PeopleListView: View {
     @Query(sort: \Person.name) private var people: [Person]
     @State private var searchText = ""
     @State private var showAddPerson = false
+    @State private var selectedTagFilters: Set<UUID> = []
+
+    /// Tags that are currently assigned to at least one person
+    var tagsInUse: [Tag] {
+        var seenIds = Set<UUID>()
+        var result: [Tag] = []
+        for person in people {
+            for tag in person.tags {
+                if !seenIds.contains(tag.id) {
+                    seenIds.insert(tag.id)
+                    result.append(tag)
+                }
+            }
+        }
+        return result.sorted { $0.name < $1.name }
+    }
 
     var filteredPeople: [Person] {
-        if searchText.isEmpty {
-            return people
+        var result = people
+
+        // Filter by search text
+        if !searchText.isEmpty {
+            result = result.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
-        return people.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+
+        // Filter by selected tags
+        if !selectedTagFilters.isEmpty {
+            result = result.filter { person in
+                let personTagIds = Set(person.tags.map { $0.id })
+                return !selectedTagFilters.isDisjoint(with: personTagIds)
+            }
+        }
+
+        return result
+    }
+
+    var hasAnyTags: Bool {
+        !tagsInUse.isEmpty
     }
 
     var body: some View {
@@ -51,13 +83,26 @@ struct PeopleListView: View {
 
     @ViewBuilder
     private var peopleList: some View {
-        List {
-            ForEach(filteredPeople) { person in
-                NavigationLink(value: person) {
-                    PersonRow(person: person)
-                }
+        VStack(spacing: 0) {
+            // Tag filter bar
+            if hasAnyTags {
+                TagFilterView(
+                    availableTags: tagsInUse,
+                    selectedTags: $selectedTagFilters,
+                    onClear: { selectedTagFilters.removeAll() }
+                )
+                .padding(.vertical, 8)
+                .background(Color(.systemBackground))
             }
-            .onDelete(perform: deletePeople)
+
+            List {
+                ForEach(filteredPeople) { person in
+                    NavigationLink(value: person) {
+                        PersonRow(person: person)
+                    }
+                }
+                .onDelete(perform: deletePeople)
+            }
         }
         .navigationDestination(for: Person.self) { person in
             PersonDetailView(person: person)
@@ -87,6 +132,26 @@ struct PersonRow: View {
                     Text(relationship)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+
+                // Show tags
+                if !person.tags.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(person.tags.prefix(3)) { tag in
+                            Text(tag.name)
+                                .font(.caption2)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(tag.color.opacity(0.2))
+                                .foregroundStyle(tag.color)
+                                .clipShape(Capsule())
+                        }
+                        if person.tags.count > 3 {
+                            Text("+\(person.tags.count - 3)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
 
                 if let lastSeen = person.lastSeenAt {

@@ -16,7 +16,8 @@ struct FaceRecallApp: App {
             Person.self,
             FaceEmbedding.self,
             ImportedPhoto.self,
-            Encounter.self
+            Encounter.self,
+            Tag.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

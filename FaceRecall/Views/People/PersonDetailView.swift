@@ -8,9 +8,12 @@ struct PersonDetailView: View {
     @Bindable var person: Person
     @State private var isEditing = false
     @State private var selectedEncounter: Encounter?
+    @State private var showEncounterDetail = false
     @State private var showFaceSourcePhoto = false
     @State private var selectedEmbedding: FaceEmbedding?
     @State private var showDeleteConfirmation = false
+    @State private var showTagPicker = false
+    @State private var selectedTags: [Tag] = []
 
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 12)
@@ -25,11 +28,15 @@ struct PersonDetailView: View {
         ScrollView {
             VStack(spacing: 24) {
                 headerSection
+                tagsSection
                 personalDetailsSection
                 encountersSection
                 facesSection
             }
             .padding()
+            .onAppear {
+                selectedTags = person.tags
+            }
         }
         .navigationTitle(person.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -61,6 +68,45 @@ struct PersonDetailView: View {
         } message: {
             Text("Are you sure you want to delete \(person.name)? This will also remove all their face samples.")
         }
+        .sheet(isPresented: $showEncounterDetail) {
+            if let encounter = selectedEncounter {
+                NavigationStack {
+                    EncounterDetailView(encounter: encounter)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") {
+                                    showEncounterDetail = false
+                                }
+                            }
+                        }
+                }
+            }
+        }
+        .sheet(isPresented: $showTagPicker, onDismiss: {
+            person.tags = selectedTags
+        }) {
+            TagPickerView(selectedTags: $selectedTags, title: "Tags for \(person.name)")
+        }
+    }
+
+    @ViewBuilder
+    private var tagsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Tags")
+                .font(.headline)
+
+            InlineTagEditor(
+                tags: person.tags,
+                onAddTag: {
+                    selectedTags = person.tags
+                    showTagPicker = true
+                },
+                onRemoveTag: { tag in
+                    person.tags.removeAll { $0.id == tag.id }
+                }
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -284,9 +330,13 @@ struct PersonDetailView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(person.encounters.prefix(5)) { encounter in
-                            NavigationLink(value: encounter) {
+                            Button {
+                                selectedEncounter = encounter
+                                showEncounterDetail = true
+                            } label: {
                                 EncounterThumbnail(encounter: encounter)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -296,9 +346,6 @@ struct PersonDetailView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-            .navigationDestination(for: Encounter.self) { encounter in
-                EncounterDetailView(encounter: encounter)
             }
         }
     }
