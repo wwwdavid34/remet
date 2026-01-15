@@ -6,6 +6,7 @@ struct FaceQuizView: View {
     @Environment(\.modelContext) private var modelContext
 
     let people: [Person]
+    var mode: QuizMode = .spaced
 
     @State private var currentIndex = 0
     @State private var shuffledPeople: [Person] = []
@@ -27,14 +28,27 @@ struct FaceQuizView: View {
                     )
                 } else if let currentPerson = currentPerson {
                     VStack(spacing: 20) {
-                        // Progress
+                        // Mode indicator + Progress
                         VStack(spacing: 8) {
+                            HStack {
+                                Image(systemName: mode.icon)
+                                    .foregroundStyle(mode.color)
+                                Text(mode.rawValue)
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(mode.color)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(mode.color.opacity(0.1))
+                            .clipShape(Capsule())
+
                             ProgressView(value: Double(currentIndex), total: Double(shuffledPeople.count))
-                                .tint(AppColors.teal)
+                                .tint(mode.color)
 
                             Text("\(currentIndex + 1) of \(shuffledPeople.count)")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.textSecondary)
                         }
                         .padding(.horizontal)
 
@@ -61,12 +75,18 @@ struct FaceQuizView: View {
                                     .clipShape(Circle())
                             } else {
                                 Circle()
-                                    .fill(Color.gray.opacity(0.3))
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
                                     .frame(width: 180, height: 180)
                                     .overlay {
                                         Image(systemName: "person.fill")
                                             .font(.system(size: 70))
-                                            .foregroundStyle(.gray)
+                                            .foregroundStyle(.white)
                                     }
                             }
                         }
@@ -117,10 +137,10 @@ struct FaceQuizView: View {
                                             .fontWeight(.medium)
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 16)
-                                            .background(Color.white)
-                                            .foregroundStyle(.primary)
+                                            .background(AppColors.cardBackground)
+                                            .foregroundStyle(AppColors.textPrimary)
                                             .clipShape(RoundedRectangle(cornerRadius: 14))
-                                            .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
+                                            .shadow(color: AppColors.teal.opacity(0.12), radius: 6, x: 0, y: 3)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -286,11 +306,12 @@ struct QuizResultView: View {
             Text(person.name)
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundStyle(AppColors.textPrimary)
 
             if !wasCorrect && !userGuess.isEmpty {
                 Text("You guessed: \(userGuess)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             }
 
             // Context info card
@@ -299,13 +320,13 @@ struct QuizResultView: View {
                     if let company = person.company {
                         Label(company, systemImage: "building.2")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppColors.textSecondary)
                     }
 
                     if let howWeMet = person.howWeMet {
                         Label(howWeMet, systemImage: "person.2")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppColors.textSecondary)
                     }
 
                     if let contextTag = person.contextTag {
@@ -324,14 +345,14 @@ struct QuizResultView: View {
                             ForEach(person.talkingPoints.prefix(2), id: \.self) { point in
                                 Text("• \(point)")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppColors.textSecondary)
                             }
                         }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                .background(Color.white)
+                .background(AppColors.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
             }
@@ -384,10 +405,11 @@ struct SessionCompleteView: View {
                 Text("Session Complete!")
                     .font(.title)
                     .fontWeight(.bold)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 Text(motivationalMessage)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
             }
 
@@ -435,7 +457,8 @@ struct SessionStatBadge: View {
 
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .fontWeight(.medium)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)

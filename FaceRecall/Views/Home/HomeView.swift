@@ -45,7 +45,7 @@ struct HomeView: View {
                             if reviewsDueToday > 0 {
                                 Text(WittyCopy.random(from: WittyCopy.reviewNudge))
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppColors.textSecondary)
                             } else {
                                 Text(WittyCopy.random(from: WittyCopy.noReviewsNeeded))
                                     .font(.subheadline)
@@ -117,7 +117,7 @@ struct HomeView: View {
                                 Spacer()
                                 Text("\(peopleNeedingReview.count) waiting")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppColors.textSecondary)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
                                     .background(AppColors.warning.opacity(0.15))
@@ -211,7 +211,10 @@ struct HomeView: View {
                 QuickCaptureView()
             }
             .fullScreenCover(isPresented: $showPractice) {
-                FaceQuizView(people: peopleNeedingReview.isEmpty ? peopleWithFaces : peopleNeedingReview)
+                FaceQuizView(
+                    people: peopleNeedingReview.isEmpty ? peopleWithFaces : peopleNeedingReview,
+                    mode: .spaced
+                )
             }
         }
     }
@@ -237,16 +240,16 @@ struct HomeStatCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 Text(title)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color.white)
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: color.opacity(0.15), radius: 8, x: 0, y: 4)
     }
@@ -334,6 +337,7 @@ struct PersonReviewCard: View {
             Text(person.name)
                 .font(.caption)
                 .fontWeight(.medium)
+                .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
         }
         .frame(width: 80)
@@ -374,7 +378,7 @@ struct RecentEncounterRow: View {
                 Text(encounter.occasion ?? "Encounter")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 HStack(spacing: 12) {
                     Label(encounter.date.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
@@ -383,7 +387,7 @@ struct RecentEncounterRow: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
 
                 if let location = encounter.location, !location.isEmpty {
                     Label(location, systemImage: "mappin")
@@ -397,12 +401,12 @@ struct RecentEncounterRow: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(AppColors.textMuted)
         }
         .padding(12)
-        .background(Color.white)
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .shadow(color: AppColors.cardShadow, radius: 4, x: 0, y: 2)
     }
 }
 

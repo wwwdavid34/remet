@@ -7,6 +7,7 @@ struct PeopleListView: View {
     @State private var searchText = ""
     @State private var showAddPerson = false
     @State private var selectedTagFilters: Set<UUID> = []
+    @State private var showQuickCapture = false
 
     /// Tags that are currently assigned to at least one person
     var tagsInUse: [Tag] {
@@ -69,41 +70,59 @@ struct PeopleListView: View {
             .sheet(isPresented: $showAddPerson) {
                 AddPersonView()
             }
+            .fullScreenCover(isPresented: $showQuickCapture) {
+                QuickCaptureView()
+            }
         }
     }
 
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView(
-            "No People Yet",
-            systemImage: "person.3",
-            description: Text("Import a photo to start adding people")
+        EmptyStateView(
+            icon: "person.3",
+            title: WittyCopy.emptyPeopleTitle,
+            subtitle: WittyCopy.emptyPeopleSubtitle,
+            actionTitle: "Add Someone",
+            action: { showQuickCapture = true }
         )
     }
 
     @ViewBuilder
     private var peopleList: some View {
-        VStack(spacing: 0) {
-            // Tag filter bar
-            if hasAnyTags {
-                TagFilterView(
-                    availableTags: tagsInUse,
-                    selectedTags: $selectedTagFilters,
-                    onClear: { selectedTagFilters.removeAll() }
-                )
-                .padding(.vertical, 8)
-                .background(Color(.systemBackground))
-            }
+        ScrollView {
+            VStack(spacing: 16) {
+                // Tag filter bar
+                if hasAnyTags {
+                    TagFilterView(
+                        availableTags: tagsInUse,
+                        selectedTags: $selectedTagFilters,
+                        onClear: { selectedTagFilters.removeAll() }
+                    )
+                }
 
-            List {
-                ForEach(filteredPeople) { person in
-                    NavigationLink(value: person) {
-                        PersonRow(person: person)
+                // People count
+                HStack {
+                    Text("\(filteredPeople.count) people")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textSecondary)
+                    Spacer()
+                }
+                .padding(.horizontal)
+
+                // People cards
+                LazyVStack(spacing: 10) {
+                    ForEach(filteredPeople) { person in
+                        NavigationLink(value: person) {
+                            PersonRow(person: person)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .onDelete(perform: deletePeople)
+                .padding(.horizontal)
             }
+            .padding(.vertical)
         }
+        .background(Color(.systemGroupedBackground))
         .navigationDestination(for: Person.self) { person in
             PersonDetailView(person: person)
         }
@@ -121,17 +140,19 @@ struct PersonRow: View {
     let person: Person
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 14) {
             personThumbnail
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(person.name)
-                    .font(.headline)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 if let relationship = person.relationship {
                     Text(relationship)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
 
                 // Show tags
@@ -149,29 +170,46 @@ struct PersonRow: View {
                         if person.tags.count > 3 {
                             Text("+\(person.tags.count - 3)")
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.textMuted)
                         }
                     }
                 }
 
                 if let lastSeen = person.lastSeenAt {
-                    Text("Last seen \(lastSeen.formatted(.relative(presentation: .named)))")
+                    Text("Last viewed \(lastSeen.formatted(.relative(presentation: .named)))")
                         .font(.caption2)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(AppColors.textMuted)
                 }
             }
 
             Spacer()
 
-            Text("\(person.embeddings.count)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color(.tertiarySystemFill))
-                .clipShape(Capsule())
+            VStack(alignment: .trailing, spacing: 4) {
+                // Face count badge
+                if person.embeddings.count > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "face.smiling")
+                            .font(.caption2)
+                        Text("\(person.embeddings.count)")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundStyle(AppColors.teal)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(AppColors.teal.opacity(0.1))
+                    .clipShape(Capsule())
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textMuted)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(12)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
     @ViewBuilder
@@ -181,12 +219,23 @@ struct PersonRow: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 50, height: 50)
+                .frame(width: 54, height: 54)
                 .clipShape(Circle())
         } else {
-            Image(systemName: "person.circle.fill")
-                .font(.system(size: 50))
-                .foregroundStyle(.secondary)
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 54, height: 54)
+                .overlay {
+                    Image(systemName: "person.fill")
+                        .font(.title3)
+                        .foregroundStyle(.white)
+                }
         }
     }
 }

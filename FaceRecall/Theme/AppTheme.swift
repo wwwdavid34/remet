@@ -11,7 +11,13 @@ enum AppColors {
 
     // Backgrounds
     static let warmBackground = Color(red: 0.99, green: 0.97, blue: 0.95)  // Warm cream
-    static let cardBackground = Color.white
+    static let cardBackground = Color(red: 0.98, green: 0.98, blue: 0.97)  // Soft off-white #FAFAF7
+    static let cardShadow = Color.black.opacity(0.06)
+
+    // Text colors - softer for less contrast
+    static let textPrimary = Color(red: 0.20, green: 0.20, blue: 0.20)     // #333333 - softer black
+    static let textSecondary = Color(red: 0.45, green: 0.45, blue: 0.45)   // #737373 - medium gray
+    static let textMuted = Color(red: 0.60, green: 0.60, blue: 0.60)       // #999999 - lighter gray
 
     // Semantic colors
     static let primary = coral
@@ -141,9 +147,9 @@ enum WittyCopy {
 struct CardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .background(Color.white)
+            .background(AppColors.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+            .shadow(color: AppColors.cardShadow, radius: 6, x: 0, y: 2)
     }
 }
 
@@ -195,11 +201,11 @@ struct EmptyStateView: View {
                 Text(title)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 Text(subtitle)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -234,7 +240,8 @@ struct StatBadge: View {
 
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .fontWeight(.medium)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)

@@ -79,10 +79,12 @@ struct EncounterListView: View {
 
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView(
-            "No Encounters Yet",
-            systemImage: "person.2.crop.square.stack",
-            description: Text("Scan your photos to record encounters with people")
+        EmptyStateView(
+            icon: "person.2.crop.square.stack",
+            title: WittyCopy.emptyEncountersTitle,
+            subtitle: WittyCopy.emptyEncountersSubtitle,
+            actionTitle: "Add Encounter",
+            action: { showScanner = true }
         )
     }
 
@@ -143,11 +145,22 @@ struct EncounterRowView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: 70, height: 70)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.3))
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .frame(width: 70, height: 70)
+                        .overlay {
+                            Image(systemName: "person.2")
+                                .font(.title2)
+                                .foregroundStyle(AppColors.coral)
+                        }
                 }
 
                 // Badges stack
@@ -160,7 +173,7 @@ struct EncounterRowView: View {
                         .font(.caption2)
                         .fontWeight(.bold)
                         .padding(3)
-                        .background(Capsule().fill(.purple))
+                        .background(Capsule().fill(AppColors.softPurple))
                         .foregroundStyle(.white)
                     }
 
@@ -172,7 +185,7 @@ struct EncounterRowView: View {
                         .font(.caption2)
                         .fontWeight(.bold)
                         .padding(3)
-                        .background(Capsule().fill(.blue))
+                        .background(Capsule().fill(AppColors.teal))
                         .foregroundStyle(.white)
                     }
                 }
@@ -183,18 +196,19 @@ struct EncounterRowView: View {
                 if let occasion = encounter.occasion, !occasion.isEmpty {
                     Text(occasion)
                         .font(.headline)
+                        .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
                 } else {
                     Text("Encounter")
                         .font(.headline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
 
                 // People names
                 if !encounter.people.isEmpty {
                     Text(encounter.people.map(\.name).joined(separator: ", "))
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
                 }
 
@@ -213,20 +227,21 @@ struct EncounterRowView: View {
                         if encounter.tags.count > 3 {
                             Text("+\(encounter.tags.count - 3)")
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.textMuted)
                         }
                     }
                 }
 
-                HStack {
+                HStack(spacing: 8) {
                     if let location = encounter.location, !location.isEmpty {
                         Label(location, systemImage: "mappin")
+                            .foregroundStyle(AppColors.teal)
                     }
 
                     Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                        .foregroundStyle(AppColors.textMuted)
                 }
                 .font(.caption)
-                .foregroundStyle(.tertiary)
             }
         }
         .padding(.vertical, 4)

@@ -1,10 +1,43 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Quiz Mode
+
+enum QuizMode: String, CaseIterable {
+    case spaced = "Spaced Review"
+    case random = "Random"
+    case troubleFaces = "Trouble Faces"
+
+    var icon: String {
+        switch self {
+        case .spaced: return "clock.badge"
+        case .random: return "shuffle"
+        case .troubleFaces: return "exclamationmark.triangle"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .spaced: return AppColors.teal
+        case .random: return AppColors.softPurple
+        case .troubleFaces: return AppColors.coral
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .spaced: return "Due for review"
+        case .random: return "Mix it up"
+        case .troubleFaces: return "Need more practice"
+        }
+    }
+}
+
 struct PracticeHomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var people: [Person]
     @State private var showingQuiz = false
+    @State private var selectedMode: QuizMode = .spaced
 
     private var peopleWithFaces: [Person] {
         people.filter { !$0.embeddings.isEmpty }
@@ -12,6 +45,37 @@ struct PracticeHomeView: View {
 
     private var peopleNeedingReview: [Person] {
         peopleWithFaces.filter { $0.needsReview }
+    }
+
+    private var troubleFaces: [Person] {
+        peopleWithFaces.filter { person in
+            guard let srData = person.spacedRepetitionData else { return false }
+            return srData.totalAttempts >= 2 && srData.accuracy < 0.6
+        }.sorted { p1, p2 in
+            (p1.spacedRepetitionData?.accuracy ?? 1) < (p2.spacedRepetitionData?.accuracy ?? 1)
+        }
+    }
+
+    private func peopleForMode(_ mode: QuizMode) -> [Person] {
+        switch mode {
+        case .spaced:
+            return peopleNeedingReview.isEmpty ? peopleWithFaces : peopleNeedingReview
+        case .random:
+            return peopleWithFaces.shuffled()
+        case .troubleFaces:
+            return troubleFaces.isEmpty ? peopleWithFaces : troubleFaces
+        }
+    }
+
+    private func countForMode(_ mode: QuizMode) -> Int {
+        switch mode {
+        case .spaced:
+            return peopleNeedingReview.isEmpty ? peopleWithFaces.count : peopleNeedingReview.count
+        case .random:
+            return peopleWithFaces.count
+        case .troubleFaces:
+            return troubleFaces.count
+        }
     }
 
     private var totalAttempts: Int {
@@ -41,7 +105,7 @@ struct PracticeHomeView: View {
                             if totalAttempts > 0 {
                                 Text("You've practiced \(totalAttempts) times with \(Int(overallAccuracy * 100))% accuracy")
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppColors.textSecondary)
                             }
                         }
                         .padding(.horizontal)
@@ -73,46 +137,32 @@ struct PracticeHomeView: View {
                     }
                     .padding(.horizontal)
 
-                    // Start Practice Button
+                    // Quiz Mode Selection
                     if !peopleWithFaces.isEmpty {
-                        VStack(spacing: 12) {
-                            Button {
-                                showingQuiz = true
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "brain.head.profile")
-                                        .font(.title2)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(peopleNeedingReview.isEmpty ? "Practice All Faces" : "Start Review")
-                                            .font(.headline)
-                                        if !peopleNeedingReview.isEmpty {
-                                            Text("\(peopleNeedingReview.count) faces waiting for you")
-                                                .font(.caption)
-                                                .opacity(0.9)
-                                        }
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Choose Your Challenge")
+                                .font(.headline)
+                                .padding(.horizontal)
+
+                            VStack(spacing: 10) {
+                                ForEach(QuizMode.allCases, id: \.self) { mode in
+                                    QuizModeButton(
+                                        mode: mode,
+                                        count: countForMode(mode),
+                                        isDisabled: mode == .troubleFaces && troubleFaces.isEmpty
+                                    ) {
+                                        selectedMode = mode
+                                        showingQuiz = true
                                     }
-                                    Spacer()
-                                    Image(systemName: "arrow.right.circle.fill")
-                                        .font(.title2)
                                 }
-                                .foregroundStyle(.white)
-                                .padding()
-                                .background(
-                                    LinearGradient(
-                                        colors: [AppColors.teal, AppColors.teal.opacity(0.7)],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .shadow(color: AppColors.teal.opacity(0.4), radius: 8, x: 0, y: 4)
                             }
                             .padding(.horizontal)
 
                             Text("Spaced repetition helps cement faces in long-term memory")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.textMuted)
                                 .italic()
+                                .padding(.horizontal)
                         }
                     }
 
@@ -157,7 +207,8 @@ struct PracticeHomeView: View {
             .navigationTitle("Practice")
             .fullScreenCover(isPresented: $showingQuiz) {
                 FaceQuizView(
-                    people: peopleNeedingReview.isEmpty ? peopleWithFaces : peopleNeedingReview
+                    people: peopleForMode(selectedMode),
+                    mode: selectedMode
                 )
             }
         }
@@ -187,15 +238,15 @@ struct PracticeStatCard: View {
 
             Text(value)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
+                .foregroundStyle(AppColors.textPrimary)
 
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.white)
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: color.opacity(0.15), radius: 6, x: 0, y: 3)
     }
@@ -236,6 +287,7 @@ struct ReviewPersonRow: View {
                 Text(person.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 if let srData = person.spacedRepetitionData {
                     HStack(spacing: 8) {
@@ -253,7 +305,7 @@ struct ReviewPersonRow: View {
                             Text("\(Int(srData.accuracy * 100))%")
                                 .font(.caption)
                                 .fontWeight(.medium)
-                                .foregroundStyle(srData.accuracy >= 0.8 ? AppColors.success : .secondary)
+                                .foregroundStyle(srData.accuracy >= 0.8 ? AppColors.success : AppColors.textSecondary)
                         }
                     }
                 } else {
@@ -267,12 +319,70 @@ struct ReviewPersonRow: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(AppColors.textMuted)
         }
         .padding(12)
-        .background(Color.white)
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+    }
+}
+
+struct QuizModeButton: View {
+    let mode: QuizMode
+    let count: Int
+    let isDisabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(mode.color.opacity(0.15))
+                        .frame(width: 44, height: 44)
+
+                    Image(systemName: mode.icon)
+                        .font(.title3)
+                        .foregroundStyle(mode.color)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(mode.rawValue)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text(mode.description)
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+
+                Spacer()
+
+                if count > 0 || mode == .random {
+                    Text(mode == .troubleFaces && count == 0 ? "None" : "\(count)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(mode.color)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(mode.color.opacity(0.1))
+                        .clipShape(Capsule())
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textMuted)
+            }
+            .padding(12)
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

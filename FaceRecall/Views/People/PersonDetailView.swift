@@ -6,7 +6,7 @@ struct PersonDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var allEncounters: [Encounter]
     @Bindable var person: Person
-    @State private var isEditing = false
+    @State private var showEditSheet = false
     @State private var selectedEncounter: Encounter?
     @State private var showEncounterDetail = false
     @State private var showFaceSourcePhoto = false
@@ -14,8 +14,7 @@ struct PersonDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
-    @State private var showAddNoteSheet = false
-    @State private var showQuiz = false
+    @State private var showEncountersTimeline = false
     @State private var expandedSections: Set<String> = ["talkingPoints", "timeline"]
 
     private let columns = [
@@ -29,7 +28,7 @@ struct PersonDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 headerSection
                 quickActionsSection
                 tagsSection
@@ -46,15 +45,16 @@ struct PersonDetailView: View {
                 selectedTags = person.tags
             }
         }
+        .background(Color(.systemGroupedBackground))
         .navigationTitle(person.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button {
-                        isEditing.toggle()
+                        showEditSheet = true
                     } label: {
-                        Label(isEditing ? "Done Editing" : "Edit Details", systemImage: "pencil")
+                        Label("Edit Details", systemImage: "pencil")
                     }
 
                     Button(role: .destructive) {
@@ -95,64 +95,70 @@ struct PersonDetailView: View {
         }) {
             TagPickerView(selectedTags: $selectedTags, title: "Tags for \(person.name)")
         }
-        .sheet(isPresented: $showAddNoteSheet) {
-            AddNoteSheet(person: person)
+        .sheet(isPresented: $showEditSheet) {
+            EditPersonSheet(person: person)
         }
-        .fullScreenCover(isPresented: $showQuiz) {
-            FaceQuizView(people: [person])
+        .sheet(isPresented: $showEncountersTimeline) {
+            EncountersTimelineSheet(person: person, onSelectEncounter: { encounter in
+                showEncountersTimeline = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    selectedEncounter = encounter
+                    showEncounterDetail = true
+                }
+            })
         }
     }
 
     @ViewBuilder
     private var quickActionsSection: some View {
-        HStack(spacing: 12) {
-            Button {
-                showAddNoteSheet = true
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "note.text.badge.plus")
-                        .font(.title3)
-                    Text("Add Note")
-                        .font(.caption)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.blue.opacity(0.1))
-                .foregroundStyle(.blue)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-
-            Button {
-                showQuiz = true
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "brain.head.profile")
-                        .font(.title3)
-                    Text("Practice")
-                        .font(.caption)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.purple.opacity(0.1))
-                .foregroundStyle(.purple)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-            .disabled(person.embeddings.isEmpty)
-
-            if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
+        if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
+            HStack(spacing: 12) {
                 Link(destination: url) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "phone")
-                            .font(.title3)
-                        Text("Call")
-                            .font(.caption)
+                    HStack(spacing: 8) {
+                        Image(systemName: "phone.fill")
+                            .font(.body)
+                        Text("Call \(person.name.components(separatedBy: " ").first ?? person.name)")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color.green.opacity(0.1))
-                    .foregroundStyle(.green)
+                    .background(AppColors.success.opacity(0.1))
+                    .foregroundStyle(AppColors.success)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+
+                if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
+                    Link(destination: emailUrl) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "envelope.fill")
+                                .font(.body)
+                            Text("Email")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(AppColors.teal.opacity(0.1))
+                        .foregroundStyle(AppColors.teal)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+            }
+        } else if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
+            Link(destination: emailUrl) {
+                HStack(spacing: 8) {
+                    Image(systemName: "envelope.fill")
+                        .font(.body)
+                    Text("Email \(person.name.components(separatedBy: " ").first ?? person.name)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(AppColors.teal.opacity(0.1))
+                .foregroundStyle(AppColors.teal)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
     }
@@ -160,8 +166,12 @@ struct PersonDetailView: View {
     @ViewBuilder
     private var tagsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Tags")
-                .font(.headline)
+            HStack(spacing: 6) {
+                Image(systemName: "tag.fill")
+                    .foregroundStyle(AppColors.coral)
+                Text("Tags")
+                    .font(.headline)
+            }
 
             InlineTagEditor(
                 tags: person.tags,
@@ -179,74 +189,88 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var talkingPointsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Talking Points")
-                    .font(.headline)
+                HStack(spacing: 6) {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundStyle(AppColors.warmYellow)
+                    Text("Talking Points")
+                        .font(.headline)
+                }
                 Spacer()
                 Button {
                     addTalkingPoint()
                 } label: {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(AppColors.coral)
                 }
             }
 
             if person.talkingPoints.isEmpty {
                 Text("Add talking points to remember for your next conversation")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
                     .padding(.vertical, 8)
             } else {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     ForEach(Array(person.talkingPoints.enumerated()), id: \.offset) { index, point in
-                        HStack(alignment: .top) {
-                            Image(systemName: "lightbulb")
-                                .foregroundStyle(.yellow)
-                                .font(.caption)
+                        HStack(alignment: .top, spacing: 10) {
+                            Circle()
+                                .fill(AppColors.warmYellow)
+                                .frame(width: 6, height: 6)
+                                .padding(.top, 6)
                             Text(point)
                                 .font(.subheadline)
+                                .foregroundStyle(AppColors.textPrimary)
                             Spacer()
                             Button {
                                 removeTalkingPoint(at: index)
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(AppColors.textMuted)
                                     .font(.caption)
                             }
                         }
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .background(AppColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
             }
         }
     }
 
     @ViewBuilder
     private var interestsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Interests")
-                    .font(.headline)
+                HStack(spacing: 6) {
+                    Image(systemName: "heart.fill")
+                        .foregroundStyle(AppColors.coral)
+                    Text("Interests")
+                        .font(.headline)
+                }
                 Spacer()
                 Button {
                     addInterest()
                 } label: {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(AppColors.coral)
                 }
             }
 
             if person.interests.isEmpty {
                 Text("Add interests to find common ground")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             } else {
                 FlowLayout(spacing: 8) {
                     ForEach(Array(person.interests.enumerated()), id: \.offset) { index, interest in
                         HStack(spacing: 4) {
                             Text(interest)
                                 .font(.caption)
+                                .fontWeight(.medium)
                             Button {
                                 removeInterest(at: index)
                             } label: {
@@ -256,8 +280,8 @@ struct PersonDetailView: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.blue.opacity(0.15))
-                        .foregroundStyle(.blue)
+                        .background(AppColors.teal.opacity(0.15))
+                        .foregroundStyle(AppColors.teal)
                         .clipShape(Capsule())
                     }
                 }
@@ -267,35 +291,51 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var howWeMetSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("How We Met")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(AppColors.teal)
+                    Text("How We Met")
+                        .font(.headline)
+                }
+                Spacer()
+                if person.howWeMet == nil || person.howWeMet?.isEmpty == true {
+                    Button {
+                        editHowWeMet()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(AppColors.coral)
+                    }
+                }
+            }
 
-            if isEditing {
-                TextField("Where did you meet?", text: Binding(
-                    get: { person.howWeMet ?? "" },
-                    set: { person.howWeMet = $0.isEmpty ? nil : $0 }
-                ))
-                .textFieldStyle(.roundedBorder)
-            } else if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
-                HStack {
-                    Image(systemName: "person.2")
-                        .foregroundStyle(.secondary)
+            if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "mappin.circle.fill")
+                        .foregroundStyle(AppColors.teal)
+                        .padding(.top, 2)
                     Text(howWeMet)
                         .font(.subheadline)
+                        .foregroundStyle(AppColors.textPrimary)
+                    Spacer()
+                    Button {
+                        editHowWeMet()
+                    } label: {
+                        Image(systemName: "pencil.circle.fill")
+                            .foregroundStyle(AppColors.textMuted)
+                            .font(.caption)
+                    }
                 }
                 .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .background(AppColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
             } else {
-                Button {
-                    isEditing = true
-                } label: {
-                    Text("Add how you met")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text("Add where or how you first met")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.vertical, 4)
             }
         }
     }
@@ -303,30 +343,20 @@ struct PersonDetailView: View {
     @ViewBuilder
     private var interactionTimelineSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            HStack(spacing: 6) {
+                Image(systemName: "clock.arrow.circlepath")
+                    .foregroundStyle(AppColors.softPurple)
                 Text("Interaction Timeline")
                     .font(.headline)
-                Spacer()
-                Button {
-                    showAddNoteSheet = true
-                } label: {
-                    Image(systemName: "plus.circle")
-                }
             }
 
             if person.interactionNotes.isEmpty && person.encounters.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "text.bubble")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                    Text("No interactions yet")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
+                Text("No interactions recorded yet")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.vertical, 4)
             } else {
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     // Show recent notes
                     ForEach(person.recentNotes) { note in
                         InteractionNoteRow(note: note, onDelete: {
@@ -393,6 +423,25 @@ struct PersonDetailView: View {
         person.interests = interests
     }
 
+    private func editHowWeMet() {
+        let currentValue = person.howWeMet ?? ""
+        let alert = UIAlertController(title: "How We Met", message: nil, preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "e.g., Conference in NYC, Friend's party"
+            textField.text = currentValue
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Save", style: .default) { _ in
+            if let text = alert.textFields?.first?.text {
+                person.howWeMet = text.isEmpty ? nil : text
+            }
+        })
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let viewController = windowScene.windows.first?.rootViewController {
+            viewController.present(alert, animated: true)
+        }
+    }
+
     private func deleteNote(_ note: InteractionNote) {
         modelContext.delete(note)
     }
@@ -409,28 +458,41 @@ struct PersonDetailView: View {
                     .clipShape(Circle())
                     .shadow(radius: 4)
             } else {
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: 120))
-                    .foregroundStyle(.secondary)
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 120, height: 120)
+                    .overlay {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 50))
+                            .foregroundStyle(.white)
+                    }
+                    .shadow(radius: 4)
             }
 
-            if isEditing {
-                TextField("Name", text: $person.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(maxWidth: 250)
-            } else {
-                Text(person.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-            }
+            Text(person.name)
+                .font(.title)
+                .fontWeight(.bold)
 
-            if let company = person.company, !isEditing {
+            if let company = person.company {
                 Text(company)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+
+            if let relationship = person.relationship {
+                Text(relationship)
+                    .font(.caption)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppColors.teal.opacity(0.15))
+                    .foregroundStyle(AppColors.teal)
+                    .clipShape(Capsule())
             }
         }
     }
@@ -438,14 +500,23 @@ struct PersonDetailView: View {
     @ViewBuilder
     private var personalDetailsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Personal Details")
-                .font(.headline)
-
-            if isEditing {
-                editableDetails
-            } else {
-                readOnlyDetails
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.text.rectangle")
+                        .foregroundStyle(AppColors.coral)
+                    Text("Personal Details")
+                        .font(.headline)
+                }
+                Spacer()
+                Button {
+                    showEditSheet = true
+                } label: {
+                    Image(systemName: "pencil.circle.fill")
+                        .foregroundStyle(AppColors.coral)
+                }
             }
+
+            readOnlyDetails
         }
     }
 
@@ -485,7 +556,7 @@ struct PersonDetailView: View {
             if let lastSeen = person.lastSeenAt {
                 InfoRow(
                     icon: "eye",
-                    title: "Last Seen",
+                    title: "Last Viewed",
                     value: lastSeen.formatted(.relative(presentation: .named))
                 )
             }
@@ -500,120 +571,50 @@ struct PersonDetailView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Label("Notes", systemImage: "note.text")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
                     Text(notes)
+                        .foregroundStyle(AppColors.textPrimary)
                 }
                 .padding(.top, 8)
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    @ViewBuilder
-    private var editableDetails: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Image(systemName: "person.2")
-                    .frame(width: 24)
-                Picker("Relationship", selection: Binding(
-                    get: { person.relationship ?? "" },
-                    set: { person.relationship = $0.isEmpty ? nil : $0 }
-                )) {
-                    Text("None").tag("")
-                    Text("Family").tag("Family")
-                    Text("Friend").tag("Friend")
-                    Text("Coworker").tag("Coworker")
-                    Text("Acquaintance").tag("Acquaintance")
-                }
-            }
-
-            HStack {
-                Image(systemName: "building.2")
-                    .frame(width: 24)
-                TextField("Company", text: Binding(
-                    get: { person.company ?? "" },
-                    set: { person.company = $0.isEmpty ? nil : $0 }
-                ))
-                .textFieldStyle(.roundedBorder)
-            }
-
-            HStack {
-                Image(systemName: "briefcase")
-                    .frame(width: 24)
-                TextField("Job Title", text: Binding(
-                    get: { person.jobTitle ?? "" },
-                    set: { person.jobTitle = $0.isEmpty ? nil : $0 }
-                ))
-                .textFieldStyle(.roundedBorder)
-            }
-
-            HStack {
-                Image(systemName: "envelope")
-                    .frame(width: 24)
-                TextField("Email", text: Binding(
-                    get: { person.email ?? "" },
-                    set: { person.email = $0.isEmpty ? nil : $0 }
-                ))
-                .textFieldStyle(.roundedBorder)
-                .textContentType(.emailAddress)
-                .keyboardType(.emailAddress)
-            }
-
-            HStack {
-                Image(systemName: "phone")
-                    .frame(width: 24)
-                TextField("Phone", text: Binding(
-                    get: { person.phone ?? "" },
-                    set: { person.phone = $0.isEmpty ? nil : $0 }
-                ))
-                .textFieldStyle(.roundedBorder)
-                .textContentType(.telephoneNumber)
-                .keyboardType(.phonePad)
-            }
-
-            HStack {
-                Image(systemName: "tag")
-                    .frame(width: 24)
-                Picker("Context", selection: Binding(
-                    get: { person.contextTag ?? "" },
-                    set: { person.contextTag = $0.isEmpty ? nil : $0 }
-                )) {
-                    Text("None").tag("")
-                    Text("Work").tag("Work")
-                    Text("School").tag("School")
-                    Text("Gym").tag("Gym")
-                    Text("Church").tag("Church")
-                    Text("Neighborhood").tag("Neighborhood")
-                }
-            }
-
-            VStack(alignment: .leading) {
-                Label("Notes", systemImage: "note.text")
-                    .font(.subheadline)
-                TextEditor(text: Binding(
-                    get: { person.notes ?? "" },
-                    set: { person.notes = $0.isEmpty ? nil : $0 }
-                ))
-                .frame(minHeight: 80)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-                )
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
     @ViewBuilder
     private var encountersSection: some View {
         if !person.encounters.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Encounters")
-                    .font(.headline)
+                HStack {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person.2.crop.square.stack")
+                            .foregroundStyle(AppColors.softPurple)
+                        Text("Encounters")
+                            .font(.headline)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        showEncountersTimeline = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("View All")
+                                .font(.subheadline)
+                            Text("\(person.encounters.count)")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(AppColors.softPurple.opacity(0.15))
+                                .clipShape(Capsule())
+                        }
+                        .foregroundStyle(AppColors.softPurple)
+                    }
+                }
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -628,12 +629,6 @@ struct PersonDetailView: View {
                         }
                     }
                 }
-
-                if person.encounters.count > 5 {
-                    Text("+ \(person.encounters.count - 5) more")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
             }
         }
     }
@@ -642,19 +637,23 @@ struct PersonDetailView: View {
     private var facesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Face Samples")
-                    .font(.headline)
+                HStack(spacing: 6) {
+                    Image(systemName: "face.smiling")
+                        .foregroundStyle(AppColors.coral)
+                    Text("Face Samples")
+                        .font(.headline)
+                }
 
                 Spacer()
 
                 Text("\(person.embeddings.count)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             }
 
             if person.embeddings.isEmpty {
                 Text("No face samples yet")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             } else {
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(person.embeddings) { embedding in
@@ -679,7 +678,7 @@ struct PersonDetailView: View {
                                     Image(systemName: "photo.fill")
                                         .font(.caption2)
                                         .padding(4)
-                                        .background(Circle().fill(.blue))
+                                        .background(Circle().fill(AppColors.softPurple))
                                         .foregroundStyle(.white)
                                         .offset(x: 4, y: 4)
                                 }
@@ -719,13 +718,13 @@ struct PersonDetailView: View {
                         Image(systemName: "photo.fill")
                             .font(.caption2)
                             .padding(3)
-                            .background(Circle().fill(.blue))
+                            .background(Circle().fill(AppColors.softPurple))
                             .foregroundStyle(.white)
                         Text("Has source photo")
                             .font(.caption2)
+                            .foregroundStyle(AppColors.textSecondary)
                     }
                 }
-                .foregroundStyle(.secondary)
                 .padding(.top, 4)
             }
         }
@@ -750,15 +749,16 @@ struct InfoRow: View {
         HStack {
             Image(systemName: icon)
                 .frame(width: 24)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.teal)
 
             Text(title)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
 
             Spacer()
 
             Text(value)
                 .fontWeight(.medium)
+                .foregroundStyle(AppColors.textPrimary)
         }
     }
 }
@@ -783,7 +783,7 @@ struct EncounterThumbnail: View {
                             .font(.caption2)
                             .fontWeight(.bold)
                             .padding(3)
-                            .background(Circle().fill(.purple))
+                            .background(Circle().fill(AppColors.softPurple))
                             .foregroundStyle(.white)
                             .offset(x: 4, y: -4)
                     }
@@ -793,6 +793,7 @@ struct EncounterThumbnail: View {
             if let occasion = encounter.occasion {
                 Text(occasion)
                     .font(.caption2)
+                    .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
             }
         }
@@ -892,7 +893,7 @@ struct FaceSourcePhotoView: View {
 
                 Text("\(currentPhotoIndex + 1) of \(photosWithPerson.count) photos with \(person.name)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
             } else if let first = photosWithPerson.first {
                 photoWithOverlay(imageData: first.photo.imageData, boxes: first.photo.faceBoundingBoxes)
             }
@@ -949,26 +950,31 @@ struct FaceSourcePhotoView: View {
         VStack(alignment: .leading, spacing: 8) {
             if let occasion = encounter.occasion {
                 Label(occasion, systemImage: "star")
+                    .foregroundStyle(AppColors.warmYellow)
             }
             if let location = encounter.location {
                 Label(location, systemImage: "mappin")
+                    .foregroundStyle(AppColors.teal)
             }
             Label(encounter.date.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                .foregroundStyle(AppColors.textSecondary)
 
             if encounter.photos.count > 1 {
                 Label("\(encounter.photos.count) photos in this encounter", systemImage: "photo.stack")
+                    .foregroundStyle(AppColors.softPurple)
             }
 
             if encounter.people.count > 1 {
                 Label("\(encounter.people.count) people tagged", systemImage: "person.2")
+                    .foregroundStyle(AppColors.coral)
             }
         }
         .font(.subheadline)
-        .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -1031,17 +1037,19 @@ struct InteractionNoteRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(note.content)
                     .font(.subheadline)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 Text(note.createdAt.formatted(.relative(presentation: .named)))
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textMuted)
             }
 
             Spacer()
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(12)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
         .contextMenu {
             Button(role: .destructive) {
                 onDelete()
@@ -1053,12 +1061,12 @@ struct InteractionNoteRow: View {
 
     private var categoryColor: Color {
         switch note.category {
-        case .conversation: return .blue
-        case .interest: return .yellow
-        case .reminder: return .orange
-        case .followUp: return .purple
-        case .milestone: return .green
-        case .general: return .gray
+        case .conversation: return AppColors.teal
+        case .interest: return AppColors.warmYellow
+        case .reminder: return AppColors.warning
+        case .followUp: return AppColors.softPurple
+        case .milestone: return AppColors.success
+        case .general: return AppColors.textMuted
         }
     }
 }
@@ -1081,32 +1089,306 @@ struct EncounterTimelineRow: View {
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 } else {
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .frame(width: 40, height: 40)
+                        .overlay {
+                            Image(systemName: "person.2")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textMuted)
+                        }
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(encounter.occasion ?? "Encounter")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(AppColors.textPrimary)
 
-                    Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 8) {
+                        Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+
+                        if let location = encounter.location, !location.isEmpty {
+                            Label(location, systemImage: "mappin")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.teal)
+                                .lineLimit(1)
+                        }
+                    }
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textMuted)
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(12)
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Encounters Timeline Sheet
+
+struct EncountersTimelineSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let person: Person
+    let onSelectEncounter: (Encounter) -> Void
+
+    var sortedEncounters: [Encounter] {
+        person.encounters.sorted { $0.date > $1.date }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    ForEach(sortedEncounters) { encounter in
+                        Button {
+                            onSelectEncounter(encounter)
+                        } label: {
+                            HStack(spacing: 12) {
+                                // Thumbnail
+                                if let imageData = encounter.thumbnailData ?? encounter.displayImageData,
+                                   let image = UIImage(data: imageData) {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 60, height: 60)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                } else {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .frame(width: 60, height: 60)
+                                        .overlay {
+                                            Image(systemName: "person.2")
+                                                .foregroundStyle(AppColors.textMuted)
+                                        }
+                                }
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(encounter.occasion ?? "Encounter")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(AppColors.textPrimary)
+
+                                    Text(encounter.date.formatted(date: .long, time: .omitted))
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textSecondary)
+
+                                    if let location = encounter.location, !location.isEmpty {
+                                        Label(location, systemImage: "mappin")
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.teal)
+                                            .lineLimit(1)
+                                    }
+
+                                    if encounter.photos.count > 1 {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "photo.stack")
+                                            Text("\(encounter.photos.count) photos")
+                                        }
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.softPurple)
+                                    }
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textMuted)
+                            }
+                            .padding(12)
+                            .background(AppColors.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding()
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("All Encounters")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
+// MARK: - Edit Person Sheet
+
+struct EditPersonSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Bindable var person: Person
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                // Basic Info Section
+                Section {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.fill")
+                            .foregroundStyle(AppColors.coral)
+                            .frame(width: 24)
+                        TextField("Name", text: $person.name)
+                    }
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.2.fill")
+                            .foregroundStyle(AppColors.teal)
+                            .frame(width: 24)
+                        Picker("Relationship", selection: Binding(
+                            get: { person.relationship ?? "" },
+                            set: { person.relationship = $0.isEmpty ? nil : $0 }
+                        )) {
+                            Text("Not set").tag("")
+                            Text("Family").tag("Family")
+                            Text("Friend").tag("Friend")
+                            Text("Coworker").tag("Coworker")
+                            Text("Acquaintance").tag("Acquaintance")
+                            Text("Client").tag("Client")
+                            Text("Mentor").tag("Mentor")
+                        }
+                        .tint(AppColors.textPrimary)
+                    }
+                } header: {
+                    Text("Basic Info")
+                }
+
+                // Work Section
+                Section {
+                    HStack(spacing: 12) {
+                        Image(systemName: "building.2.fill")
+                            .foregroundStyle(AppColors.softPurple)
+                            .frame(width: 24)
+                        TextField("Company", text: Binding(
+                            get: { person.company ?? "" },
+                            set: { person.company = $0.isEmpty ? nil : $0 }
+                        ))
+                    }
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "briefcase.fill")
+                            .foregroundStyle(AppColors.softPurple)
+                            .frame(width: 24)
+                        TextField("Job Title", text: Binding(
+                            get: { person.jobTitle ?? "" },
+                            set: { person.jobTitle = $0.isEmpty ? nil : $0 }
+                        ))
+                    }
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "mappin.circle.fill")
+                            .foregroundStyle(AppColors.softPurple)
+                            .frame(width: 24)
+                        Picker("Context", selection: Binding(
+                            get: { person.contextTag ?? "" },
+                            set: { person.contextTag = $0.isEmpty ? nil : $0 }
+                        )) {
+                            Text("Not set").tag("")
+                            Text("Work").tag("Work")
+                            Text("School").tag("School")
+                            Text("Gym").tag("Gym")
+                            Text("Church").tag("Church")
+                            Text("Neighborhood").tag("Neighborhood")
+                            Text("Online").tag("Online")
+                            Text("Event").tag("Event")
+                        }
+                        .tint(AppColors.textPrimary)
+                    }
+                } header: {
+                    Text("Work & Context")
+                }
+
+                // Contact Section
+                Section {
+                    HStack(spacing: 12) {
+                        Image(systemName: "envelope.fill")
+                            .foregroundStyle(AppColors.teal)
+                            .frame(width: 24)
+                        TextField("Email", text: Binding(
+                            get: { person.email ?? "" },
+                            set: { person.email = $0.isEmpty ? nil : $0 }
+                        ))
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                    }
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "phone.fill")
+                            .foregroundStyle(AppColors.success)
+                            .frame(width: 24)
+                        TextField("Phone", text: Binding(
+                            get: { person.phone ?? "" },
+                            set: { person.phone = $0.isEmpty ? nil : $0 }
+                        ))
+                        .textContentType(.telephoneNumber)
+                        .keyboardType(.phonePad)
+                    }
+                } header: {
+                    Text("Contact")
+                }
+
+                // Notes Section
+                Section {
+                    TextEditor(text: Binding(
+                        get: { person.notes ?? "" },
+                        set: { person.notes = $0.isEmpty ? nil : $0 }
+                    ))
+                    .frame(minHeight: 100)
+                } header: {
+                    Text("Notes")
+                } footer: {
+                    Text("Add any additional notes or reminders about this person")
+                        .foregroundStyle(AppColors.textMuted)
+                }
+            }
+            .navigationTitle("Edit Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
     }
 }
 
