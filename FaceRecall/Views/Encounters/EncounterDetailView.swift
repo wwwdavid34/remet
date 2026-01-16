@@ -31,6 +31,8 @@ struct EncounterDetailView: View {
     @State private var locateFaceMode = false
     @State private var locateFacePhotoIndex: Int = 0
     @State private var locateFaceError: String?
+    @State private var lastAddedFaceId: UUID?
+    @State private var lastAddedFacePhotoId: UUID?
 
     // Tag editing state
     @State private var showTagPicker = false
@@ -704,6 +706,27 @@ struct EncounterDetailView: View {
                                 .foregroundStyle(AppColors.warning)
                         }
                     }
+                } else if lastAddedFaceId != nil {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppColors.success)
+                        Text("Face added")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.success)
+
+                        Spacer()
+
+                        Button {
+                            undoLastAddedFace()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Undo")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(AppColors.coral)
+                        }
+                    }
                 } else {
                     Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos • Tap to expand")
                         .font(.caption2)
@@ -758,6 +781,27 @@ struct EncounterDetailView: View {
                         Text(error)
                             .font(.caption2)
                             .foregroundStyle(AppColors.warning)
+                    }
+                }
+            } else if lastAddedFaceId != nil {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(AppColors.success)
+                    Text("Face added")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.success)
+
+                    Spacer()
+
+                    Button {
+                        undoLastAddedFace()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.uturn.backward")
+                            Text("Undo")
+                        }
+                        .font(.caption)
+                        .foregroundStyle(AppColors.coral)
                     }
                 }
             } else if isEditing {
@@ -1056,9 +1100,12 @@ struct EncounterDetailView: View {
                     await MainActor.run {
                         if let photo = photo {
                             photo.faceBoundingBoxes.append(newBox)
+                            lastAddedFacePhotoId = photo.id
                         } else {
                             encounter.faceBoundingBoxes.append(newBox)
+                            lastAddedFacePhotoId = nil
                         }
+                        lastAddedFaceId = newBox.id
                         locateFaceMode = false
                         isLocatingFace = false
                     }
@@ -1075,6 +1122,20 @@ struct EncounterDetailView: View {
                 }
             }
         }
+    }
+
+    private func undoLastAddedFace() {
+        guard let faceId = lastAddedFaceId else { return }
+
+        if let photoId = lastAddedFacePhotoId,
+           let photo = encounter.photos.first(where: { $0.id == photoId }) {
+            photo.faceBoundingBoxes.removeAll { $0.id == faceId }
+        } else {
+            encounter.faceBoundingBoxes.removeAll { $0.id == faceId }
+        }
+
+        lastAddedFaceId = nil
+        lastAddedFacePhotoId = nil
     }
 
     @ViewBuilder

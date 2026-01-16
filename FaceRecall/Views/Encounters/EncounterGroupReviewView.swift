@@ -32,6 +32,8 @@ struct EncounterGroupReviewView: View {
     @State private var isLocatingFace = false
     @State private var locateFaceMode = false
     @State private var locateFaceError: String?
+    @State private var lastAddedFaceId: UUID?
+    @State private var lastAddedFacePhotoId: String?
 
     private let scannerService = PhotoLibraryScannerService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
@@ -209,6 +211,21 @@ struct EncounterGroupReviewView: View {
                 .padding()
                 .background(AppColors.coral.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            // Undo last added face button
+            if lastAddedFaceId != nil {
+                Button {
+                    undoLastAddedFace()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.uturn.backward")
+                        Text("Undo last added face")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(AppColors.warning)
+                }
+                .padding(.vertical, 4)
             }
 
             if isProcessing || isLocatingFace {
@@ -685,6 +702,8 @@ struct EncounterGroupReviewView: View {
                         var boxes = photoFaceData[photo.id] ?? []
                         boxes.append(newBox)
                         photoFaceData[photo.id] = boxes
+                        lastAddedFaceId = newBox.id
+                        lastAddedFacePhotoId = photo.id
                         locateFaceMode = false
                         isLocatingFace = false
                     }
@@ -701,6 +720,19 @@ struct EncounterGroupReviewView: View {
                 }
             }
         }
+    }
+
+    private func undoLastAddedFace() {
+        guard let faceId = lastAddedFaceId,
+              let photoId = lastAddedFacePhotoId else { return }
+
+        if var boxes = photoFaceData[photoId] {
+            boxes.removeAll { $0.id == faceId }
+            photoFaceData[photoId] = boxes
+        }
+
+        lastAddedFaceId = nil
+        lastAddedFacePhotoId = nil
     }
 
     private func reverseGeocode(_ location: CLLocation) async -> String? {

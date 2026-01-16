@@ -247,6 +247,7 @@ struct QuickCaptureReviewView: View {
     @State private var isLocatingFace = false
     @State private var locateFaceMode = false
     @State private var locateFaceError: String?
+    @State private var lastAddedFaceIndex: Int?
     @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
@@ -349,6 +350,21 @@ struct QuickCaptureReviewView: View {
                         .padding()
                         .background(AppColors.coral.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+
+                    // Undo last added face button
+                    if lastAddedFaceIndex != nil {
+                        Button {
+                            undoLastAddedFace()
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "arrow.uturn.backward")
+                                Text("Undo last added face")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(AppColors.warning)
+                        }
+                        .padding(.vertical, 4)
                     }
 
                     TextField("Name (required)", text: $name)
@@ -494,6 +510,7 @@ struct QuickCaptureReviewView: View {
 
                     await MainActor.run {
                         detectedFaces.append(newFace)
+                        lastAddedFaceIndex = detectedFaces.count - 1
                         locateFaceMode = false
                         isLocatingFace = false
                     }
@@ -510,6 +527,16 @@ struct QuickCaptureReviewView: View {
                 }
             }
         }
+    }
+
+    private func undoLastAddedFace() {
+        guard let index = lastAddedFaceIndex, index < detectedFaces.count else {
+            lastAddedFaceIndex = nil
+            return
+        }
+
+        detectedFaces.remove(at: index)
+        lastAddedFaceIndex = nil
     }
 }
 
