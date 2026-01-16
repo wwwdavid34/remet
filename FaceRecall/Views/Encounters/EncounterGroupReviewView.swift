@@ -28,6 +28,9 @@ struct EncounterGroupReviewView: View {
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
 
+    // Re-detection state
+    @State private var isRedetecting = false
+
     private let scannerService = PhotoLibraryScannerService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
 
@@ -147,13 +150,35 @@ struct EncounterGroupReviewView: View {
     @ViewBuilder
     private var facesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("People in this encounter")
-                .font(.headline)
+            HStack {
+                Text("People in this encounter")
+                    .font(.headline)
 
-            if isProcessing {
+                Spacer()
+
+                // Re-detect button
+                Button {
+                    redetectCurrentPhoto()
+                } label: {
+                    HStack(spacing: 4) {
+                        if isRedetecting {
+                            ProgressView()
+                                .scaleEffect(0.7)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        Text("Re-detect")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(AppColors.teal)
+                }
+                .disabled(isRedetecting || isProcessing)
+            }
+
+            if isProcessing || isRedetecting {
                 HStack {
                     ProgressView()
-                    Text("Analyzing faces...")
+                    Text(isRedetecting ? "Re-analyzing faces..." : "Analyzing faces...")
                         .foregroundStyle(.secondary)
                 }
             } else {
@@ -553,6 +578,51 @@ struct EncounterGroupReviewView: View {
         } else {
             await MainActor.run {
                 isProcessing = false
+            }
+        }
+    }
+
+    private func redetectCurrentPhoto() {
+        guard let photo = currentPhoto, let image = photo.image else { return }
+
+        isRedetecting = true
+
+        Task {
+            do {
+                let faceDetectionService = FaceDetectionService()
+
+                // Use enhanced detection options
+                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+
+                // Create new bounding boxes
+                var newBoxes: [FaceBoundingBox] = []
+                for face in faces {
+                    let box = FaceBoundingBox(
+                        rect: face.normalizedBoundingBox,
+                        personId: nil,
+                        personName: nil,
+                        confidence: nil,
+                        isAutoAccepted: false
+                    )
+                    newBoxes.append(box)
+                }
+
+                // Try to match faces to known people
+                let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
+                    faces: faces,
+                    people: people,
+                    autoAcceptThreshold: autoAcceptThreshold
+                )
+
+                await MainActor.run {
+                    photoFaceData[photo.id] = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
+                    isRedetecting = false
+                }
+            } catch {
+                await MainActor.run {
+                    isRedetecting = false
+                }
+                print("Re-detection error: \(error)")
             }
         }
     }
