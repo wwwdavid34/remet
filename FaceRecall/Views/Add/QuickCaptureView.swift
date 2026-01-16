@@ -461,17 +461,26 @@ struct QuickCaptureReviewView: View {
 
                 if let face = faces.first {
                     // Translate bounding box from cropped coordinates to original image coordinates
+                    // cropRect is in top-left coords, Vision normalizedBoundingBox is bottom-left coords
                     let cropNormRect = face.normalizedBoundingBox
-                    let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
-                    let originalY = (cropRect.origin.y + cropNormRect.origin.y * cropRect.height) / imageSize.height
-                    let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
-                    let originalHeight = (cropNormRect.height * cropRect.height) / imageSize.height
 
-                    // Create translated coordinates
+                    // X coordinate (no flip needed)
+                    let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
+                    let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
+
+                    // Y coordinate: convert from Vision (bottom-left) coords
+                    let cropBottomNorm = 1.0 - (cropRect.origin.y + cropRect.height) / imageSize.height
+                    let cropHeightNorm = cropRect.height / imageSize.height
+                    let originalY = cropBottomNorm + cropNormRect.origin.y * cropHeightNorm
+                    let originalHeight = cropNormRect.height * cropHeightNorm
+
+                    // Create translated coordinates (Vision normalized coords)
                     let translatedNormRect = CGRect(x: originalX, y: originalY, width: originalWidth, height: originalHeight)
+
+                    // Convert to pixel coords using VNImageRectForNormalizedRect equivalent
                     let translatedPixelRect = CGRect(
                         x: originalX * imageSize.width,
-                        y: originalY * imageSize.height,
+                        y: (1.0 - originalY - originalHeight) * imageSize.height, // Flip for pixel coords
                         width: originalWidth * imageSize.width,
                         height: originalHeight * imageSize.height
                     )

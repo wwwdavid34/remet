@@ -660,11 +660,18 @@ struct EncounterGroupReviewView: View {
 
                 if let face = faces.first {
                     // Translate bounding box from cropped coordinates to original image coordinates
+                    // cropRect is in top-left coords, Vision normalizedBoundingBox is bottom-left coords
                     let cropNormRect = face.normalizedBoundingBox
+
+                    // X coordinate (no flip needed)
                     let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
-                    let originalY = (cropRect.origin.y + cropNormRect.origin.y * cropRect.height) / imageSize.height
                     let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
-                    let originalHeight = (cropNormRect.height * cropRect.height) / imageSize.height
+
+                    // Y coordinate: convert from Vision (bottom-left) coords
+                    let cropBottomNorm = 1.0 - (cropRect.origin.y + cropRect.height) / imageSize.height
+                    let cropHeightNorm = cropRect.height / imageSize.height
+                    let originalY = cropBottomNorm + cropNormRect.origin.y * cropHeightNorm
+                    let originalHeight = cropNormRect.height * cropHeightNorm
 
                     let newBox = FaceBoundingBox(
                         rect: CGRect(x: originalX, y: originalY, width: originalWidth, height: originalHeight),
