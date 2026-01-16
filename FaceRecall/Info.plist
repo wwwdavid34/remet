@@ -20,23 +20,23 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.facerecall.app</string>
+			<string>com.remet.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>facerecall</string>
+				<string>remet</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Face Recall needs camera access to capture photos for face identification.</string>
+	<string>Remet needs camera access to capture photos for face identification.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Face Recall uses your location to record where you met people.</string>
+	<string>Remet uses your location to record where you met people.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Face Recall can save processed photos to your library.</string>
+	<string>Remet can save processed photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Face Recall needs access to your photos to identify people.</string>
+	<string>Remet needs access to your photos to identify people.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

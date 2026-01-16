@@ -8,7 +8,7 @@ class AppState {
 }
 
 @main
-struct FaceRecallApp: App {
+struct RemetApp: App {
     @State private var appState = AppState()
     @State private var subscriptionManager = SubscriptionManager.shared
 
@@ -51,8 +51,8 @@ struct FaceRecallApp: App {
     }
 
     private func handleIncomingURL(_ url: URL) {
-        // Handle facerecall://import?url=<encoded_url>
-        guard url.scheme == "facerecall",
+        // Handle remet://import?url=<encoded_url>
+        guard url.scheme == "remet",
               url.host == "import",
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let urlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,

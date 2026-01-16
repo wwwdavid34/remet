@@ -65,7 +65,7 @@ struct PhotoImportView: View {
 
                 Spacer()
             }
-            .navigationTitle("Face Recall")
+            .navigationTitle("Remet")
             .onChange(of: viewModel.selectedItem) {
                 Task {
                     await viewModel.processSelectedPhoto()

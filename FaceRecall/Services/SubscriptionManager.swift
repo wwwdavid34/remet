@@ -9,8 +9,8 @@ final class SubscriptionManager {
 
     // MARK: - Product IDs
 
-    static let monthlyProductId = "com.facerecall.premium.monthly"
-    static let yearlyProductId = "com.facerecall.premium.yearly"
+    static let monthlyProductId = "com.remet.premium.monthly"
+    static let yearlyProductId = "com.remet.premium.yearly"
     static let productIds = [monthlyProductId, yearlyProductId]
 
     // MARK: - State

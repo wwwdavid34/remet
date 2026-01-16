@@ -144,7 +144,7 @@ struct AppLogoWithText: View {
         VStack(spacing: 12) {
             AppLogoView(size: logoSize)
 
-            Text("Face Recall")
+            Text("Remet")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundStyle(

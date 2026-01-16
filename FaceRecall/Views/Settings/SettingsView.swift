@@ -396,7 +396,7 @@ struct SignInSheet: View {
                 }
 
                 VStack(spacing: 8) {
-                    Text("Sign in to Face Recall")
+                    Text("Sign in to Remet")
                         .font(.title2)
                         .fontWeight(.bold)
 

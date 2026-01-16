@@ -50,7 +50,7 @@ class ShareViewController: UIViewController {
 
     private func saveImageToSharedContainer(_ image: UIImage) -> URL? {
         guard let containerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.facerecall.shared"
+            forSecurityApplicationGroupIdentifier: "group.com.remet.shared"
         ) else {
             return nil
         }
@@ -73,7 +73,7 @@ class ShareViewController: UIViewController {
 
     private func openMainApp(with imageURL: URL) {
         // Use URL scheme to open main app with the shared image
-        let urlString = "facerecall://import?url=\(imageURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        let urlString = "remet://import?url=\(imageURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
 
         guard let url = URL(string: urlString) else {
             completeRequest()

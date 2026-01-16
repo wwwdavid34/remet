@@ -191,7 +191,7 @@ struct HomeView: View {
                 .padding(.vertical)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Face Recall")
+            .navigationTitle("Remet")
             .navigationDestination(item: $selectedPerson) { person in
                 PersonDetailView(person: person)
             }

@@ -445,14 +445,14 @@
 				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = FaceRecall/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Face Recall needs camera access to capture photos for face identification.";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Face Recall can save processed photos to your library.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Face Recall needs access to your photos to identify people.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Remet can save processed photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Remet needs access to your photos to identify people.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.facerecall.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remet.app;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -469,14 +469,14 @@
 				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = FaceRecall/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Face Recall needs camera access to capture photos for face identification.";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Face Recall can save processed photos to your library.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Face Recall needs access to your photos to identify people.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Remet can save processed photos to your library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Remet needs access to your photos to identify people.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.facerecall.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remet.app;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
