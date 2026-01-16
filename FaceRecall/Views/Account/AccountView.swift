@@ -8,15 +8,19 @@ struct AccountView: View {
 
     private var settings = AppSettings.shared
     @State private var subscriptionManager = SubscriptionManager.shared
+    @State private var referralManager = ReferralManager.shared
 
     @State private var showSignInSheet = false
     @State private var showPaywall = false
+    @State private var showInviteFriends = false
+    @State private var showEnterCode = false
 
     var body: some View {
         NavigationStack {
             List {
                 accountSection
                 subscriptionSection
+                referralSection
                 photoStorageSection
                 faceMatchingSection
                 storageInfoSection
@@ -28,6 +32,15 @@ struct AccountView: View {
             }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
+            }
+            .sheet(isPresented: $showInviteFriends) {
+                InviteFriendsView()
+            }
+            .sheet(isPresented: $showEnterCode) {
+                EnterReferralCodeView()
+            }
+            .task {
+                await referralManager.syncCredits()
             }
         }
     }
@@ -168,6 +181,79 @@ struct AccountView: View {
             }
         } header: {
             Text("Subscription")
+        }
+    }
+
+    // MARK: - Referral Section
+
+    @ViewBuilder
+    private var referralSection: some View {
+        Section {
+            // Invite Friends button
+            Button {
+                showInviteFriends = true
+            } label: {
+                HStack {
+                    Image(systemName: "gift.fill")
+                        .foregroundStyle(AppColors.coral)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Invite Friends")
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.textPrimary)
+                        Text("Get $0.50 credit for each referral")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+
+                    Spacer()
+
+                    // Show credit balance if any
+                    if referralManager.hasCredit {
+                        Text(referralManager.formattedBalance)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.success)
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textMuted)
+                }
+            }
+            .buttonStyle(.plain)
+
+            // Enter code option (if user hasn't used a referral code yet)
+            if referralManager.credit.referredBy == nil {
+                Button {
+                    showEnterCode = true
+                } label: {
+                    HStack {
+                        Image(systemName: "ticket")
+                            .foregroundStyle(AppColors.teal)
+                            .frame(width: 28)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Enter Code")
+                                .fontWeight(.medium)
+                                .foregroundStyle(AppColors.textPrimary)
+                            Text("Have a referral or promo code?")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textMuted)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        } header: {
+            Text("Referrals & Promos")
         }
     }
 

@@ -4,9 +4,12 @@ import StoreKit
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var subscriptionManager = SubscriptionManager.shared
+    @State private var referralManager = ReferralManager.shared
     @State private var selectedProduct: Product?
     @State private var isPurchasing = false
     @State private var showError = false
+    @State private var showSuccessWithCredit = false
+    @State private var creditRedeemed: Decimal = 0
 
     var body: some View {
         NavigationStack {
@@ -36,7 +39,19 @@ struct PaywallView: View {
             } message: {
                 Text(subscriptionManager.purchaseError ?? "An error occurred.")
             }
+            .alert("Welcome to Premium!", isPresented: $showSuccessWithCredit) {
+                Button("Continue") { dismiss() }
+            } message: {
+                Text("You saved \(formatCurrency(creditRedeemed)) with referral credits!")
+            }
         }
+    }
+
+    private func formatCurrency(_ amount: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "USD"
+        return formatter.string(from: amount as NSDecimalNumber) ?? "$\(amount)"
     }
 
     // MARK: - Hero Section
@@ -152,6 +167,11 @@ struct PaywallView: View {
                     )
                 }
 
+                // Credit balance banner
+                if referralManager.hasCredit {
+                    creditBanner
+                }
+
                 // Subscribe button
                 Button {
                     Task { await purchase() }
@@ -217,6 +237,33 @@ struct PaywallView: View {
         .padding(.top, 8)
     }
 
+    // MARK: - Credit Banner
+
+    @ViewBuilder
+    private var creditBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "dollarsign.circle.fill")
+                .font(.title3)
+                .foregroundStyle(AppColors.success)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("You have \(referralManager.formattedBalance) credit")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Text("Applied as savings when you subscribe")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(AppColors.success.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     // MARK: - Actions
 
     private func purchase() async {
@@ -228,7 +275,19 @@ struct PaywallView: View {
         do {
             let success = try await subscriptionManager.purchase(product)
             if success {
-                dismiss()
+                // Redeem any referral credits
+                if referralManager.hasCredit {
+                    creditRedeemed = referralManager.redeemCredits(for: product.id)
+                }
+
+                // Notify CloudKit if this user was referred
+                await referralManager.onReferredUserSubscribed()
+
+                if creditRedeemed > 0 {
+                    showSuccessWithCredit = true
+                } else {
+                    dismiss()
+                }
             }
         } catch {
             showError = true

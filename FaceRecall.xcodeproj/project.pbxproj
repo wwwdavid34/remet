@@ -50,6 +50,12 @@
 		FDBA47C827868812A0C7611A /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E6058371775D524BED9450 /* Person.swift */; };
 		LOTTIE01234567890123402 /* ScanningAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOTTIE11234567890123402 /* ScanningAnimationView.swift */; };
 		LOTTIE01234567890123403 /* AppLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOTTIE11234567890123403 /* AppLogoView.swift */; };
+		REF101234567890123456001 /* ReferralCloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF001234567890123456001 /* ReferralCloudKitService.swift */; };
+		REF101234567890123456002 /* ReferralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF001234567890123456002 /* ReferralManager.swift */; };
+		REF101234567890123456003 /* InviteFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF001234567890123456003 /* InviteFriendsView.swift */; };
+		REF101234567890123456004 /* EnterReferralCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = REF001234567890123456004 /* EnterReferralCodeView.swift */; };
+		SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEARCH11234567890123001 /* GlobalSearchView.swift */; };
+		SPLASH01234567890123001 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SPLASH11234567890123001 /* SplashView.swift */; };
 		SUB001234567890123456001 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456001 /* SubscriptionManager.swift */; };
 		SUB001234567890123456002 /* SubscriptionLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456002 /* SubscriptionLimits.swift */; };
 		SUB001234567890123456003 /* LimitChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456003 /* LimitChecker.swift */; };
@@ -57,8 +63,6 @@
 		SUB001234567890123456005 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456005 /* PaywallView.swift */; };
 		SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456006 /* LimitWarningBanner.swift */; };
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
-		SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEARCH11234567890123001 /* GlobalSearchView.swift */; };
-		SPLASH01234567890123001 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SPLASH11234567890123001 /* SplashView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -108,6 +112,12 @@
 		FF12345678901234ABCD9999 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		LOTTIE11234567890123402 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
 		LOTTIE11234567890123403 /* AppLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogoView.swift; sourceTree = "<group>"; };
+		REF001234567890123456001 /* ReferralCloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralCloudKitService.swift; sourceTree = "<group>"; };
+		REF001234567890123456002 /* ReferralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralManager.swift; sourceTree = "<group>"; };
+		REF001234567890123456003 /* InviteFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsView.swift; sourceTree = "<group>"; };
+		REF001234567890123456004 /* EnterReferralCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterReferralCodeView.swift; sourceTree = "<group>"; };
+		SEARCH11234567890123001 /* GlobalSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchView.swift; sourceTree = "<group>"; };
+		SPLASH11234567890123001 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456001 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		SUB101234567890123456002 /* SubscriptionLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLimits.swift; sourceTree = "<group>"; };
 		SUB101234567890123456003 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
@@ -115,8 +125,6 @@
 		SUB101234567890123456005 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456006 /* LimitWarningBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitWarningBanner.swift; sourceTree = "<group>"; };
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
-		SEARCH11234567890123001 /* GlobalSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchView.swift; sourceTree = "<group>"; };
-		SPLASH11234567890123001 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -209,6 +217,8 @@
 				97598B0F79F458D52747CC36 /* FaceMatchingService.swift */,
 				SUB101234567890123456003 /* LimitChecker.swift */,
 				FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */,
+				REF001234567890123456001 /* ReferralCloudKitService.swift */,
+				REF001234567890123456002 /* ReferralManager.swift */,
 				SUB101234567890123456002 /* SubscriptionLimits.swift */,
 				SUB101234567890123456001 /* SubscriptionManager.swift */,
 			);
@@ -261,6 +271,7 @@
 				F59944A0F4855F8DCD9AFD81 /* People */,
 				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
 				EE12345678901234ABCDAAAA /* Practice */,
+				REF201234567890123456001 /* Referral */,
 				SEARCH21234567890123001 /* Search */,
 				E5F6789012345678901234CD /* Settings */,
 				0FFB4409C3A484BFB6CCCDC5 /* Shared */,
@@ -315,6 +326,23 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		REF201234567890123456001 /* Referral */ = {
+			isa = PBXGroup;
+			children = (
+				REF001234567890123456004 /* EnterReferralCodeView.swift */,
+				REF001234567890123456003 /* InviteFriendsView.swift */,
+			);
+			path = Referral;
+			sourceTree = "<group>";
+		};
+		SEARCH21234567890123001 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				SEARCH11234567890123001 /* GlobalSearchView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
 		SUB201234567890123456001 /* Account */ = {
 			isa = PBXGroup;
 			children = (
@@ -331,14 +359,6 @@
 				SUB101234567890123456005 /* PaywallView.swift */,
 			);
 			path = Subscription;
-			sourceTree = "<group>";
-		};
-		SEARCH21234567890123001 /* Search */ = {
-			isa = PBXGroup;
-			children = (
-				SEARCH11234567890123001 /* GlobalSearchView.swift */,
-			);
-			path = Search;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -463,11 +483,14 @@
 				LOTTIE01234567890123403 /* AppLogoView.swift in Sources */,
 				SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */,
 				SPLASH01234567890123001 /* SplashView.swift in Sources */,
+				REF101234567890123456001 /* ReferralCloudKitService.swift in Sources */,
+				REF101234567890123456002 /* ReferralManager.swift in Sources */,
+				REF101234567890123456003 /* InviteFriendsView.swift in Sources */,
+				REF101234567890123456004 /* EnterReferralCodeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
 
 /* Begin XCBuildConfiguration section */
 		1E90B84062FD60E1AD71BD0D /* Debug */ = {
@@ -475,6 +498,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FaceRecall/FaceRecall.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RX44K7NF89;
@@ -499,6 +523,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FaceRecall/FaceRecall.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RX44K7NF89;
