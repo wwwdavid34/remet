@@ -12,7 +12,6 @@ struct EncounterScannerView: View {
     @State private var scanTotal = 0
     @State private var photoGroups: [PhotoGroup] = []
     @State private var selectedGroup: PhotoGroup?
-    @State private var showGroupReview = false
 
     // Time range selection
     @State private var selectedTimeRange: ScanTimeRange = .lastWeek
@@ -72,17 +71,15 @@ struct EncounterScannerView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showGroupReview) {
-                if let group = selectedGroup {
-                    EncounterGroupReviewView(
-                        photoGroup: group,
-                        people: people
-                    ) { encounter in
-                        modelContext.insert(encounter)
-                        // Remove processed group
-                        photoGroups.removeAll { $0.id == group.id }
-                        selectedGroup = nil
-                    }
+            .sheet(item: $selectedGroup) { group in
+                EncounterGroupReviewView(
+                    photoGroup: group,
+                    people: people
+                ) { encounter in
+                    modelContext.insert(encounter)
+                    // Remove processed group
+                    photoGroups.removeAll { $0.id == group.id }
+                    selectedGroup = nil
                 }
             }
             .alert("Photo Limit Reached", isPresented: $showLimitReachedAlert) {
@@ -242,7 +239,6 @@ struct EncounterScannerView: View {
                     GroupThumbnailCard(group: group)
                         .onTapGesture {
                             selectedGroup = group
-                            showGroupReview = true
                         }
                 }
             }
