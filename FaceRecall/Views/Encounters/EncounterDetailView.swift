@@ -26,6 +26,9 @@ struct EncounterDetailView: View {
     @State private var sessionEmbeddings: [UUID: (personId: UUID, embedding: [Float])] = [:]
     @State private var isPropagating = false
 
+    // Re-detection state
+    @State private var isRedetecting = false
+
     // Tag editing state
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
@@ -52,15 +55,30 @@ struct EncounterDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button {
-                    isEditing.toggle()
-                } label: {
-                    if isEditing {
-                        // Use checkmark to clearly indicate "save/finish editing"
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(AppColors.teal)
-                    } else {
-                        Image(systemName: "pencil.circle")
+                HStack(spacing: 16) {
+                    // Re-detect button (always visible)
+                    Button {
+                        redetectFaces()
+                    } label: {
+                        if isRedetecting {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                    }
+                    .disabled(isRedetecting)
+
+                    // Edit button
+                    Button {
+                        isEditing.toggle()
+                    } label: {
+                        if isEditing {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(AppColors.teal)
+                        } else {
+                            Image(systemName: "pencil.circle")
+                        }
                     }
                 }
             }
@@ -918,6 +936,88 @@ struct EncounterDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+
+    // MARK: - Re-detection
+
+    private func redetectFaces() {
+        isRedetecting = true
+
+        Task {
+            let faceDetectionService = FaceDetectionService()
+            let scannerService = PhotoLibraryScannerService()
+            let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
+
+            do {
+                if hasMultiplePhotos {
+                    // Re-detect for multiple photos
+                    for photo in encounter.photos {
+                        guard let image = UIImage(data: photo.imageData) else { continue }
+
+                        let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+
+                        // Create new bounding boxes
+                        var newBoxes: [FaceBoundingBox] = []
+                        for face in faces {
+                            let box = FaceBoundingBox(
+                                rect: face.normalizedBoundingBox,
+                                personId: nil,
+                                personName: nil,
+                                confidence: nil,
+                                isAutoAccepted: false
+                            )
+                            newBoxes.append(box)
+                        }
+
+                        // Try to match faces to known people
+                        let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
+                            faces: faces,
+                            people: allPeople,
+                            autoAcceptThreshold: autoAcceptThreshold
+                        )
+
+                        await MainActor.run {
+                            photo.faceBoundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
+                        }
+                    }
+                } else if let imageData = encounter.displayImageData,
+                          let image = UIImage(data: imageData) {
+                    // Re-detect for legacy single photo
+                    let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+
+                    var newBoxes: [FaceBoundingBox] = []
+                    for face in faces {
+                        let box = FaceBoundingBox(
+                            rect: face.normalizedBoundingBox,
+                            personId: nil,
+                            personName: nil,
+                            confidence: nil,
+                            isAutoAccepted: false
+                        )
+                        newBoxes.append(box)
+                    }
+
+                    let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
+                        faces: faces,
+                        people: allPeople,
+                        autoAcceptThreshold: autoAcceptThreshold
+                    )
+
+                    await MainActor.run {
+                        encounter.faceBoundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
+                    }
+                }
+
+                await MainActor.run {
+                    isRedetecting = false
+                }
+            } catch {
+                await MainActor.run {
+                    isRedetecting = false
+                }
+                print("Re-detection error: \(error)")
             }
         }
     }

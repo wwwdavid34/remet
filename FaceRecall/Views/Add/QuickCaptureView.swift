@@ -280,56 +280,42 @@ struct QuickCaptureReviewView: View {
             // Form
             ScrollView {
                 VStack(spacing: 16) {
-                    if detectedFaces.isEmpty {
-                        VStack(spacing: 12) {
-                            HStack {
-                                Image(systemName: "exclamationmark.triangle")
-                                    .foregroundStyle(AppColors.warning)
-                                Text("No face detected")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.warning)
-                            }
-
-                            Text("Try re-detecting with enhanced image processing, or retake the photo.")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary)
-                                .multilineTextAlignment(.center)
-
-                            Button {
-                                redetectFaces()
-                            } label: {
-                                HStack {
-                                    if isRedetecting {
-                                        ProgressView()
-                                            .scaleEffect(0.8)
-                                            .tint(.white)
-                                    } else {
-                                        Image(systemName: "arrow.clockwise")
-                                    }
-                                    Text(redetectAttempts == 0 ? "Re-detect Faces" : "Try Again")
-                                }
+                    // Face detection status
+                    HStack {
+                        if detectedFaces.isEmpty {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundStyle(AppColors.warning)
+                            Text("No face detected")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 10)
-                                .background(AppColors.teal)
-                                .clipShape(Capsule())
-                            }
-                            .disabled(isRedetecting)
-                        }
-                        .padding()
-                        .background(AppColors.warning.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    } else {
-                        HStack {
+                                .foregroundStyle(AppColors.warning)
+                        } else {
                             Image(systemName: "checkmark.circle")
                                 .foregroundStyle(.green)
                             Text("\(detectedFaces.count) face\(detectedFaces.count == 1 ? "" : "s") detected")
                                 .font(.subheadline)
                                 .foregroundStyle(.green)
                         }
+
+                        Spacer()
+
+                        // Always-visible re-detect button
+                        Button {
+                            redetectFaces()
+                        } label: {
+                            HStack(spacing: 4) {
+                                if isRedetecting {
+                                    ProgressView()
+                                        .scaleEffect(0.7)
+                                } else {
+                                    Image(systemName: "arrow.clockwise")
+                                }
+                                Text("Re-detect")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(AppColors.teal)
+                        }
+                        .disabled(isRedetecting)
                     }
 
                     TextField("Name (required)", text: $name)
