@@ -136,61 +136,59 @@ struct EncounterListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if encounters.isEmpty {
-                    emptyStateView
-                } else {
-                    encountersList
-                }
+        Group {
+            if encounters.isEmpty {
+                emptyStateView
+            } else {
+                encountersList
             }
-            .navigationTitle("Encounters")
-            .searchable(text: $searchText, prompt: "Search occasions, locations, people")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 12) {
-                        Button {
-                            showFilters.toggle()
-                        } label: {
-                            ZStack(alignment: .topTrailing) {
-                                Image(systemName: "line.3.horizontal.decrease.circle")
-                                    .foregroundStyle(hasActiveFilters ? AppColors.coral : .primary)
-                                if activeFilterCount > 0 {
-                                    Text("\(activeFilterCount)")
-                                        .font(.caption2)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(.white)
-                                        .padding(4)
-                                        .background(Circle().fill(AppColors.coral))
-                                        .offset(x: 8, y: -8)
-                                }
+        }
+        .navigationTitle("Encounters")
+        .searchable(text: $searchText, prompt: "Search occasions, locations, people")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                HStack(spacing: 12) {
+                    Button {
+                        showFilters.toggle()
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .foregroundStyle(hasActiveFilters ? AppColors.coral : AppColors.teal)
+                            if activeFilterCount > 0 {
+                                Text("\(activeFilterCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.white)
+                                    .padding(4)
+                                    .background(Circle().fill(AppColors.coral))
+                                    .offset(x: 8, y: -8)
                             }
                         }
+                    }
 
-                        Button {
-                            showScanner = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
+                    Button {
+                        showScanner = true
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $showFilters, onDismiss: {
-                // Force refresh when filter sheet closes
-                filterRefreshId = UUID()
-            }) {
-                EncounterFilterSheet(
-                    selectedTimeFilter: $selectedTimeFilter,
-                    selectedLocation: $selectedLocation,
-                    selectedTagFilters: $selectedTagFilters,
-                    availableLocations: locationsInUse,
-                    availableTags: tagsInUse
-                )
-                .presentationDetents([.medium, .large])
-            }
-            .sheet(isPresented: $showScanner) {
-                EncounterScannerView()
-            }
+        }
+        .sheet(isPresented: $showFilters, onDismiss: {
+            // Force refresh when filter sheet closes
+            filterRefreshId = UUID()
+        }) {
+            EncounterFilterSheet(
+                selectedTimeFilter: $selectedTimeFilter,
+                selectedLocation: $selectedLocation,
+                selectedTagFilters: $selectedTagFilters,
+                availableLocations: locationsInUse,
+                availableTags: tagsInUse
+            )
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showScanner) {
+            EncounterScannerView()
         }
     }
 
@@ -221,19 +219,14 @@ struct EncounterListView: View {
 
             List {
                 ForEach(filteredEncounters) { encounter in
-                    NavigationLink(value: encounter) {
+                    NavigationLink {
+                        EncounterDetailView(encounter: encounter)
+                    } label: {
                         EncounterRowView(encounter: encounter)
-                    }
-                    .task {
-                        // Prefetch encounter data to prevent load failures
-                        await prefetchEncounterData(encounter)
                     }
                 }
                 .onDelete(perform: deleteEncounters)
             }
-        }
-        .navigationDestination(for: Encounter.self) { encounter in
-            EncounterDetailView(encounter: encounter)
         }
     }
 
@@ -242,17 +235,6 @@ struct EncounterListView: View {
             let encounter = filteredEncounters[index]
             modelContext.delete(encounter)
         }
-    }
-
-    /// Prefetch encounter data to prevent load failures
-    private func prefetchEncounterData(_ encounter: Encounter) async {
-        // Access properties to trigger lazy loading
-        _ = encounter.displayImageData
-        _ = encounter.thumbnailData
-        _ = encounter.people.map { $0.name }
-        _ = encounter.photos.map { $0.imageData }
-        _ = encounter.faceBoundingBoxes
-        _ = encounter.tags.map { $0.name }
     }
 }
 
@@ -402,18 +384,19 @@ struct EncounterFilterSheet: View {
                         } label: {
                             HStack {
                                 Text(filter.rawValue)
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedTimeFilter == filter {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(AppColors.coral)
+                                        .fontWeight(.semibold)
                                 }
                             }
                         }
                     }
                 } header: {
-                    Label("Time Period", systemImage: "calendar")
-                        .foregroundStyle(AppColors.coral)
+                    Text("Time Period")
+                        .foregroundStyle(.secondary)
                 }
 
                 // Location Filter
@@ -424,11 +407,12 @@ struct EncounterFilterSheet: View {
                         } label: {
                             HStack {
                                 Text("All Locations")
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedLocation == nil {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(AppColors.teal)
+                                        .foregroundStyle(AppColors.coral)
+                                        .fontWeight(.semibold)
                                 }
                             }
                         }
@@ -438,19 +422,22 @@ struct EncounterFilterSheet: View {
                                 selectedLocation = location
                             } label: {
                                 HStack {
+                                    Image(systemName: "mappin.circle.fill")
+                                        .foregroundStyle(AppColors.teal)
                                     Text(location)
-                                        .foregroundStyle(AppColors.textPrimary)
+                                        .foregroundStyle(.primary)
                                     Spacer()
                                     if selectedLocation == location {
                                         Image(systemName: "checkmark")
-                                            .foregroundStyle(AppColors.teal)
+                                            .foregroundStyle(AppColors.coral)
+                                            .fontWeight(.semibold)
                                     }
                                 }
                             }
                         }
                     } header: {
-                        Label("Location", systemImage: "mappin")
-                            .foregroundStyle(AppColors.teal)
+                        Text("Location")
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -470,18 +457,19 @@ struct EncounterFilterSheet: View {
                                         .fill(tag.color)
                                         .frame(width: 12, height: 12)
                                     Text(tag.name)
-                                        .foregroundStyle(AppColors.textPrimary)
+                                        .foregroundStyle(.primary)
                                     Spacer()
                                     if selectedTagFilters.contains(tag.id) {
                                         Image(systemName: "checkmark")
-                                            .foregroundStyle(tag.color)
+                                            .foregroundStyle(AppColors.coral)
+                                            .fontWeight(.semibold)
                                     }
                                 }
                             }
                         }
                     } header: {
-                        Label("Tags", systemImage: "tag")
-                            .foregroundStyle(AppColors.softPurple)
+                        Text("Tags")
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
@@ -501,6 +489,7 @@ struct EncounterFilterSheet: View {
                     Button("Done") {
                         dismiss()
                     }
+                    .fontWeight(.semibold)
                 }
             }
         }

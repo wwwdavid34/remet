@@ -8,6 +8,7 @@ struct HomeView: View {
 
     @State private var showQuickCapture = false
     @State private var showPractice = false
+    @State private var showAccount = false
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
 
@@ -192,6 +193,17 @@ struct HomeView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Remet")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAccount = true
+                    } label: {
+                        Image(systemName: "person.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppColors.coral)
+                    }
+                }
+            }
             .navigationDestination(item: $selectedPerson) { person in
                 PersonDetailView(person: person)
             }
@@ -215,6 +227,18 @@ struct HomeView: View {
                     people: peopleNeedingReview.isEmpty ? peopleWithFaces : peopleNeedingReview,
                     mode: .spaced
                 )
+            }
+            .sheet(isPresented: $showAccount) {
+                NavigationStack {
+                    AccountView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") {
+                                    showAccount = false
+                                }
+                            }
+                        }
+                }
             }
         }
     }

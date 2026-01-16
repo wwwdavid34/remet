@@ -48,6 +48,8 @@
 		F89012345678901234567890 /* TagViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08901234567890123456789A /* TagViews.swift */; };
 		FB20244AA42C9DB84934B4CC /* PhotoImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */; };
 		FDBA47C827868812A0C7611A /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E6058371775D524BED9450 /* Person.swift */; };
+		LOTTIE01234567890123402 /* ScanningAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOTTIE11234567890123402 /* ScanningAnimationView.swift */; };
+		LOTTIE01234567890123403 /* AppLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LOTTIE11234567890123403 /* AppLogoView.swift */; };
 		SUB001234567890123456001 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456001 /* SubscriptionManager.swift */; };
 		SUB001234567890123456002 /* SubscriptionLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456002 /* SubscriptionLimits.swift */; };
 		SUB001234567890123456003 /* LimitChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456003 /* LimitChecker.swift */; };
@@ -55,6 +57,7 @@
 		SUB001234567890123456005 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456005 /* PaywallView.swift */; };
 		SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456006 /* LimitWarningBanner.swift */; };
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
+		SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEARCH11234567890123001 /* GlobalSearchView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -102,6 +105,8 @@
 		F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
 		FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
 		FF12345678901234ABCD9999 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		LOTTIE11234567890123402 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
+		LOTTIE11234567890123403 /* AppLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogoView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456001 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		SUB101234567890123456002 /* SubscriptionLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLimits.swift; sourceTree = "<group>"; };
 		SUB101234567890123456003 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
@@ -109,6 +114,7 @@
 		SUB101234567890123456005 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456006 /* LimitWarningBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitWarningBanner.swift; sourceTree = "<group>"; };
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
+		SEARCH11234567890123001 /* GlobalSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -247,11 +253,13 @@
 				7009BB5788005DCA09E9BFD7 /* ContentView.swift */,
 				SUB201234567890123456001 /* Account */,
 				EE12345678901234ABCDBBBB /* Add */,
+				LOTTIE21234567890123401 /* Components */,
 				1696A6D6EB005A9CCA04D3C3 /* Encounters */,
 				EE12345678901234ABCD9999 /* Home */,
 				F59944A0F4855F8DCD9AFD81 /* People */,
 				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
 				EE12345678901234ABCDAAAA /* Practice */,
+				SEARCH21234567890123001 /* Search */,
 				E5F6789012345678901234CD /* Settings */,
 				0FFB4409C3A484BFB6CCCDC5 /* Shared */,
 				SUB201234567890123456002 /* Subscription */,
@@ -295,6 +303,15 @@
 			path = People;
 			sourceTree = "<group>";
 		};
+		LOTTIE21234567890123401 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				LOTTIE11234567890123403 /* AppLogoView.swift */,
+				LOTTIE11234567890123402 /* ScanningAnimationView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		SUB201234567890123456001 /* Account */ = {
 			isa = PBXGroup;
 			children = (
@@ -311,6 +328,14 @@
 				SUB101234567890123456005 /* PaywallView.swift */,
 			);
 			path = Subscription;
+			sourceTree = "<group>";
+		};
+		SEARCH21234567890123001 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				SEARCH11234567890123001 /* GlobalSearchView.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -358,6 +383,8 @@
 			);
 			mainGroup = 631360D3EC3915C65DE557EA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -429,10 +456,14 @@
 				SUB001234567890123456005 /* PaywallView.swift in Sources */,
 				SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */,
 				SUB001234567890123456007 /* LimitReachedView.swift in Sources */,
+				LOTTIE01234567890123402 /* ScanningAnimationView.swift in Sources */,
+				LOTTIE01234567890123403 /* AppLogoView.swift in Sources */,
+				SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
 
 /* Begin XCBuildConfiguration section */
 		1E90B84062FD60E1AD71BD0D /* Debug */ = {

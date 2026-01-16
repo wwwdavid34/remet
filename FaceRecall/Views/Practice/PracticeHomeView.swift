@@ -184,7 +184,12 @@ struct PracticeHomeView: View {
                                 ForEach(peopleNeedingReview.sorted { p1, p2 in
                                     (p1.spacedRepetitionData?.nextReviewDate ?? .distantPast) < (p2.spacedRepetitionData?.nextReviewDate ?? .distantPast)
                                 }) { person in
-                                    ReviewPersonRow(person: person)
+                                    NavigationLink {
+                                        PersonDetailView(person: person)
+                                    } label: {
+                                        ReviewPersonRow(person: person)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal)

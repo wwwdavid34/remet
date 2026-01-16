@@ -40,9 +40,9 @@ struct ContentView: View {
                     Label("Practice", systemImage: "brain.head.profile")
                 }
 
-            AccountView()
+            GlobalSearchView()
                 .tabItem {
-                    Label("Account", systemImage: "person.circle.fill")
+                    Label("Search", systemImage: "magnifyingglass")
                 }
         }
         .tint(AppColors.coral)

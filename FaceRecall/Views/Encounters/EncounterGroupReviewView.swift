@@ -22,6 +22,7 @@ struct EncounterGroupReviewView: View {
     @State private var showNewPersonSheet = false
     @State private var newPersonName = ""
     @State private var createdEmbeddings: [FaceEmbedding] = []
+    @State private var createdPersons: [Person] = []
 
     // Face matching state for picker
     @State private var selectedFaceCrop: UIImage?
@@ -65,6 +66,7 @@ struct EncounterGroupReviewView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
+                        cleanupCreatedPersons()
                         dismiss()
                     }
                 }
@@ -809,6 +811,7 @@ struct EncounterGroupReviewView: View {
 
         let person = Person(name: newPersonName.trimmingCharacters(in: .whitespaces))
         modelContext.insert(person)
+        createdPersons.append(person)
 
         guard var boxes = photoFaceData[photo.id], boxIndex < boxes.count else { return }
 
@@ -921,5 +924,17 @@ struct EncounterGroupReviewView: View {
         return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: newSize))
         }
+    }
+
+    /// Clean up persons created during this session when user cancels
+    private func cleanupCreatedPersons() {
+        for person in createdPersons {
+            // Delete embeddings first (should cascade, but be explicit)
+            for embedding in person.embeddings {
+                modelContext.delete(embedding)
+            }
+            modelContext.delete(person)
+        }
+        createdPersons.removeAll()
     }
 }

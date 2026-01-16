@@ -99,8 +99,9 @@ struct EncounterScannerView: View {
     @ViewBuilder
     private var scanningView: some View {
         VStack(spacing: 24) {
-            ProgressView()
-                .scaleEffect(1.5)
+            // Native scanning animation
+            ScanningAnimationView(tintColor: AppColors.teal)
+                .frame(width: 120, height: 120)
 
             Text("Scanning photos...")
                 .font(.headline)
@@ -111,6 +112,7 @@ struct EncounterScannerView: View {
 
                 ProgressView(value: Double(scanProgress), total: Double(scanTotal))
                     .padding(.horizontal, 40)
+                    .tint(AppColors.teal)
             }
         }
     }
