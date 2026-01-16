@@ -22,6 +22,10 @@ struct EncounterDetailView: View {
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
 
+    // Session-level face embedding cache for realtime matching
+    @State private var sessionEmbeddings: [UUID: (personId: UUID, embedding: [Float])] = [:]
+    @State private var isPropagating = false
+
     // Tag editing state
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
@@ -48,8 +52,16 @@ struct EncounterDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(isEditing ? "Done" : "Edit") {
+                Button {
                     isEditing.toggle()
+                } label: {
+                    if isEditing {
+                        // Use checkmark to clearly indicate "save/finish editing"
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppColors.teal)
+                    } else {
+                        Image(systemName: "pencil.circle")
+                    }
                 }
             }
         }
@@ -302,8 +314,8 @@ struct EncounterDetailView: View {
             selectedFaceCrop = UIImage(cgImage: cgImage)
         }
 
-        // Find potential matches
-        guard let faceCrop = selectedFaceCrop, !allPeople.isEmpty else { return }
+        // Find potential matches (including session-tagged faces)
+        guard let faceCrop = selectedFaceCrop else { return }
 
         isLoadingMatches = true
 
@@ -313,10 +325,48 @@ struct EncounterDetailView: View {
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
-                let matches = matchingService.findMatches(for: embedding, in: allPeople, topK: 5, threshold: 0.5)
+
+                // First check session embeddings for quick matches from this editing session
+                var sessionMatches: [MatchResult] = []
+                for (_, cached) in sessionEmbeddings {
+                    let similarity = cosineSimilarity(embedding, cached.embedding)
+                    if similarity >= 0.5 {
+                        if let person = allPeople.first(where: { $0.id == cached.personId }) {
+                            let confidence: MatchConfidence = similarity >= 0.85 ? .high : (similarity >= 0.75 ? .ambiguous : .none)
+                            sessionMatches.append(MatchResult(person: person, similarity: similarity, confidence: confidence))
+                        }
+                    }
+                }
+
+                // Get regular matches from stored embeddings
+                let regularMatches = matchingService.findMatches(for: embedding, in: allPeople, topK: 5, threshold: 0.5)
+
+                // Merge matches, preferring higher similarity and removing duplicates
+                var allMatches: [UUID: MatchResult] = [:]
+                for match in sessionMatches {
+                    if let existing = allMatches[match.person.id] {
+                        if match.similarity > existing.similarity {
+                            allMatches[match.person.id] = match
+                        }
+                    } else {
+                        allMatches[match.person.id] = match
+                    }
+                }
+                for match in regularMatches {
+                    if let existing = allMatches[match.person.id] {
+                        if match.similarity > existing.similarity {
+                            allMatches[match.person.id] = match
+                        }
+                    } else {
+                        allMatches[match.person.id] = match
+                    }
+                }
+
+                // Sort by similarity and take top 5
+                let sortedMatches = allMatches.values.sorted { $0.similarity > $1.similarity }
 
                 await MainActor.run {
-                    potentialMatches = Array(matches.prefix(5)) // Top 5 matches
+                    potentialMatches = Array(sortedMatches.prefix(5))
                     isLoadingMatches = false
                 }
             } catch {
@@ -377,6 +427,13 @@ struct EncounterDetailView: View {
                 boxes[index].personId = person.id
                 boxes[index].personName = person.name
                 photo.faceBoundingBoxes = boxes
+
+                // Generate embedding and propagate to other photos
+                propagateFaceLabelToOtherPhotos(
+                    person: person,
+                    sourceBox: boxes[index],
+                    sourcePhoto: photo
+                )
             }
         } else {
             // Legacy single-photo
@@ -396,6 +453,123 @@ struct EncounterDetailView: View {
         showFaceLabelPicker = false
         selectedBoxId = nil
         selectedPhotoForLabeling = nil
+    }
+
+    /// Propagate face label to similar faces in other photos of the same encounter
+    private func propagateFaceLabelToOtherPhotos(person: Person, sourceBox: FaceBoundingBox, sourcePhoto: EncounterPhoto) {
+        guard encounter.photos.count > 1 else { return }
+
+        isPropagating = true
+
+        Task {
+            do {
+                let embeddingService = FaceEmbeddingService()
+                let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
+
+                // Extract source face crop
+                guard let sourceImage = UIImage(data: sourcePhoto.imageData) else { return }
+                let sourceRect = extractFaceRect(box: sourceBox, imageSize: sourceImage.size)
+                guard let sourceCGImage = sourceImage.cgImage?.cropping(to: sourceRect) else { return }
+                let sourceFaceCrop = UIImage(cgImage: sourceCGImage)
+
+                // Generate embedding for source face
+                let sourceEmbedding = try await embeddingService.generateEmbedding(for: sourceFaceCrop)
+
+                // Cache this embedding for the session
+                await MainActor.run {
+                    sessionEmbeddings[sourceBox.id] = (personId: person.id, embedding: sourceEmbedding)
+                }
+
+                // Check other photos for similar unlabeled faces
+                for photo in encounter.photos where photo.id != sourcePhoto.id {
+                    guard let photoImage = UIImage(data: photo.imageData) else { continue }
+
+                    var updatedBoxes = photo.faceBoundingBoxes
+                    var hasChanges = false
+
+                    for (index, box) in updatedBoxes.enumerated() {
+                        // Skip already labeled faces
+                        guard box.personId == nil else { continue }
+
+                        // Extract face crop
+                        let faceRect = extractFaceRect(box: box, imageSize: photoImage.size)
+                        guard let faceCGImage = photoImage.cgImage?.cropping(to: faceRect) else { continue }
+                        let faceCrop = UIImage(cgImage: faceCGImage)
+
+                        // Generate embedding
+                        let faceEmbedding = try await embeddingService.generateEmbedding(for: faceCrop)
+
+                        // Calculate similarity
+                        let similarity = cosineSimilarity(sourceEmbedding, faceEmbedding)
+
+                        // Auto-tag if similarity is high enough
+                        if similarity >= autoAcceptThreshold {
+                            updatedBoxes[index].personId = person.id
+                            updatedBoxes[index].personName = person.name
+                            updatedBoxes[index].confidence = similarity
+                            updatedBoxes[index].isAutoAccepted = true
+                            hasChanges = true
+
+                            // Cache this embedding too
+                            await MainActor.run {
+                                sessionEmbeddings[box.id] = (personId: person.id, embedding: faceEmbedding)
+                            }
+                        }
+                    }
+
+                    // Update photo's bounding boxes if changes were made
+                    if hasChanges {
+                        await MainActor.run {
+                            photo.faceBoundingBoxes = updatedBoxes
+                        }
+                    }
+                }
+
+                await MainActor.run {
+                    isPropagating = false
+                }
+            } catch {
+                await MainActor.run {
+                    isPropagating = false
+                }
+                print("Error propagating face labels: \(error)")
+            }
+        }
+    }
+
+    /// Extract face rect from bounding box (with padding)
+    private func extractFaceRect(box: FaceBoundingBox, imageSize: CGSize) -> CGRect {
+        let cropRect = CGRect(
+            x: box.x * imageSize.width,
+            y: (1 - box.y - box.height) * imageSize.height,
+            width: box.width * imageSize.width,
+            height: box.height * imageSize.height
+        )
+
+        // Add padding around the face
+        let padding: CGFloat = 0.15
+        return cropRect.insetBy(
+            dx: -cropRect.width * padding,
+            dy: -cropRect.height * padding
+        ).intersection(CGRect(origin: .zero, size: imageSize))
+    }
+
+    /// Calculate cosine similarity between two embedding vectors
+    private func cosineSimilarity(_ a: [Float], _ b: [Float]) -> Float {
+        guard a.count == b.count, !a.isEmpty else { return 0 }
+
+        var dotProduct: Float = 0
+        var normA: Float = 0
+        var normB: Float = 0
+
+        for i in 0..<a.count {
+            dotProduct += a[i] * b[i]
+            normA += a[i] * a[i]
+            normB += b[i] * b[i]
+        }
+
+        let denominator = sqrt(normA) * sqrt(normB)
+        return denominator > 0 ? dotProduct / denominator : 0
     }
 
     private func removePersonFromFace() {
@@ -494,9 +668,19 @@ struct EncounterDetailView: View {
                 .tabViewStyle(.page(indexDisplayMode: .automatic))
                 .frame(height: 300)
 
-                Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos • Tap to expand")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                if isPropagating {
+                    HStack(spacing: 6) {
+                        ProgressView()
+                            .scaleEffect(0.7)
+                        Text("Auto-tagging similar faces...")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.teal)
+                    }
+                } else {
+                    Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos • Tap to expand")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
             }
         } else if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
             // Legacy single photo

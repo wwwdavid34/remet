@@ -47,6 +47,7 @@ struct EncounterListView: View {
     @State private var selectedTimeFilter: TimeFilter = .all
     @State private var selectedLocation: String? = nil
     @State private var showFilters = false
+    @State private var filterRefreshId = UUID()
 
     /// Tags that are currently assigned to at least one encounter
     var tagsInUse: [Tag] {
@@ -77,6 +78,9 @@ struct EncounterListView: View {
     }
 
     var filteredEncounters: [Encounter] {
+        // Force dependency on refresh ID to ensure updates
+        _ = filterRefreshId
+
         var result = encounters
 
         // Filter by search text
@@ -96,17 +100,19 @@ struct EncounterListView: View {
             }
         }
 
-        // Filter by time
-        if let dateRange = selectedTimeFilter.dateRange {
+        // Filter by time - explicit check for non-all filter
+        if selectedTimeFilter != .all, let dateRange = selectedTimeFilter.dateRange {
+            let startDate = dateRange.start
+            let endDate = dateRange.end
             result = result.filter { encounter in
-                encounter.date >= dateRange.start && encounter.date <= dateRange.end
+                encounter.date >= startDate && encounter.date <= endDate
             }
         }
 
-        // Filter by location
-        if let location = selectedLocation {
+        // Filter by location - case-insensitive comparison
+        if let location = selectedLocation, !location.isEmpty {
             result = result.filter { encounter in
-                encounter.location == location
+                encounter.location?.localizedCaseInsensitiveCompare(location) == .orderedSame
             }
         }
 
@@ -169,7 +175,10 @@ struct EncounterListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showFilters) {
+            .sheet(isPresented: $showFilters, onDismiss: {
+                // Force refresh when filter sheet closes
+                filterRefreshId = UUID()
+            }) {
                 EncounterFilterSheet(
                     selectedTimeFilter: $selectedTimeFilter,
                     selectedLocation: $selectedLocation,
