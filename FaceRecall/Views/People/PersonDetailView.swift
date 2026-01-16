@@ -8,7 +8,6 @@ struct PersonDetailView: View {
     @Bindable var person: Person
     @State private var showEditSheet = false
     @State private var selectedEncounter: Encounter?
-    @State private var showEncounterDetail = false
     @State private var showFaceSourcePhoto = false
     @State private var selectedEmbedding: FaceEmbedding?
     @State private var showDeleteConfirmation = false
@@ -76,18 +75,16 @@ struct PersonDetailView: View {
         } message: {
             Text("Are you sure you want to delete \(person.name)? This will also remove all their face samples.")
         }
-        .sheet(isPresented: $showEncounterDetail) {
-            if let encounter = selectedEncounter {
-                NavigationStack {
-                    EncounterDetailView(encounter: encounter)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") {
-                                    showEncounterDetail = false
-                                }
+        .sheet(item: $selectedEncounter) { encounter in
+            NavigationStack {
+                EncounterDetailView(encounter: encounter)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                selectedEncounter = nil
                             }
                         }
-                }
+                    }
             }
         }
         .sheet(isPresented: $showTagPicker, onDismiss: {
@@ -103,7 +100,6 @@ struct PersonDetailView: View {
                 showEncountersTimeline = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     selectedEncounter = encounter
-                    showEncounterDetail = true
                 }
             })
         }
@@ -368,7 +364,6 @@ struct PersonDetailView: View {
                     ForEach(person.encounters.prefix(3)) { encounter in
                         EncounterTimelineRow(encounter: encounter) {
                             selectedEncounter = encounter
-                            showEncounterDetail = true
                         }
                     }
                 }
@@ -621,7 +616,6 @@ struct PersonDetailView: View {
                         ForEach(person.encounters.prefix(5)) { encounter in
                             Button {
                                 selectedEncounter = encounter
-                                showEncounterDetail = true
                             } label: {
                                 EncounterThumbnail(encounter: encounter)
                             }

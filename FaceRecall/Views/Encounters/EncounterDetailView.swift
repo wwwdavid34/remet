@@ -6,6 +6,11 @@ struct EncounterDetailView: View {
     @Query private var allPeople: [Person]
     @Bindable var encounter: Encounter
 
+    init(encounter: Encounter) {
+        self._encounter = Bindable(encounter)
+        print("[DetailInit] EncounterDetailView init for \(encounter.id.uuidString.prefix(8))")
+    }
+
     @State private var isEditing = false
     @State private var selectedPerson: Person?
     @State private var showFullPhoto = false
@@ -36,6 +41,8 @@ struct EncounterDetailView: View {
     }
 
     var body: some View {
+        let _ = print("[DetailBody] Rendering body for encounter \(encounter.id.uuidString.prefix(8))")
+
         ScrollView {
             VStack(spacing: 20) {
                 photoSection
@@ -45,6 +52,12 @@ struct EncounterDetailView: View {
             }
             .padding()
             .onAppear {
+                let encounterId = encounter.id.uuidString.prefix(8)
+                let hasDisplayImage = encounter.displayImageData != nil
+                let hasThumbnail = encounter.thumbnailData != nil
+                let photosCount = encounter.photos.count
+                let photoDataLoaded = encounter.photos.map { $0.imageData.count > 0 }
+                print("[Detail:\(encounterId)] onAppear - displayImage:\(hasDisplayImage), thumbnail:\(hasThumbnail), photos:\(photosCount), photoDataLoaded:\(photoDataLoaded)")
                 selectedTags = encounter.tags
             }
         }
@@ -458,13 +471,9 @@ struct EncounterDetailView: View {
     /// Propagate face label to similar faces in other photos of the same encounter
     private func propagateFaceLabelToOtherPhotos(person: Person, sourceBox: FaceBoundingBox, sourcePhoto: EncounterPhoto) {
         let otherPhotos = encounter.photos.filter { $0.id != sourcePhoto.id }
-        guard !otherPhotos.isEmpty else {
-            print("[Propagate] No other photos to propagate to")
-            return
-        }
+        guard !otherPhotos.isEmpty else { return }
 
         isPropagating = true
-        print("[Propagate] Starting propagation to \(otherPhotos.count) other photos")
 
         Task {
             defer {
@@ -475,90 +484,56 @@ struct EncounterDetailView: View {
 
             do {
                 let embeddingService = FaceEmbeddingService()
-                // Use a slightly lower threshold for propagation to catch more matches
                 let propagationThreshold: Float = min(AppSettings.shared.autoAcceptThreshold, 0.85)
 
-                // Extract source face crop
-                guard let sourceImage = UIImage(data: sourcePhoto.imageData) else {
-                    print("[Propagate] Failed to load source image")
-                    return
-                }
+                guard let sourceImage = UIImage(data: sourcePhoto.imageData) else { return }
                 let sourceRect = extractFaceRect(box: sourceBox, imageSize: sourceImage.size)
-                guard let sourceCGImage = sourceImage.cgImage?.cropping(to: sourceRect) else {
-                    print("[Propagate] Failed to crop source face")
-                    return
-                }
+                guard let sourceCGImage = sourceImage.cgImage?.cropping(to: sourceRect) else { return }
                 let sourceFaceCrop = UIImage(cgImage: sourceCGImage)
 
-                // Generate embedding for source face
                 let sourceEmbedding = try await embeddingService.generateEmbedding(for: sourceFaceCrop)
-                print("[Propagate] Generated source embedding")
 
-                // Cache this embedding for the session
                 await MainActor.run {
                     sessionEmbeddings[sourceBox.id] = (personId: person.id, embedding: sourceEmbedding)
                 }
 
-                // Check other photos for similar unlabeled faces
-                var totalTagged = 0
                 for photo in otherPhotos {
-                    guard let photoImage = UIImage(data: photo.imageData) else {
-                        print("[Propagate] Failed to load photo image")
-                        continue
-                    }
+                    guard let photoImage = UIImage(data: photo.imageData) else { continue }
 
                     var updatedBoxes = photo.faceBoundingBoxes
                     var hasChanges = false
-                    let unlabeledCount = updatedBoxes.filter { $0.personId == nil }.count
-                    print("[Propagate] Checking photo with \(unlabeledCount) unlabeled faces")
 
                     for (index, box) in updatedBoxes.enumerated() {
-                        // Skip already labeled faces
                         guard box.personId == nil else { continue }
 
-                        // Extract face crop
                         let faceRect = extractFaceRect(box: box, imageSize: photoImage.size)
-                        guard let faceCGImage = photoImage.cgImage?.cropping(to: faceRect) else {
-                            print("[Propagate] Failed to crop face at index \(index)")
-                            continue
-                        }
+                        guard let faceCGImage = photoImage.cgImage?.cropping(to: faceRect) else { continue }
                         let faceCrop = UIImage(cgImage: faceCGImage)
 
-                        // Generate embedding
                         let faceEmbedding = try await embeddingService.generateEmbedding(for: faceCrop)
-
-                        // Calculate similarity
                         let similarity = cosineSimilarity(sourceEmbedding, faceEmbedding)
-                        print("[Propagate] Face \(index) similarity: \(String(format: "%.2f", similarity * 100))%")
 
-                        // Auto-tag if similarity is high enough
                         if similarity >= propagationThreshold {
                             updatedBoxes[index].personId = person.id
                             updatedBoxes[index].personName = person.name
                             updatedBoxes[index].confidence = similarity
                             updatedBoxes[index].isAutoAccepted = true
                             hasChanges = true
-                            totalTagged += 1
-                            print("[Propagate] Auto-tagged face \(index) as \(person.name)")
 
-                            // Cache this embedding too
                             await MainActor.run {
                                 sessionEmbeddings[box.id] = (personId: person.id, embedding: faceEmbedding)
                             }
                         }
                     }
 
-                    // Update photo's bounding boxes if changes were made
                     if hasChanges {
                         await MainActor.run {
                             photo.faceBoundingBoxes = updatedBoxes
                         }
                     }
                 }
-
-                print("[Propagate] Completed - tagged \(totalTagged) faces")
             } catch {
-                print("[Propagate] Error: \(error)")
+                // Silently handle errors
             }
         }
     }
@@ -682,6 +657,13 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private var photoSection: some View {
+        let _ = {
+            let encounterId = encounter.id.uuidString.prefix(8)
+            let photosCount = encounter.photos.count
+            let hasLegacyImage = encounter.displayImageData != nil
+            print("[PhotoSection:\(encounterId)] Rendering - hasMultiplePhotos:\(hasMultiplePhotos), photosCount:\(photosCount), hasLegacyImage:\(hasLegacyImage)")
+        }()
+
         if hasMultiplePhotos {
             // Multiple photos carousel
             VStack(spacing: 8) {
@@ -710,6 +692,7 @@ struct EncounterDetailView: View {
             }
         } else if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
             // Legacy single photo
+            let _ = print("[PhotoSection:\(encounter.id.uuidString.prefix(8))] Rendering legacy photo, dataSize:\(imageData.count)")
             ZStack {
                 Image(uiImage: image)
                     .resizable()
@@ -747,6 +730,23 @@ struct EncounterDetailView: View {
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
+        } else {
+            // No image data available - show placeholder with logging
+            let _ = print("[PhotoSection:\(encounter.id.uuidString.prefix(8))] NO IMAGE DATA - photos.isEmpty:\(encounter.photos.isEmpty), displayImageData:\(encounter.displayImageData != nil), thumbnailData:\(encounter.thumbnailData != nil)")
+
+            VStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.secondary.opacity(0.2))
+                    .frame(height: 200)
+                    .overlay {
+                        VStack(spacing: 8) {
+                            ProgressView()
+                            Text("Loading image...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+            }
         }
     }
 
@@ -771,6 +771,13 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private func photoCard(for photo: EncounterPhoto) -> some View {
+        let _ = {
+            let photoId = photo.id.uuidString.prefix(8)
+            let dataSize = photo.imageData.count
+            let canCreateImage = UIImage(data: photo.imageData) != nil
+            print("[PhotoCard:\(photoId)] dataSize:\(dataSize), canCreateImage:\(canCreateImage)")
+        }()
+
         GeometryReader { geometry in
             if let image = UIImage(data: photo.imageData) {
                 Image(uiImage: image)
@@ -795,6 +802,19 @@ struct EncounterDetailView: View {
                                     handleFaceBoxTap(box: box, photo: photo)
                                 }
                             )
+                        }
+                    }
+            } else {
+                // Placeholder when image data not loaded yet
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.secondary.opacity(0.2))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay {
+                        VStack(spacing: 8) {
+                            ProgressView()
+                            Text("Loading...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
             }
