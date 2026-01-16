@@ -8,7 +8,7 @@ struct PersonDetailView: View {
     @Bindable var person: Person
     @State private var showEditSheet = false
     @State private var selectedEncounter: Encounter?
-    @State private var showFaceSourcePhoto = false
+    @State private var faceSourceEncounter: Encounter?
     @State private var selectedEmbedding: FaceEmbedding?
     @State private var showDeleteConfirmation = false
     @State private var showTagPicker = false
@@ -680,16 +680,14 @@ struct PersonDetailView: View {
                             .onTapGesture {
                                 if let encounter = findEncounter(for: embedding) {
                                     selectedEmbedding = embedding
-                                    selectedEncounter = encounter
-                                    showFaceSourcePhoto = true
+                                    faceSourceEncounter = encounter
                                 }
                             }
                             .contextMenu {
                                 if let encounter = findEncounter(for: embedding) {
                                     Button {
                                         selectedEmbedding = embedding
-                                        selectedEncounter = encounter
-                                        showFaceSourcePhoto = true
+                                        faceSourceEncounter = encounter
                                     } label: {
                                         Label("View Source Photo", systemImage: "photo")
                                     }
@@ -722,10 +720,8 @@ struct PersonDetailView: View {
                 .padding(.top, 4)
             }
         }
-        .sheet(isPresented: $showFaceSourcePhoto) {
-            if let encounter = selectedEncounter {
-                FaceSourcePhotoView(encounter: encounter, person: person)
-            }
+        .sheet(item: $faceSourceEncounter) { encounter in
+            FaceSourcePhotoView(encounter: encounter, person: person)
         }
     }
 
