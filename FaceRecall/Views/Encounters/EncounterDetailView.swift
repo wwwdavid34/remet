@@ -457,23 +457,42 @@ struct EncounterDetailView: View {
 
     /// Propagate face label to similar faces in other photos of the same encounter
     private func propagateFaceLabelToOtherPhotos(person: Person, sourceBox: FaceBoundingBox, sourcePhoto: EncounterPhoto) {
-        guard encounter.photos.count > 1 else { return }
+        let otherPhotos = encounter.photos.filter { $0.id != sourcePhoto.id }
+        guard !otherPhotos.isEmpty else {
+            print("[Propagate] No other photos to propagate to")
+            return
+        }
 
         isPropagating = true
+        print("[Propagate] Starting propagation to \(otherPhotos.count) other photos")
 
         Task {
+            defer {
+                Task { @MainActor in
+                    isPropagating = false
+                }
+            }
+
             do {
                 let embeddingService = FaceEmbeddingService()
-                let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
+                // Use a slightly lower threshold for propagation to catch more matches
+                let propagationThreshold: Float = min(AppSettings.shared.autoAcceptThreshold, 0.85)
 
                 // Extract source face crop
-                guard let sourceImage = UIImage(data: sourcePhoto.imageData) else { return }
+                guard let sourceImage = UIImage(data: sourcePhoto.imageData) else {
+                    print("[Propagate] Failed to load source image")
+                    return
+                }
                 let sourceRect = extractFaceRect(box: sourceBox, imageSize: sourceImage.size)
-                guard let sourceCGImage = sourceImage.cgImage?.cropping(to: sourceRect) else { return }
+                guard let sourceCGImage = sourceImage.cgImage?.cropping(to: sourceRect) else {
+                    print("[Propagate] Failed to crop source face")
+                    return
+                }
                 let sourceFaceCrop = UIImage(cgImage: sourceCGImage)
 
                 // Generate embedding for source face
                 let sourceEmbedding = try await embeddingService.generateEmbedding(for: sourceFaceCrop)
+                print("[Propagate] Generated source embedding")
 
                 // Cache this embedding for the session
                 await MainActor.run {
@@ -481,11 +500,17 @@ struct EncounterDetailView: View {
                 }
 
                 // Check other photos for similar unlabeled faces
-                for photo in encounter.photos where photo.id != sourcePhoto.id {
-                    guard let photoImage = UIImage(data: photo.imageData) else { continue }
+                var totalTagged = 0
+                for photo in otherPhotos {
+                    guard let photoImage = UIImage(data: photo.imageData) else {
+                        print("[Propagate] Failed to load photo image")
+                        continue
+                    }
 
                     var updatedBoxes = photo.faceBoundingBoxes
                     var hasChanges = false
+                    let unlabeledCount = updatedBoxes.filter { $0.personId == nil }.count
+                    print("[Propagate] Checking photo with \(unlabeledCount) unlabeled faces")
 
                     for (index, box) in updatedBoxes.enumerated() {
                         // Skip already labeled faces
@@ -493,7 +518,10 @@ struct EncounterDetailView: View {
 
                         // Extract face crop
                         let faceRect = extractFaceRect(box: box, imageSize: photoImage.size)
-                        guard let faceCGImage = photoImage.cgImage?.cropping(to: faceRect) else { continue }
+                        guard let faceCGImage = photoImage.cgImage?.cropping(to: faceRect) else {
+                            print("[Propagate] Failed to crop face at index \(index)")
+                            continue
+                        }
                         let faceCrop = UIImage(cgImage: faceCGImage)
 
                         // Generate embedding
@@ -501,14 +529,17 @@ struct EncounterDetailView: View {
 
                         // Calculate similarity
                         let similarity = cosineSimilarity(sourceEmbedding, faceEmbedding)
+                        print("[Propagate] Face \(index) similarity: \(String(format: "%.2f", similarity * 100))%")
 
                         // Auto-tag if similarity is high enough
-                        if similarity >= autoAcceptThreshold {
+                        if similarity >= propagationThreshold {
                             updatedBoxes[index].personId = person.id
                             updatedBoxes[index].personName = person.name
                             updatedBoxes[index].confidence = similarity
                             updatedBoxes[index].isAutoAccepted = true
                             hasChanges = true
+                            totalTagged += 1
+                            print("[Propagate] Auto-tagged face \(index) as \(person.name)")
 
                             // Cache this embedding too
                             await MainActor.run {
@@ -525,14 +556,9 @@ struct EncounterDetailView: View {
                     }
                 }
 
-                await MainActor.run {
-                    isPropagating = false
-                }
+                print("[Propagate] Completed - tagged \(totalTagged) faces")
             } catch {
-                await MainActor.run {
-                    isPropagating = false
-                }
-                print("Error propagating face labels: \(error)")
+                print("[Propagate] Error: \(error)")
             }
         }
     }
