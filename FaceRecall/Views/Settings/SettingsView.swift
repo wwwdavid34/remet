@@ -172,10 +172,15 @@ struct SettingsView: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 4)
+
+            Toggle("Save Photos to Camera Roll", isOn: Binding(
+                get: { settings.savePhotosToCameraRoll },
+                set: { settings.savePhotosToCameraRoll = $0 }
+            ))
         } header: {
             Text("Photo Storage")
         } footer: {
-            Text("Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only.")
+            Text("Higher quality uses more storage but preserves more detail. When enabled, photos taken with Remet are also saved to your Photos app.")
         }
     }
 

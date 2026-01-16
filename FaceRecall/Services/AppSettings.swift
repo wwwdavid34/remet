@@ -56,6 +56,8 @@ final class AppSettings {
         static let photoStorageQuality = "photoStorageQuality"
         static let autoAcceptThreshold = "autoAcceptThreshold"
         static let showConfidenceScores = "showConfidenceScores"
+        static let savePhotosToCameraRoll = "savePhotosToCameraRoll"
+        static let hasShownCameraRollHint = "hasShownCameraRollHint"
         static let firstLaunchDate = "firstLaunchDate"
         static let subscriptionLimitsVersion = "subscriptionLimitsVersion"
     }
@@ -89,6 +91,24 @@ final class AppSettings {
         }
         set {
             defaults.set(newValue, forKey: Keys.showConfidenceScores)
+        }
+    }
+
+    var savePhotosToCameraRoll: Bool {
+        get {
+            defaults.bool(forKey: Keys.savePhotosToCameraRoll)
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.savePhotosToCameraRoll)
+        }
+    }
+
+    var hasShownCameraRollHint: Bool {
+        get {
+            defaults.bool(forKey: Keys.hasShownCameraRollHint)
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.hasShownCameraRollHint)
         }
     }
 

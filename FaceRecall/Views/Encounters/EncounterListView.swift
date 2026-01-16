@@ -1,6 +1,24 @@
 import SwiftUI
 import SwiftData
 
+enum EncounterSortOption: String, CaseIterable, Identifiable {
+    case dateNewest = "Newest First"
+    case dateOldest = "Oldest First"
+    case mostPeople = "Most People"
+    case fewestPeople = "Fewest People"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .dateNewest: return "arrow.down.circle"
+        case .dateOldest: return "arrow.up.circle"
+        case .mostPeople: return "person.3.fill"
+        case .fewestPeople: return "person.fill"
+        }
+    }
+}
+
 enum TimeFilter: String, CaseIterable, Identifiable {
     case all = "All Time"
     case today = "Today"
@@ -46,6 +64,7 @@ struct EncounterListView: View {
     @State private var selectedTagFilters: Set<UUID> = []
     @State private var selectedTimeFilter: TimeFilter = .all
     @State private var selectedLocation: String? = nil
+    @State private var selectedSortOption: EncounterSortOption = .dateNewest
     @State private var showFilters = false
     @State private var filterRefreshId = UUID()
 
@@ -116,6 +135,18 @@ struct EncounterListView: View {
             }
         }
 
+        // Apply sorting
+        switch selectedSortOption {
+        case .dateNewest:
+            result.sort { $0.date > $1.date }
+        case .dateOldest:
+            result.sort { $0.date < $1.date }
+        case .mostPeople:
+            result.sort { $0.people.count > $1.people.count }
+        case .fewestPeople:
+            result.sort { $0.people.count < $1.people.count }
+        }
+
         return result
     }
 
@@ -124,13 +155,14 @@ struct EncounterListView: View {
     }
 
     var hasActiveFilters: Bool {
-        selectedTimeFilter != .all || selectedLocation != nil || !selectedTagFilters.isEmpty
+        selectedTimeFilter != .all || selectedLocation != nil || !selectedTagFilters.isEmpty || selectedSortOption != .dateNewest
     }
 
     var activeFilterCount: Int {
         var count = 0
         if selectedTimeFilter != .all { count += 1 }
         if selectedLocation != nil { count += 1 }
+        if selectedSortOption != .dateNewest { count += 1 }
         count += selectedTagFilters.count
         return count
     }
@@ -182,6 +214,7 @@ struct EncounterListView: View {
                 selectedTimeFilter: $selectedTimeFilter,
                 selectedLocation: $selectedLocation,
                 selectedTagFilters: $selectedTagFilters,
+                selectedSortOption: $selectedSortOption,
                 availableLocations: locationsInUse,
                 availableTags: tagsInUse
             )
@@ -369,6 +402,7 @@ struct EncounterFilterSheet: View {
     @Binding var selectedTimeFilter: TimeFilter
     @Binding var selectedLocation: String?
     @Binding var selectedTagFilters: Set<UUID>
+    @Binding var selectedSortOption: EncounterSortOption
 
     let availableLocations: [String]
     let availableTags: [Tag]
@@ -376,6 +410,32 @@ struct EncounterFilterSheet: View {
     var body: some View {
         NavigationStack {
             List {
+                // Sort Options
+                Section {
+                    ForEach(EncounterSortOption.allCases) { option in
+                        Button {
+                            selectedSortOption = option
+                        } label: {
+                            HStack {
+                                Image(systemName: option.icon)
+                                    .foregroundStyle(AppColors.teal)
+                                    .frame(width: 24)
+                                Text(option.rawValue)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedSortOption == option {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(AppColors.coral)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Sort By")
+                        .foregroundStyle(.secondary)
+                }
+
                 // Time Filter
                 Section {
                     ForEach(TimeFilter.allCases) { filter in
@@ -478,6 +538,7 @@ struct EncounterFilterSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Reset") {
+                        selectedSortOption = .dateNewest
                         selectedTimeFilter = .all
                         selectedLocation = nil
                         selectedTagFilters.removeAll()

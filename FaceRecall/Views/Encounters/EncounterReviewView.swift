@@ -688,7 +688,8 @@ struct EncounterReviewView: View {
                         }
 
                         // Also add this face's embedding to the person
-                        await addEmbeddingToPersonAsync(person, face: otherFace)
+                        let boxId = await MainActor.run { boundingBoxes[otherIndex].id }
+                        await addEmbeddingToPersonAsync(person, face: otherFace, boundingBoxId: boxId)
                     }
                 }
             } catch {
@@ -716,7 +717,7 @@ struct EncounterReviewView: View {
     }
 
     /// Add embedding to person asynchronously (for propagated faces)
-    private func addEmbeddingToPersonAsync(_ person: Person, face: DetectedFace) async {
+    private func addEmbeddingToPersonAsync(_ person: Person, face: DetectedFace, boundingBoxId: UUID) async {
         let embeddingService = FaceEmbeddingService()
 
         do {
@@ -727,11 +728,17 @@ struct EncounterReviewView: View {
             await MainActor.run {
                 let faceEmbedding = FaceEmbedding(
                     vector: vectorData,
-                    faceCropData: imageData
+                    faceCropData: imageData,
+                    boundingBoxId: boundingBoxId
                 )
                 faceEmbedding.person = person
                 modelContext.insert(faceEmbedding)
                 person.lastSeenAt = Date()
+
+                // Auto-assign as profile photo if person has none
+                if person.profileEmbeddingId == nil {
+                    person.profileEmbeddingId = faceEmbedding.id
+                }
             }
         } catch {
             print("Error adding embedding for propagated face: \(error)")
@@ -741,8 +748,9 @@ struct EncounterReviewView: View {
     private func addEmbeddingToPerson(_ person: Person, faceIndex: Int) {
         // Use localDetectedFaces if available (after re-detection), otherwise use original
         let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
-        guard faceIndex < faces.count else { return }
+        guard faceIndex < faces.count, faceIndex < boundingBoxes.count else { return }
         let face = faces[faceIndex]
+        let boxId = boundingBoxes[faceIndex].id
 
         Task {
             let embeddingService = FaceEmbeddingService()
@@ -754,11 +762,18 @@ struct EncounterReviewView: View {
                 await MainActor.run {
                     let faceEmbedding = FaceEmbedding(
                         vector: vectorData,
-                        faceCropData: imageData
+                        faceCropData: imageData,
+                        boundingBoxId: boxId
                     )
                     faceEmbedding.person = person
                     modelContext.insert(faceEmbedding)
                     person.lastSeenAt = Date()
+
+                    // Auto-assign as profile photo if person has none
+                    if person.profileEmbeddingId == nil {
+                        person.profileEmbeddingId = faceEmbedding.id
+                    }
+
                     // Track embedding for later encounterId assignment
                     createdEmbeddings.append(faceEmbedding)
                 }
@@ -843,6 +858,9 @@ struct FaceBoundingBoxOverlay: View {
     let imageSize: CGSize
     let viewSize: CGSize
 
+    // Minimum tap target size (Apple HIG recommends 44x44)
+    private let minTapTarget: CGFloat = 44
+
     var body: some View {
         let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
         let scaledWidth = imageSize.width * scale
@@ -856,6 +874,10 @@ struct FaceBoundingBoxOverlay: View {
         let width = box.width * scaledWidth
         let height = box.height * scaledHeight
 
+        // Calculate tap target size (at least minTapTarget)
+        let tapWidth = max(width, minTapTarget)
+        let tapHeight = max(height, minTapTarget)
+
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 4)
                 .stroke(boxColor, lineWidth: isSelected ? 3 : 2)
@@ -863,6 +885,7 @@ struct FaceBoundingBoxOverlay: View {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(boxColor.opacity(0.1))
                 )
+                .frame(width: width, height: height)
 
             if let name = box.personName {
                 Text(name)
@@ -876,7 +899,9 @@ struct FaceBoundingBoxOverlay: View {
                     .offset(y: 16)
             }
         }
-        .frame(width: width, height: height)
+        // Use larger frame for tap target while keeping visual size
+        .frame(width: tapWidth, height: tapHeight)
+        .contentShape(Rectangle()) // Ensure entire frame is tappable
         .position(x: x + width / 2, y: y + height / 2)
     }
 

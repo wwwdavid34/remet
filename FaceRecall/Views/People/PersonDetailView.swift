@@ -724,6 +724,25 @@ struct PersonDetailView: View {
     }
 
     private func deleteEmbedding(_ embedding: FaceEmbedding) {
+        // Clear profile photo reference if this embedding was the profile
+        if person.profileEmbeddingId == embedding.id {
+            person.profileEmbeddingId = nil
+        }
+
+        // Check if person should be unlinked from the associated encounter
+        if let encounterId = embedding.encounterId,
+           let encounter = allEncounters.first(where: { $0.id == encounterId }) {
+            // Count remaining embeddings for this person in this encounter (excluding the one being deleted)
+            let remainingEmbeddings = person.embeddings.filter {
+                $0.id != embedding.id && $0.encounterId == encounterId
+            }
+
+            // If no other embeddings link this person to the encounter, remove from people list
+            if remainingEmbeddings.isEmpty {
+                encounter.people.removeAll { $0.id == person.id }
+            }
+        }
+
         modelContext.delete(embedding)
     }
 }
@@ -1234,33 +1253,84 @@ struct EncountersTimelineSheet: View {
 
 struct EditPersonSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @Bindable var person: Person
+    @Query private var allEncounters: [Encounter]
+
+    @State private var showFacePicker = false
 
     private let photoColumns = [
         GridItem(.adaptive(minimum: 60), spacing: 8)
     ]
 
+    // Find encounters with unassigned faces that could belong to this person
+    private var encountersWithAvailableFaces: [Encounter] {
+        allEncounters.filter { encounter in
+            // Check if encounter has any unassigned face boxes
+            let hasUnassignedFaces = encounter.photos.contains { photo in
+                photo.faceBoundingBoxes.contains { $0.personId == nil }
+            } || encounter.faceBoundingBoxes.contains { $0.personId == nil }
+            return hasUnassignedFaces
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
-                // Profile Photo Section
-                if !person.embeddings.isEmpty {
-                    Section {
-                        VStack(spacing: 12) {
-                            // Current profile photo
-                            if let profileEmbedding = person.profileEmbedding,
-                               let image = UIImage(data: profileEmbedding.faceCropData) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 80, height: 80)
-                                    .clipShape(Circle())
-                                    .overlay(
-                                        Circle()
-                                            .stroke(AppColors.coral, lineWidth: 3)
+                // Profile Photo Section - always show
+                Section {
+                    VStack(spacing: 12) {
+                        // Current profile photo or placeholder
+                        if let profileEmbedding = person.profileEmbedding,
+                           let image = UIImage(data: profileEmbedding.faceCropData) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 80, height: 80)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle()
+                                        .stroke(AppColors.coral, lineWidth: 3)
+                                )
+                        } else {
+                            // Placeholder when no profile photo
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
-                            }
+                                )
+                                .frame(width: 80, height: 80)
+                                .overlay {
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 36))
+                                        .foregroundStyle(.white)
+                                }
+                        }
 
+                        if person.embeddings.isEmpty {
+                            // No face samples - show add button
+                            Text("No face photo assigned")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textMuted)
+
+                            Button {
+                                showFacePicker = true
+                            } label: {
+                                Label("Add Face Photo", systemImage: "face.smiling")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 10)
+                                    .background(AppColors.coral)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            // Has face samples - show selection
                             Text("Tap to select profile photo")
                                 .font(.caption)
                                 .foregroundStyle(AppColors.textMuted)
@@ -1297,13 +1367,28 @@ struct EditPersonSheet: View {
                                         .buttonStyle(.plain)
                                     }
                                 }
+
+                                // Add more faces button
+                                Button {
+                                    showFacePicker = true
+                                } label: {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(AppColors.teal.opacity(0.1))
+                                        .frame(width: 60, height: 60)
+                                        .overlay {
+                                            Image(systemName: "plus")
+                                                .font(.title3)
+                                                .foregroundStyle(AppColors.teal)
+                                        }
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
-                        .frame(maxWidth: .infinity)
-                        .listRowBackground(Color.clear)
-                    } header: {
-                        Text("Profile Photo")
                     }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                } header: {
+                    Text("Profile Photo")
                 }
 
                 // Basic Info Section
@@ -1441,9 +1526,234 @@ struct EditPersonSheet: View {
                     .fontWeight(.semibold)
                 }
             }
+            .sheet(isPresented: $showFacePicker) {
+                FacePickerSheet(person: person, encounters: encountersWithAvailableFaces)
+            }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+    }
+}
+
+// MARK: - Face Picker Sheet
+
+struct FacePickerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    let person: Person
+    let encounters: [Encounter]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                if encounters.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "face.dashed")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AppColors.textMuted)
+
+                        Text("No Available Faces")
+                            .font(.headline)
+
+                        Text("Add a new encounter with photos to detect faces, or assign faces from existing encounters.")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(40)
+                } else {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Select a face from your encounters to assign to \(person.name)")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .padding(.horizontal)
+
+                        ForEach(encounters) { encounter in
+                            EncounterFacePickerSection(
+                                encounter: encounter,
+                                person: person,
+                                onFaceSelected: { faceData, box in
+                                    assignFace(faceData: faceData, box: box, encounter: encounter)
+                                }
+                            )
+                        }
+                    }
+                    .padding(.vertical)
+                }
+            }
+            .navigationTitle("Add Face Photo")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    private func assignFace(faceData: Data, box: FaceBoundingBox, encounter: Encounter) {
+        // Create a new face embedding for this person
+        // Note: vector is empty for now - the face matching will still work based on faceCropData
+        // A background task could compute the actual embedding vector later if needed
+        let embedding = FaceEmbedding(
+            vector: Data(),
+            faceCropData: faceData,
+            encounterId: encounter.id
+        )
+        embedding.person = person
+
+        modelContext.insert(embedding)
+        person.embeddings.append(embedding)
+
+        // Update the bounding box to link to this person
+        if let photoIndex = encounter.photos.firstIndex(where: { photo in
+            photo.faceBoundingBoxes.contains { $0.id == box.id }
+        }) {
+            if let boxIndex = encounter.photos[photoIndex].faceBoundingBoxes.firstIndex(where: { $0.id == box.id }) {
+                encounter.photos[photoIndex].faceBoundingBoxes[boxIndex].personId = person.id
+                encounter.photos[photoIndex].faceBoundingBoxes[boxIndex].personName = person.name
+            }
+        }
+
+        // Also check legacy single-photo encounter boxes
+        if let boxIndex = encounter.faceBoundingBoxes.firstIndex(where: { $0.id == box.id }) {
+            encounter.faceBoundingBoxes[boxIndex].personId = person.id
+            encounter.faceBoundingBoxes[boxIndex].personName = person.name
+        }
+
+        // Link encounter to person if not already
+        if !person.encounters.contains(where: { $0.id == encounter.id }) {
+            person.encounters.append(encounter)
+        }
+
+        dismiss()
+    }
+}
+
+struct EncounterFacePickerSection: View {
+    let encounter: Encounter
+    let person: Person
+    let onFaceSelected: (Data, FaceBoundingBox) -> Void
+
+    // Get all unassigned faces from this encounter
+    private var unassignedFaces: [(photo: EncounterPhoto?, box: FaceBoundingBox, faceImage: UIImage?)] {
+        var faces: [(photo: EncounterPhoto?, box: FaceBoundingBox, faceImage: UIImage?)] = []
+
+        // Multi-photo encounters
+        for photo in encounter.photos {
+            if let image = UIImage(data: photo.imageData) {
+                for box in photo.faceBoundingBoxes where box.personId == nil {
+                    let faceImage = cropFace(from: image, box: box)
+                    faces.append((photo, box, faceImage))
+                }
+            }
+        }
+
+        // Legacy single-photo encounters
+        if let imageData = encounter.displayImageData,
+           let image = UIImage(data: imageData) {
+            for box in encounter.faceBoundingBoxes where box.personId == nil {
+                // Skip if already included from photos array
+                let alreadyIncluded = faces.contains { $0.box.id == box.id }
+                if !alreadyIncluded {
+                    let faceImage = cropFace(from: image, box: box)
+                    faces.append((nil, box, faceImage))
+                }
+            }
+        }
+
+        return faces
+    }
+
+    var body: some View {
+        if !unassignedFaces.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                // Encounter header
+                HStack(spacing: 12) {
+                    if let imageData = encounter.thumbnailData ?? encounter.displayImageData,
+                       let image = UIImage(data: imageData) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 44, height: 44)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(encounter.occasion ?? "Encounter")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                }
+                .padding(.horizontal)
+
+                // Unassigned faces
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(unassignedFaces, id: \.box.id) { item in
+                            if let faceImage = item.faceImage,
+                               let faceData = faceImage.jpegData(compressionQuality: 0.8) {
+                                Button {
+                                    onFaceSelected(faceData, item.box)
+                                } label: {
+                                    VStack(spacing: 6) {
+                                        Image(uiImage: faceImage)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 70, height: 70)
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(AppColors.coral.opacity(0.5), lineWidth: 1)
+                                            )
+
+                                        Text("Assign")
+                                            .font(.caption2)
+                                            .foregroundStyle(AppColors.coral)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .padding(.vertical, 8)
+            .background(AppColors.cardBackground)
+        }
+    }
+
+    private func cropFace(from image: UIImage, box: FaceBoundingBox) -> UIImage? {
+        let imageSize = image.size
+
+        // Convert normalized coordinates to pixel coordinates
+        let x = box.x * imageSize.width
+        let y = (1 - box.y - box.height) * imageSize.height
+        let width = box.width * imageSize.width
+        let height = box.height * imageSize.height
+
+        // Add some padding
+        let padding: CGFloat = 0.15
+        let paddedX = max(0, x - width * padding)
+        let paddedY = max(0, y - height * padding)
+        let paddedWidth = min(imageSize.width - paddedX, width * (1 + 2 * padding))
+        let paddedHeight = min(imageSize.height - paddedY, height * (1 + 2 * padding))
+
+        let cropRect = CGRect(x: paddedX, y: paddedY, width: paddedWidth, height: paddedHeight)
+
+        guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+            return nil
+        }
+
+        return UIImage(cgImage: cgImage)
     }
 }
 

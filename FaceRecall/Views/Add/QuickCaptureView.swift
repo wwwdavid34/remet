@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 import CoreLocation
+import Photos
 
 struct QuickCaptureView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +15,8 @@ struct QuickCaptureView: View {
     @State private var isProcessing = false
     @State private var capturedLocation: CLLocation?
     @State private var showPaywall = false
+    @State private var showCameraRollHint = false
+    @State private var pendingSave: (name: String, context: String?, location: String?)?
     @StateObject private var locationManager = LocationManager()
 
     private let limitChecker = LimitChecker()
@@ -36,7 +39,17 @@ struct QuickCaptureView: View {
                         detectedFaces: $detectedFaces,
                         location: capturedLocation,
                         onSave: { name, context, locationName in
-                            savePersonWithFace(name: name, context: context, locationName: locationName)
+                            // Check if we need to show the camera roll hint
+                            if !AppSettings.shared.hasShownCameraRollHint {
+                                pendingSave = (name, context, locationName)
+                                showCameraRollHint = true
+                            } else {
+                                // Setting already configured, save directly
+                                if AppSettings.shared.savePhotosToCameraRoll {
+                                    savePhotoToCameraRoll(image, location: capturedLocation)
+                                }
+                                savePersonWithFace(name: name, context: context, locationName: locationName)
+                            }
                         },
                         onRetake: {
                             capturedImage = nil
@@ -78,6 +91,31 @@ struct QuickCaptureView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }
+            .alert("Save to Camera Roll?", isPresented: $showCameraRollHint) {
+                Button("Yes, Save") {
+                    AppSettings.shared.savePhotosToCameraRoll = true
+                    AppSettings.shared.hasShownCameraRollHint = true
+                    // Save current photo to camera roll with location
+                    if let image = capturedImage {
+                        savePhotoToCameraRoll(image, location: capturedLocation)
+                    }
+                    // Complete the pending save
+                    if let save = pendingSave {
+                        savePersonWithFace(name: save.name, context: save.context, locationName: save.location)
+                    }
+                    pendingSave = nil
+                }
+                Button("No Thanks", role: .cancel) {
+                    AppSettings.shared.hasShownCameraRollHint = true
+                    // Complete the pending save without camera roll
+                    if let save = pendingSave {
+                        savePersonWithFace(name: save.name, context: save.context, locationName: save.location)
+                    }
+                    pendingSave = nil
+                }
+            } message: {
+                Text("Would you like this photo saved to your Camera Roll as well? Future photos will also be saved automatically. You can change this anytime in Settings.")
+            }
         }
     }
 
@@ -95,6 +133,30 @@ struct QuickCaptureView: View {
                 await MainActor.run {
                     detectedFaces = []
                     isProcessing = false
+                }
+            }
+        }
+    }
+
+    /// Save photo to camera roll with GPS location metadata
+    private func savePhotoToCameraRoll(_ image: UIImage, location: CLLocation?) {
+        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+            guard status == .authorized || status == .limited else { return }
+
+            PHPhotoLibrary.shared().performChanges {
+                let request = PHAssetCreationRequest.forAsset()
+                if let imageData = image.jpegData(compressionQuality: 1.0) {
+                    request.addResource(with: .photo, data: imageData, options: nil)
+                }
+                // Set location metadata
+                if let location = location {
+                    request.location = location
+                }
+                // Set creation date to now
+                request.creationDate = Date()
+            } completionHandler: { success, error in
+                if let error = error {
+                    print("Error saving photo to camera roll: \(error)")
                 }
             }
         }
@@ -134,16 +196,54 @@ struct QuickCaptureView: View {
                 srData.person = person
                 person.spacedRepetitionData = srData
 
+                // Prepare image data for encounter
+                let settings = AppSettings.shared
+                let resizedImage = resizeImage(capturedImage!, targetSize: settings.photoTargetSize)
+                guard let imageData = resizedImage.jpegData(compressionQuality: settings.photoJpegQuality) else {
+                    await MainActor.run {
+                        isProcessing = false
+                    }
+                    return
+                }
+
                 // Create an encounter to record the meeting with GPS
                 let encounter = Encounter(
+                    imageData: imageData,
                     occasion: "Met \(name)",
                     location: locationName,
                     latitude: capturedLocation?.coordinate.latitude,
                     longitude: capturedLocation?.coordinate.longitude,
                     date: Date()
                 )
+
+                // Create bounding boxes for detected faces
+                var boundingBoxes: [FaceBoundingBox] = []
+                for (index, face) in detectedFaces.enumerated() {
+                    let box = FaceBoundingBox(
+                        rect: face.normalizedBoundingBox,
+                        personId: index == 0 ? person.id : nil,
+                        personName: index == 0 ? person.name : nil,
+                        confidence: nil,
+                        isAutoAccepted: false
+                    )
+                    boundingBoxes.append(box)
+                }
+                encounter.faceBoundingBoxes = boundingBoxes
+
                 encounter.people.append(person)
                 person.encounters.append(encounter)
+
+                // Link embedding to encounter
+                if let embedding = person.embeddings.first {
+                    embedding.encounterId = encounter.id
+                    // Auto-assign as profile photo
+                    if person.profileEmbeddingId == nil {
+                        person.profileEmbeddingId = embedding.id
+                    }
+                    if let firstBox = boundingBoxes.first {
+                        embedding.boundingBoxId = firstBox.id
+                    }
+                }
 
                 await MainActor.run {
                     modelContext.insert(person)
@@ -158,6 +258,24 @@ struct QuickCaptureView: View {
                     print("Error saving person: \(error)")
                 }
             }
+        }
+    }
+
+    private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
+        let size = image.size
+        let widthRatio = targetSize.width / size.width
+        let heightRatio = targetSize.height / size.height
+        let ratio = min(widthRatio, heightRatio)
+
+        // Only downscale, never upscale
+        if ratio >= 1.0 {
+            return image
+        }
+
+        let newSize = CGSize(width: size.width * ratio, height: size.height * ratio)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
         }
     }
 }
@@ -254,6 +372,16 @@ struct QuickCaptureReviewView: View {
         VStack(spacing: 0) {
             // Image with face indicators
             GeometryReader { geometry in
+                let imageSize = image.size
+                let viewSize = geometry.size
+
+                // Calculate scaledToFit dimensions and offset
+                let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
+                let scaledWidth = imageSize.width * scale
+                let scaledHeight = imageSize.height * scale
+                let offsetX = (viewSize.width - scaledWidth) / 2
+                let offsetY = (viewSize.height - scaledHeight) / 2
+
                 ZStack {
                     Image(uiImage: image)
                         .resizable()
@@ -270,16 +398,17 @@ struct QuickCaptureReviewView: View {
                     ForEach(detectedFaces.indices, id: \.self) { index in
                         let face = detectedFaces[index]
                         let rect = face.normalizedBoundingBox
+
+                        // Convert normalized coordinates to view coordinates with offset
+                        let boxWidth = rect.width * scaledWidth
+                        let boxHeight = rect.height * scaledHeight
+                        let boxX = offsetX + rect.midX * scaledWidth
+                        let boxY = offsetY + (1 - rect.midY) * scaledHeight
+
                         Rectangle()
                             .stroke(Color.green, lineWidth: 2)
-                            .frame(
-                                width: rect.width * geometry.size.width,
-                                height: rect.height * geometry.size.height
-                            )
-                            .position(
-                                x: rect.midX * geometry.size.width,
-                                y: (1 - rect.midY) * geometry.size.height
-                            )
+                            .frame(width: boxWidth, height: boxHeight)
+                            .position(x: boxX, y: boxY)
                     }
                 }
             }

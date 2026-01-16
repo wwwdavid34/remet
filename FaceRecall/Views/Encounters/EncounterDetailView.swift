@@ -34,6 +34,13 @@ struct EncounterDetailView: View {
     @State private var lastAddedFaceId: UUID?
     @State private var lastAddedFacePhotoId: UUID?
 
+    // Re-detect faces state
+    @State private var isRedetecting = false
+
+    // Remove person confirmation state
+    @State private var personToRemove: Person?
+    @State private var showRemovePersonConfirmation = false
+
     // Tag editing state
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
@@ -61,6 +68,23 @@ struct EncounterDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 16) {
+                    // Re-detect faces button (only in edit mode)
+                    if isEditing {
+                        Button {
+                            Task {
+                                await redetectFaces()
+                            }
+                        } label: {
+                            if isRedetecting {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                            }
+                        }
+                        .disabled(isRedetecting)
+                    }
+
                     // Missing faces button
                     Button {
                         locateFaceMode.toggle()
@@ -408,8 +432,32 @@ struct EncounterDetailView: View {
     private var newPersonSheet: some View {
         NavigationStack {
             Form {
-                TextField("Name", text: $newPersonName)
-                    .textContentType(.name)
+                // Show the face being labeled for reference
+                if let faceCrop = selectedFaceCrop {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Image(uiImage: faceCrop)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 120)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle()
+                                        .stroke(AppColors.coral.opacity(0.5), lineWidth: 2)
+                                )
+                            Spacer()
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                }
+
+                Section {
+                    TextField("Name", text: $newPersonName)
+                        .textContentType(.name)
+                } header: {
+                    Text("Person's Name")
+                }
             }
             .navigationTitle("New Person")
             .navigationBarTitleDisplayMode(.inline)
@@ -476,9 +524,69 @@ struct EncounterDetailView: View {
             encounter.people.append(person)
         }
 
+        // Create embedding for this face assignment (pass boxId for re-label tracking)
+        if let faceCrop = selectedFaceCrop, let boxId = selectedBoxId {
+            addEmbeddingToPerson(person, faceCrop: faceCrop, boundingBoxId: boxId)
+        }
+
         showFaceLabelPicker = false
         selectedBoxId = nil
         selectedPhotoForLabeling = nil
+    }
+
+    /// Add face embedding to person with auto-profile assignment
+    /// Handles re-labeling by removing old embedding if face was previously assigned
+    private func addEmbeddingToPerson(_ person: Person, faceCrop: UIImage, boundingBoxId: UUID) {
+        // First, remove any existing embedding for this bounding box (handles re-labeling)
+        removeExistingEmbedding(for: boundingBoxId)
+
+        Task {
+            let embeddingService = FaceEmbeddingService()
+            do {
+                let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
+                let vectorData = embedding.withUnsafeBytes { Data($0) }
+                let imageData = faceCrop.jpegData(compressionQuality: 0.8) ?? Data()
+
+                await MainActor.run {
+                    let faceEmbedding = FaceEmbedding(
+                        vector: vectorData,
+                        faceCropData: imageData,
+                        encounterId: encounter.id,
+                        boundingBoxId: boundingBoxId
+                    )
+                    faceEmbedding.person = person
+                    modelContext.insert(faceEmbedding)
+                    person.lastSeenAt = Date()
+
+                    // Auto-assign as profile photo if person has none
+                    if person.profileEmbeddingId == nil {
+                        person.profileEmbeddingId = faceEmbedding.id
+                    }
+                }
+            } catch {
+                print("Error adding embedding: \(error)")
+            }
+        }
+    }
+
+    /// Remove existing embedding for a bounding box (used when re-labeling faces)
+    private func removeExistingEmbedding(for boundingBoxId: UUID) {
+        let encId = encounter.id
+        let descriptor = FetchDescriptor<FaceEmbedding>(
+            predicate: #Predicate { embedding in
+                embedding.boundingBoxId == boundingBoxId && embedding.encounterId == encId
+            }
+        )
+
+        if let existingEmbeddings = try? modelContext.fetch(descriptor) {
+            for embedding in existingEmbeddings {
+                // If this was someone's profile photo, clear that reference
+                if let oldPerson = embedding.person, oldPerson.profileEmbeddingId == embedding.id {
+                    oldPerson.profileEmbeddingId = nil
+                }
+                modelContext.delete(embedding)
+            }
+        }
     }
 
     /// Propagate face label to similar faces in other photos of the same encounter
@@ -911,48 +1019,115 @@ struct EncounterDetailView: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(encounter.people) { person in
-                    NavigationLink(value: person) {
-                        HStack {
-                            if let firstEmbedding = person.embeddings.first,
-                               let image = UIImage(data: firstEmbedding.faceCropData) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 44, height: 44)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.circle.fill")
-                                    .font(.system(size: 44))
-                                    .foregroundStyle(.secondary)
-                            }
+                    HStack {
+                        NavigationLink(value: person) {
+                            HStack {
+                                if let firstEmbedding = person.embeddings.first,
+                                   let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 44, height: 44)
+                                        .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.secondary)
+                                }
 
-                            VStack(alignment: .leading) {
-                                Text(person.name)
-                                    .fontWeight(.medium)
+                                VStack(alignment: .leading) {
+                                    Text(person.name)
+                                        .fontWeight(.medium)
 
-                                if let company = person.company {
-                                    Text(company)
-                                        .font(.caption)
+                                    if let company = person.company {
+                                        Text(company)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+
+                                Spacer()
+
+                                if !isEditing {
+                                    Image(systemName: "chevron.right")
                                         .foregroundStyle(.secondary)
                                 }
                             }
+                        }
+                        .foregroundStyle(.primary)
+                        .disabled(isEditing)
 
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.secondary)
+                        if isEditing {
+                            Button {
+                                personToRemove = person
+                                showRemovePersonConfirmation = true
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.red)
+                            }
                         }
                     }
-                    .foregroundStyle(.primary)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
         }
+        .alert("Remove Person", isPresented: $showRemovePersonConfirmation) {
+            Button("Cancel", role: .cancel) {
+                personToRemove = nil
+            }
+            Button("Remove", role: .destructive) {
+                if let person = personToRemove {
+                    removePersonFromEncounter(person)
+                }
+                personToRemove = nil
+            }
+        } message: {
+            if let person = personToRemove {
+                Text("Remove \(person.name) from this encounter? This will unlink all their face labels from this encounter.")
+            }
+        }
         .navigationDestination(for: Person.self) { person in
             PersonDetailView(person: person)
         }
+    }
+
+    /// Remove a person from this encounter, clearing all associated links
+    private func removePersonFromEncounter(_ person: Person) {
+        let encounterId = encounter.id
+
+        // Remove person's face labels from all bounding boxes in this encounter
+        for photo in encounter.photos {
+            var boxes = photo.faceBoundingBoxes
+            for i in boxes.indices where boxes[i].personId == person.id {
+                boxes[i].personId = nil
+                boxes[i].personName = nil
+            }
+            photo.faceBoundingBoxes = boxes
+        }
+
+        // Also check legacy single-photo bounding boxes
+        var legacyBoxes = encounter.faceBoundingBoxes
+        for i in legacyBoxes.indices where legacyBoxes[i].personId == person.id {
+            legacyBoxes[i].personId = nil
+            legacyBoxes[i].personName = nil
+        }
+        encounter.faceBoundingBoxes = legacyBoxes
+
+        // Delete all embeddings linking this person to this encounter
+        let embeddingsToDelete = person.embeddings.filter { $0.encounterId == encounterId }
+        for embedding in embeddingsToDelete {
+            // Clear profile photo reference if needed
+            if person.profileEmbeddingId == embedding.id {
+                person.profileEmbeddingId = nil
+            }
+            modelContext.delete(embedding)
+        }
+
+        // Remove person from encounter's people list
+        encounter.people.removeAll { $0.id == person.id }
     }
 
     @ViewBuilder
@@ -1136,6 +1311,194 @@ struct EncounterDetailView: View {
 
         lastAddedFaceId = nil
         lastAddedFacePhotoId = nil
+    }
+
+    /// Re-detect faces in all photos using tiled crop-detect-transfer approach
+    /// This detects faces more reliably by scanning overlapping regions
+    private func redetectFaces() async {
+        isRedetecting = true
+        defer {
+            Task { @MainActor in
+                isRedetecting = false
+            }
+        }
+
+        // Handle multi-photo encounters
+        for photo in encounter.photos {
+            guard let image = UIImage(data: photo.imageData) else { continue }
+            let oldBoxes = photo.faceBoundingBoxes
+
+            let newBoxes = await detectFacesWithTiling(in: image, oldBoxes: oldBoxes)
+
+            await MainActor.run {
+                photo.faceBoundingBoxes = newBoxes
+            }
+        }
+
+        // Handle legacy single-photo encounter
+        if encounter.photos.isEmpty, let imageData = encounter.imageData, let image = UIImage(data: imageData) {
+            let oldBoxes = encounter.faceBoundingBoxes
+
+            let newBoxes = await detectFacesWithTiling(in: image, oldBoxes: oldBoxes)
+
+            await MainActor.run {
+                encounter.faceBoundingBoxes = newBoxes
+            }
+        }
+    }
+
+    /// Detect faces using tiled crop-detect-coordinate-transfer approach
+    private func detectFacesWithTiling(in image: UIImage, oldBoxes: [FaceBoundingBox]) async -> [FaceBoundingBox] {
+        let faceDetectionService = FaceDetectionService()
+        let imageSize = image.size
+
+        // First, run full-image detection
+        var allDetectedBoxes: [FaceBoundingBox] = []
+
+        do {
+            let fullImageFaces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+            for face in fullImageFaces {
+                let box = FaceBoundingBox(
+                    rect: face.normalizedBoundingBox,
+                    personId: nil,
+                    personName: nil,
+                    confidence: nil,
+                    isAutoAccepted: false
+                )
+                allDetectedBoxes.append(box)
+            }
+        } catch {
+            print("Full image detection error: \(error)")
+        }
+
+        // Then, run tiled detection with overlapping regions
+        // Use a 3x3 grid with 50% overlap for better coverage
+        let tileOverlap: CGFloat = 0.5
+        let tilesPerAxis = 3
+
+        for row in 0..<tilesPerAxis {
+            for col in 0..<tilesPerAxis {
+                // Calculate tile region with overlap
+                let tileWidth = imageSize.width / CGFloat(tilesPerAxis - 1 + 1) * (1 + tileOverlap)
+                let tileHeight = imageSize.height / CGFloat(tilesPerAxis - 1 + 1) * (1 + tileOverlap)
+
+                let stepX = (imageSize.width - tileWidth) / CGFloat(max(1, tilesPerAxis - 1))
+                let stepY = (imageSize.height - tileHeight) / CGFloat(max(1, tilesPerAxis - 1))
+
+                let cropRect = CGRect(
+                    x: CGFloat(col) * stepX,
+                    y: CGFloat(row) * stepY,
+                    width: min(tileWidth, imageSize.width - CGFloat(col) * stepX),
+                    height: min(tileHeight, imageSize.height - CGFloat(row) * stepY)
+                )
+
+                // Skip tiles that are too small
+                guard cropRect.width > 100 && cropRect.height > 100 else { continue }
+
+                // Crop the tile
+                guard let cgImage = image.cgImage?.cropping(to: cropRect) else { continue }
+                let croppedImage = UIImage(cgImage: cgImage)
+
+                do {
+                    let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
+
+                    for face in faces {
+                        // Transform coordinates from tile space to original image space
+                        let cropNormRect = face.normalizedBoundingBox
+
+                        // X coordinate transformation
+                        let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
+                        let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
+
+                        // Y coordinate: convert from Vision (bottom-left) coords
+                        let cropBottomNorm = 1.0 - (cropRect.origin.y + cropRect.height) / imageSize.height
+                        let cropHeightNorm = cropRect.height / imageSize.height
+                        let originalY = cropBottomNorm + cropNormRect.origin.y * cropHeightNorm
+                        let originalHeight = cropNormRect.height * cropHeightNorm
+
+                        let transformedBox = FaceBoundingBox(
+                            rect: CGRect(x: originalX, y: originalY, width: originalWidth, height: originalHeight),
+                            personId: nil,
+                            personName: nil,
+                            confidence: nil,
+                            isAutoAccepted: false
+                        )
+
+                        allDetectedBoxes.append(transformedBox)
+                    }
+                } catch {
+                    // Continue with other tiles
+                }
+            }
+        }
+
+        // Deduplicate overlapping detections using NMS (Non-Maximum Suppression)
+        let deduplicatedBoxes = nonMaximumSuppression(boxes: allDetectedBoxes, iouThreshold: 0.4)
+
+        // Transfer person labels from old boxes to new boxes
+        var finalBoxes = deduplicatedBoxes
+        for oldBox in oldBoxes where oldBox.personId != nil {
+            let oldRect = CGRect(x: oldBox.x, y: oldBox.y, width: oldBox.width, height: oldBox.height)
+
+            var bestMatchIndex: Int?
+            var bestIoU: CGFloat = 0.25 // Lower threshold since re-detection may shift boxes
+
+            for (index, newBox) in finalBoxes.enumerated() where newBox.personId == nil {
+                let newRect = CGRect(x: newBox.x, y: newBox.y, width: newBox.width, height: newBox.height)
+                let iou = calculateIoU(oldRect, newRect)
+
+                if iou > bestIoU {
+                    bestIoU = iou
+                    bestMatchIndex = index
+                }
+            }
+
+            if let matchIndex = bestMatchIndex {
+                finalBoxes[matchIndex].personId = oldBox.personId
+                finalBoxes[matchIndex].personName = oldBox.personName
+            }
+        }
+
+        return finalBoxes
+    }
+
+    /// Non-Maximum Suppression to remove duplicate detections
+    private func nonMaximumSuppression(boxes: [FaceBoundingBox], iouThreshold: CGFloat) -> [FaceBoundingBox] {
+        guard !boxes.isEmpty else { return [] }
+
+        // Sort by area (larger boxes first - they're usually more reliable)
+        let sortedBoxes = boxes.sorted {
+            ($0.width * $0.height) > ($1.width * $1.height)
+        }
+
+        var selectedBoxes: [FaceBoundingBox] = []
+
+        for box in sortedBoxes {
+            let boxRect = CGRect(x: box.x, y: box.y, width: box.width, height: box.height)
+
+            // Check if this box overlaps significantly with any selected box
+            let overlapsWithSelected = selectedBoxes.contains { selected in
+                let selectedRect = CGRect(x: selected.x, y: selected.y, width: selected.width, height: selected.height)
+                return calculateIoU(boxRect, selectedRect) > iouThreshold
+            }
+
+            if !overlapsWithSelected {
+                selectedBoxes.append(box)
+            }
+        }
+
+        return selectedBoxes
+    }
+
+    /// Calculate Intersection over Union for two rectangles
+    private func calculateIoU(_ rect1: CGRect, _ rect2: CGRect) -> CGFloat {
+        let intersection = rect1.intersection(rect2)
+        guard !intersection.isNull else { return 0 }
+
+        let intersectionArea = intersection.width * intersection.height
+        let unionArea = rect1.width * rect1.height + rect2.width * rect2.height - intersectionArea
+
+        return unionArea > 0 ? intersectionArea / unionArea : 0
     }
 
     @ViewBuilder

@@ -843,8 +843,11 @@ struct EncounterGroupReviewView: View {
     }
 
     private func addEmbeddingToPerson(_ person: Person, photo: ScannedPhoto, faceIndex: Int) {
-        guard faceIndex < photo.detectedFaces.count else { return }
+        guard faceIndex < photo.detectedFaces.count,
+              let boxes = photoFaceData[photo.id],
+              faceIndex < boxes.count else { return }
         let face = photo.detectedFaces[faceIndex]
+        let boxId = boxes[faceIndex].id
 
         Task {
             let embeddingService = FaceEmbeddingService()
@@ -856,11 +859,18 @@ struct EncounterGroupReviewView: View {
                 await MainActor.run {
                     let faceEmbedding = FaceEmbedding(
                         vector: vectorData,
-                        faceCropData: imageData
+                        faceCropData: imageData,
+                        boundingBoxId: boxId
                     )
                     faceEmbedding.person = person
                     modelContext.insert(faceEmbedding)
                     person.lastSeenAt = Date()
+
+                    // Auto-assign as profile photo if person has none
+                    if person.profileEmbeddingId == nil {
+                        person.profileEmbeddingId = faceEmbedding.id
+                    }
+
                     createdEmbeddings.append(faceEmbedding)
                 }
             } catch {

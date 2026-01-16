@@ -8,6 +8,7 @@ final class FaceEmbedding {
     var faceCropData: Data
     var sourcePhotoId: UUID?
     var encounterId: UUID?
+    var boundingBoxId: UUID?
     var createdAt: Date
 
     var person: Person?
@@ -18,6 +19,7 @@ final class FaceEmbedding {
         faceCropData: Data,
         sourcePhotoId: UUID? = nil,
         encounterId: UUID? = nil,
+        boundingBoxId: UUID? = nil,
         createdAt: Date = Date()
     ) {
         self.id = id
@@ -25,6 +27,7 @@ final class FaceEmbedding {
         self.faceCropData = faceCropData
         self.sourcePhotoId = sourcePhotoId
         self.encounterId = encounterId
+        self.boundingBoxId = boundingBoxId
         self.createdAt = createdAt
     }
 
