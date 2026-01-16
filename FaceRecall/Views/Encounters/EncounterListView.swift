@@ -228,15 +228,11 @@ struct EncounterListView: View {
                         // Prefetch encounter data to prevent load failures
                         await prefetchEncounterData(encounter)
                     }
-                    .onAppear {
-                        print("[RowAppear] Row appeared for encounter \(encounter.id.uuidString.prefix(8))")
-                    }
                 }
                 .onDelete(perform: deleteEncounters)
             }
         }
         .navigationDestination(for: Encounter.self) { encounter in
-            let _ = print("[Navigation] Creating EncounterDetailView for \(encounter.id.uuidString.prefix(8))")
             EncounterDetailView(encounter: encounter)
         }
     }
@@ -250,19 +246,13 @@ struct EncounterListView: View {
 
     /// Prefetch encounter data to prevent load failures
     private func prefetchEncounterData(_ encounter: Encounter) async {
-        let encounterId = encounter.id.uuidString.prefix(8)
-        print("[Prefetch:\(encounterId)] Starting prefetch")
-
         // Access properties to trigger lazy loading
-        let hasDisplayImage = encounter.displayImageData != nil
-        let hasThumbnail = encounter.thumbnailData != nil
-        let peopleCount = encounter.people.count
-        let photosCount = encounter.photos.count
-        let photoDataSizes = encounter.photos.map { $0.imageData.count }
+        _ = encounter.displayImageData
+        _ = encounter.thumbnailData
+        _ = encounter.people.map { $0.name }
+        _ = encounter.photos.map { $0.imageData }
         _ = encounter.faceBoundingBoxes
         _ = encounter.tags.map { $0.name }
-
-        print("[Prefetch:\(encounterId)] Completed - displayImage:\(hasDisplayImage), thumbnail:\(hasThumbnail), people:\(peopleCount), photos:\(photosCount), photoSizes:\(photoDataSizes)")
     }
 }
 

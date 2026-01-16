@@ -6,11 +6,6 @@ struct EncounterDetailView: View {
     @Query private var allPeople: [Person]
     @Bindable var encounter: Encounter
 
-    init(encounter: Encounter) {
-        self._encounter = Bindable(encounter)
-        print("[DetailInit] EncounterDetailView init for \(encounter.id.uuidString.prefix(8))")
-    }
-
     @State private var isEditing = false
     @State private var selectedPerson: Person?
     @State private var showFullPhoto = false
@@ -41,8 +36,6 @@ struct EncounterDetailView: View {
     }
 
     var body: some View {
-        let _ = print("[DetailBody] Rendering body for encounter \(encounter.id.uuidString.prefix(8))")
-
         ScrollView {
             VStack(spacing: 20) {
                 photoSection
@@ -52,12 +45,6 @@ struct EncounterDetailView: View {
             }
             .padding()
             .onAppear {
-                let encounterId = encounter.id.uuidString.prefix(8)
-                let hasDisplayImage = encounter.displayImageData != nil
-                let hasThumbnail = encounter.thumbnailData != nil
-                let photosCount = encounter.photos.count
-                let photoDataLoaded = encounter.photos.map { $0.imageData.count > 0 }
-                print("[Detail:\(encounterId)] onAppear - displayImage:\(hasDisplayImage), thumbnail:\(hasThumbnail), photos:\(photosCount), photoDataLoaded:\(photoDataLoaded)")
                 selectedTags = encounter.tags
             }
         }
@@ -657,13 +644,6 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private var photoSection: some View {
-        let _ = {
-            let encounterId = encounter.id.uuidString.prefix(8)
-            let photosCount = encounter.photos.count
-            let hasLegacyImage = encounter.displayImageData != nil
-            print("[PhotoSection:\(encounterId)] Rendering - hasMultiplePhotos:\(hasMultiplePhotos), photosCount:\(photosCount), hasLegacyImage:\(hasLegacyImage)")
-        }()
-
         if hasMultiplePhotos {
             // Multiple photos carousel
             VStack(spacing: 8) {
@@ -692,7 +672,6 @@ struct EncounterDetailView: View {
             }
         } else if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
             // Legacy single photo
-            let _ = print("[PhotoSection:\(encounter.id.uuidString.prefix(8))] Rendering legacy photo, dataSize:\(imageData.count)")
             ZStack {
                 Image(uiImage: image)
                     .resizable()
@@ -731,9 +710,7 @@ struct EncounterDetailView: View {
                     .foregroundStyle(.tertiary)
             }
         } else {
-            // No image data available - show placeholder with logging
-            let _ = print("[PhotoSection:\(encounter.id.uuidString.prefix(8))] NO IMAGE DATA - photos.isEmpty:\(encounter.photos.isEmpty), displayImageData:\(encounter.displayImageData != nil), thumbnailData:\(encounter.thumbnailData != nil)")
-
+            // No image data available - show placeholder
             VStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.secondary.opacity(0.2))
@@ -771,13 +748,6 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private func photoCard(for photo: EncounterPhoto) -> some View {
-        let _ = {
-            let photoId = photo.id.uuidString.prefix(8)
-            let dataSize = photo.imageData.count
-            let canCreateImage = UIImage(data: photo.imageData) != nil
-            print("[PhotoCard:\(photoId)] dataSize:\(dataSize), canCreateImage:\(canCreateImage)")
-        }()
-
         GeometryReader { geometry in
             if let image = UIImage(data: photo.imageData) {
                 Image(uiImage: image)
