@@ -1,6 +1,42 @@
 import SwiftUI
 import SwiftData
 
+enum TimeFilter: String, CaseIterable, Identifiable {
+    case all = "All Time"
+    case today = "Today"
+    case thisWeek = "This Week"
+    case thisMonth = "This Month"
+    case last3Months = "Last 3 Months"
+    case thisYear = "This Year"
+
+    var id: String { rawValue }
+
+    var dateRange: (start: Date, end: Date)? {
+        let calendar = Calendar.current
+        let now = Date()
+
+        switch self {
+        case .all:
+            return nil
+        case .today:
+            let start = calendar.startOfDay(for: now)
+            return (start, now)
+        case .thisWeek:
+            let start = calendar.date(byAdding: .day, value: -7, to: now)!
+            return (start, now)
+        case .thisMonth:
+            let start = calendar.date(byAdding: .month, value: -1, to: now)!
+            return (start, now)
+        case .last3Months:
+            let start = calendar.date(byAdding: .month, value: -3, to: now)!
+            return (start, now)
+        case .thisYear:
+            let start = calendar.date(byAdding: .year, value: -1, to: now)!
+            return (start, now)
+        }
+    }
+}
+
 struct EncounterListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Encounter.date, order: .reverse) private var encounters: [Encounter]
@@ -8,6 +44,9 @@ struct EncounterListView: View {
     @State private var showScanner = false
     @State private var searchText = ""
     @State private var selectedTagFilters: Set<UUID> = []
+    @State private var selectedTimeFilter: TimeFilter = .all
+    @State private var selectedLocation: String? = nil
+    @State private var showFilters = false
 
     /// Tags that are currently assigned to at least one encounter
     var tagsInUse: [Tag] {
@@ -22,6 +61,19 @@ struct EncounterListView: View {
             }
         }
         return result.sorted { $0.name < $1.name }
+    }
+
+    /// Unique locations from all encounters
+    var locationsInUse: [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for encounter in encounters {
+            if let location = encounter.location, !location.isEmpty, !seen.contains(location) {
+                seen.insert(location)
+                result.append(location)
+            }
+        }
+        return result.sorted()
     }
 
     var filteredEncounters: [Encounter] {
@@ -44,11 +96,37 @@ struct EncounterListView: View {
             }
         }
 
+        // Filter by time
+        if let dateRange = selectedTimeFilter.dateRange {
+            result = result.filter { encounter in
+                encounter.date >= dateRange.start && encounter.date <= dateRange.end
+            }
+        }
+
+        // Filter by location
+        if let location = selectedLocation {
+            result = result.filter { encounter in
+                encounter.location == location
+            }
+        }
+
         return result
     }
 
     var hasAnyTags: Bool {
         !tagsInUse.isEmpty
+    }
+
+    var hasActiveFilters: Bool {
+        selectedTimeFilter != .all || selectedLocation != nil || !selectedTagFilters.isEmpty
+    }
+
+    var activeFilterCount: Int {
+        var count = 0
+        if selectedTimeFilter != .all { count += 1 }
+        if selectedLocation != nil { count += 1 }
+        count += selectedTagFilters.count
+        return count
     }
 
     var body: some View {
@@ -64,12 +142,42 @@ struct EncounterListView: View {
             .searchable(text: $searchText, prompt: "Search occasions, locations, people")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showScanner = true
-                    } label: {
-                        Image(systemName: "plus")
+                    HStack(spacing: 12) {
+                        Button {
+                            showFilters.toggle()
+                        } label: {
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "line.3.horizontal.decrease.circle")
+                                    .foregroundStyle(hasActiveFilters ? AppColors.coral : .primary)
+                                if activeFilterCount > 0 {
+                                    Text("\(activeFilterCount)")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(.white)
+                                        .padding(4)
+                                        .background(Circle().fill(AppColors.coral))
+                                        .offset(x: 8, y: -8)
+                                }
+                            }
+                        }
+
+                        Button {
+                            showScanner = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
+            }
+            .sheet(isPresented: $showFilters) {
+                EncounterFilterSheet(
+                    selectedTimeFilter: $selectedTimeFilter,
+                    selectedLocation: $selectedLocation,
+                    selectedTagFilters: $selectedTagFilters,
+                    availableLocations: locationsInUse,
+                    availableTags: tagsInUse
+                )
+                .presentationDetents([.medium, .large])
             }
             .sheet(isPresented: $showScanner) {
                 EncounterScannerView()
@@ -107,6 +215,10 @@ struct EncounterListView: View {
                     NavigationLink(value: encounter) {
                         EncounterRowView(encounter: encounter)
                     }
+                    .task {
+                        // Prefetch encounter data to prevent load failures
+                        await prefetchEncounterData(encounter)
+                    }
                 }
                 .onDelete(perform: deleteEncounters)
             }
@@ -121,6 +233,17 @@ struct EncounterListView: View {
             let encounter = filteredEncounters[index]
             modelContext.delete(encounter)
         }
+    }
+
+    /// Prefetch encounter data to prevent load failures
+    private func prefetchEncounterData(_ encounter: Encounter) async {
+        // Access properties to trigger lazy loading
+        _ = encounter.displayImageData
+        _ = encounter.thumbnailData
+        _ = encounter.people.map { $0.name }
+        _ = encounter.photos.map { $0.imageData }
+        _ = encounter.faceBoundingBoxes
+        _ = encounter.tags.map { $0.name }
     }
 }
 
@@ -196,7 +319,6 @@ struct EncounterRowView: View {
                 if let occasion = encounter.occasion, !occasion.isEmpty {
                     Text(occasion)
                         .font(.headline)
-                        .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
                 } else {
                     Text("Encounter")
@@ -245,6 +367,134 @@ struct EncounterRowView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Filter Sheet
+
+struct EncounterFilterSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var selectedTimeFilter: TimeFilter
+    @Binding var selectedLocation: String?
+    @Binding var selectedTagFilters: Set<UUID>
+
+    let availableLocations: [String]
+    let availableTags: [Tag]
+
+    var body: some View {
+        NavigationStack {
+            List {
+                // Time Filter
+                Section {
+                    ForEach(TimeFilter.allCases) { filter in
+                        Button {
+                            selectedTimeFilter = filter
+                        } label: {
+                            HStack {
+                                Text(filter.rawValue)
+                                    .foregroundStyle(AppColors.textPrimary)
+                                Spacer()
+                                if selectedTimeFilter == filter {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(AppColors.coral)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Label("Time Period", systemImage: "calendar")
+                        .foregroundStyle(AppColors.coral)
+                }
+
+                // Location Filter
+                if !availableLocations.isEmpty {
+                    Section {
+                        Button {
+                            selectedLocation = nil
+                        } label: {
+                            HStack {
+                                Text("All Locations")
+                                    .foregroundStyle(AppColors.textPrimary)
+                                Spacer()
+                                if selectedLocation == nil {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(AppColors.teal)
+                                }
+                            }
+                        }
+
+                        ForEach(availableLocations, id: \.self) { location in
+                            Button {
+                                selectedLocation = location
+                            } label: {
+                                HStack {
+                                    Text(location)
+                                        .foregroundStyle(AppColors.textPrimary)
+                                    Spacer()
+                                    if selectedLocation == location {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(AppColors.teal)
+                                    }
+                                }
+                            }
+                        }
+                    } header: {
+                        Label("Location", systemImage: "mappin")
+                            .foregroundStyle(AppColors.teal)
+                    }
+                }
+
+                // Tag Filter
+                if !availableTags.isEmpty {
+                    Section {
+                        ForEach(availableTags) { tag in
+                            Button {
+                                if selectedTagFilters.contains(tag.id) {
+                                    selectedTagFilters.remove(tag.id)
+                                } else {
+                                    selectedTagFilters.insert(tag.id)
+                                }
+                            } label: {
+                                HStack {
+                                    Circle()
+                                        .fill(tag.color)
+                                        .frame(width: 12, height: 12)
+                                    Text(tag.name)
+                                        .foregroundStyle(AppColors.textPrimary)
+                                    Spacer()
+                                    if selectedTagFilters.contains(tag.id) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(tag.color)
+                                    }
+                                }
+                            }
+                        }
+                    } header: {
+                        Label("Tags", systemImage: "tag")
+                            .foregroundStyle(AppColors.softPurple)
+                    }
+                }
+            }
+            .navigationTitle("Filter Encounters")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Reset") {
+                        selectedTimeFilter = .all
+                        selectedLocation = nil
+                        selectedTagFilters.removeAll()
+                    }
+                    .foregroundStyle(AppColors.coral)
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 

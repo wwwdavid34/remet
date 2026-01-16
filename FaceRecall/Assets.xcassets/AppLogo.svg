@@ -1,0 +1,67 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#4ECDC4;stop-opacity:0.15" />
+    </linearGradient>
+    <linearGradient id="faceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B" />
+      <stop offset="100%" style="stop-color:#4ECDC4" />
+    </linearGradient>
+    <linearGradient id="coralToTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF6B6B" />
+      <stop offset="100%" style="stop-color:#4ECDC4" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer glow circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+
+  <!-- Face outline - stylized with split colors -->
+  <!-- Left half of face (coral) -->
+  <path d="M256 80
+           C156 80 96 160 96 256
+           C96 352 156 432 256 432"
+        stroke="#FF6B6B"
+        stroke-width="24"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Right half of face (teal) -->
+  <path d="M256 80
+           C356 80 416 160 416 256
+           C416 352 356 432 256 432"
+        stroke="#4ECDC4"
+        stroke-width="24"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Left eye (coral) -->
+  <circle cx="190" cy="220" r="28" fill="#FF6B6B"/>
+  <circle cx="190" cy="220" r="12" fill="white"/>
+
+  <!-- Right eye (teal) -->
+  <circle cx="322" cy="220" r="28" fill="#4ECDC4"/>
+  <circle cx="322" cy="220" r="12" fill="white"/>
+
+  <!-- Smile with gradient -->
+  <path d="M180 310 Q256 380 332 310"
+        stroke="url(#coralToTeal)"
+        stroke-width="20"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Memory sparkles/nodes (representing recall) -->
+  <!-- Top left sparkle (coral) -->
+  <circle cx="120" cy="120" r="16" fill="#FF6B6B" opacity="0.8"/>
+  <circle cx="100" cy="160" r="10" fill="#FF6B6B" opacity="0.5"/>
+
+  <!-- Top right sparkle (teal) -->
+  <circle cx="392" cy="120" r="16" fill="#4ECDC4" opacity="0.8"/>
+  <circle cx="412" cy="160" r="10" fill="#4ECDC4" opacity="0.5"/>
+
+  <!-- Connection lines (neural network hint) -->
+  <line x1="120" y1="120" x2="170" y2="180" stroke="#FF6B6B" stroke-width="3" opacity="0.4"/>
+  <line x1="392" y1="120" x2="342" y2="180" stroke="#4ECDC4" stroke-width="3" opacity="0.4"/>
+</svg>

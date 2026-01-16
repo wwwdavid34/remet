@@ -10,6 +10,7 @@ class AppState {
 @main
 struct FaceRecallApp: App {
     @State private var appState = AppState()
+    @State private var subscriptionManager = SubscriptionManager.shared
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -35,8 +36,15 @@ struct FaceRecallApp: App {
         WindowGroup {
             ContentView()
                 .environment(appState)
+                .environment(subscriptionManager)
                 .onOpenURL { url in
                     handleIncomingURL(url)
+                }
+                .task {
+                    // Record first launch for grace period tracking
+                    AppSettings.shared.recordFirstLaunchIfNeeded()
+                    // Load subscription products
+                    await subscriptionManager.loadProducts()
                 }
         }
         .modelContainer(sharedModelContainer)

@@ -1,14 +1,16 @@
 import SwiftUI
 import SwiftData
 
-struct SettingsView: View {
+struct AccountView: View {
     @Query private var encounters: [Encounter]
     @Query private var people: [Person]
     @Query private var embeddings: [FaceEmbedding]
 
     private var settings = AppSettings.shared
+    @State private var subscriptionManager = SubscriptionManager.shared
 
     @State private var showSignInSheet = false
+    @State private var showPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -20,9 +22,12 @@ struct SettingsView: View {
                 storageInfoSection
                 aboutSection
             }
-            .navigationTitle("Settings")
+            .navigationTitle("Account")
             .sheet(isPresented: $showSignInSheet) {
                 SignInSheet()
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
         }
     }
@@ -92,21 +97,31 @@ struct SettingsView: View {
     @ViewBuilder
     private var subscriptionSection: some View {
         Section {
-            // TODO: Replace with actual subscription state
-            let isPremium = false
-
-            if isPremium {
+            if subscriptionManager.isPremium {
+                // Premium active state
                 HStack {
                     Image(systemName: "crown.fill")
                         .foregroundStyle(AppColors.warmYellow)
-                    Text("Premium Active")
-                        .fontWeight(.medium)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Premium Active")
+                            .fontWeight(.medium)
+                        if case .gracePeriod(let expiresAt) = subscriptionManager.subscriptionStatus {
+                            Text("Renews \(expiresAt.formatted(date: .abbreviated, time: .omitted))")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                    }
                     Spacer()
-                    Text("Manage")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.teal)
+                    Button("Manage") {
+                        if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.teal)
                 }
             } else {
+                // Free tier - show upgrade prompt
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: "crown.fill")
@@ -115,15 +130,23 @@ struct SettingsView: View {
                             .fontWeight(.semibold)
                     }
 
+                    // Usage status
+                    HStack {
+                        Image(systemName: "person.3")
+                            .foregroundStyle(AppColors.teal)
+                        Text("\(people.count)/\(SubscriptionLimits.freePeopleLimit) people")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+
                     VStack(alignment: .leading, spacing: 6) {
-                        PremiumFeatureRow(icon: "icloud", text: "Cloud sync across devices")
                         PremiumFeatureRow(icon: "infinity", text: "Unlimited people & encounters")
+                        PremiumFeatureRow(icon: "icloud", text: "Cloud sync across devices")
                         PremiumFeatureRow(icon: "chart.bar", text: "Advanced analytics")
-                        PremiumFeatureRow(icon: "calendar.badge.clock", text: "Calendar integration")
                     }
 
                     Button {
-                        // TODO: Show subscription options
+                        showPaywall = true
                     } label: {
                         Text("View Plans")
                             .fontWeight(.medium)
@@ -289,193 +312,6 @@ struct SettingsView: View {
     }
 }
 
-struct StorageRow: View {
-    let title: String
-    let count: Int
-    let icon: String
-
-    var body: some View {
-        HStack {
-            Label(title, systemImage: icon)
-            Spacer()
-            Text("\(count)")
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-struct PrivacyInfoView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("On-Device Processing", systemImage: "iphone")
-                        .font(.headline)
-                    Text("All face detection and recognition happens entirely on your device. Your photos and face data are never uploaded to any server.")
-                        .foregroundStyle(.secondary)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Local Storage", systemImage: "internaldrive")
-                        .font(.headline)
-                    Text("Face embeddings and photos are stored only in the app's private storage on your device.")
-                        .foregroundStyle(.secondary)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("No Cloud Sync", systemImage: "icloud.slash")
-                        .font(.headline)
-                    Text("Your data is not synced to iCloud or any cloud service. If you delete the app, all data is permanently removed.")
-                        .foregroundStyle(.secondary)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Photo Library Access", systemImage: "photo.on.rectangle")
-                        .font(.headline)
-                    Text("The app requests access to your photo library only to scan for faces. Photos are copied into the app for offline access.")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding()
-        }
-        .navigationTitle("Privacy")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// MARK: - Premium Feature Row
-
-struct PremiumFeatureRow: View {
-    let icon: String
-    let text: String
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(AppColors.teal)
-                .frame(width: 20)
-            Text(text)
-                .font(.subheadline)
-                .foregroundStyle(AppColors.textSecondary)
-        }
-    }
-}
-
-// MARK: - Sign In Sheet
-
-struct SignInSheet: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Spacer()
-
-                // Logo
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral.opacity(0.15), AppColors.teal.opacity(0.15)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "face.smiling")
-                        .font(.system(size: 50))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [AppColors.coral, AppColors.teal],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                }
-
-                VStack(spacing: 8) {
-                    Text("Sign in to Face Recall")
-                        .font(.title2)
-                        .fontWeight(.bold)
-
-                    Text("Sync your data across all your devices")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
-                        .multilineTextAlignment(.center)
-                }
-
-                Spacer()
-
-                VStack(spacing: 12) {
-                    // Apple Sign In
-                    Button {
-                        // TODO: Implement Apple Sign In
-                        // Use AuthenticationServices framework
-                    } label: {
-                        HStack {
-                            Image(systemName: "apple.logo")
-                            Text("Continue with Apple")
-                        }
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-
-                    // Google Sign In
-                    Button {
-                        // TODO: Implement Google Sign In
-                        // Use GoogleSignIn SDK
-                    } label: {
-                        HStack {
-                            Image(systemName: "g.circle.fill")
-                            Text("Continue with Google")
-                        }
-                        .fontWeight(.medium)
-                        .foregroundStyle(AppColors.textPrimary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(AppColors.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 32)
-
-                Text("By continuing, you agree to our Terms of Service and Privacy Policy")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textMuted)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                Spacer()
-            }
-            .padding()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-#Preview("Settings") {
-    SettingsView()
-}
-
-#Preview("Sign In") {
-    SignInSheet()
+#Preview {
+    AccountView()
 }

@@ -306,7 +306,6 @@ struct QuizResultView: View {
             Text(person.name)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(AppColors.textPrimary)
 
             if !wasCorrect && !userGuess.isEmpty {
                 Text("You guessed: \(userGuess)")

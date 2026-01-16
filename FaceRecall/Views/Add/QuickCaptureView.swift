@@ -6,21 +6,34 @@ import CoreLocation
 struct QuickCaptureView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Query private var people: [Person]
 
     @State private var capturedImage: UIImage?
     @State private var showingReview = false
     @State private var detectedFaces: [DetectedFace] = []
     @State private var isProcessing = false
     @State private var capturedLocation: CLLocation?
+    @State private var showPaywall = false
     @StateObject private var locationManager = LocationManager()
+
+    private let limitChecker = LimitChecker()
+
+    private var limitStatus: LimitChecker.LimitStatus {
+        limitChecker.canAddPerson(currentCount: people.count)
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                if let image = capturedImage {
+                // Check if limit reached
+                if limitStatus.isBlocked {
+                    LimitReachedView {
+                        showPaywall = true
+                    }
+                } else if let image = capturedImage {
                     QuickCaptureReviewView(
                         image: image,
-                        detectedFaces: detectedFaces,
+                        detectedFaces: $detectedFaces,
                         location: capturedLocation,
                         onSave: { name, context, locationName in
                             savePersonWithFace(name: name, context: context, locationName: locationName)
@@ -61,6 +74,9 @@ struct QuickCaptureView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
         }
     }
@@ -218,7 +234,7 @@ struct CameraPreviewView: View {
 
 struct QuickCaptureReviewView: View {
     let image: UIImage
-    let detectedFaces: [DetectedFace]
+    @Binding var detectedFaces: [DetectedFace]
     let location: CLLocation?
     let onSave: (String, String?, String?) -> Void
     let onRetake: () -> Void
@@ -228,6 +244,8 @@ struct QuickCaptureReviewView: View {
     @State private var contextNote = ""
     @State private var locationName = ""
     @State private var isLoadingLocation = false
+    @State private var isRedetecting = false
+    @State private var redetectAttempts = 0
     @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
@@ -263,16 +281,47 @@ struct QuickCaptureReviewView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     if detectedFaces.isEmpty {
-                        HStack {
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundStyle(.orange)
-                            Text("No face detected. Try retaking the photo.")
+                        VStack(spacing: 12) {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle")
+                                    .foregroundStyle(AppColors.warning)
+                                Text("No face detected")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(AppColors.warning)
+                            }
+
+                            Text("Try re-detecting with enhanced image processing, or retake the photo.")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                                .multilineTextAlignment(.center)
+
+                            Button {
+                                redetectFaces()
+                            } label: {
+                                HStack {
+                                    if isRedetecting {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                            .tint(.white)
+                                    } else {
+                                        Image(systemName: "arrow.clockwise")
+                                    }
+                                    Text(redetectAttempts == 0 ? "Re-detect Faces" : "Try Again")
+                                }
                                 .font(.subheadline)
-                                .foregroundStyle(.orange)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(AppColors.teal)
+                                .clipShape(Capsule())
+                            }
+                            .disabled(isRedetecting)
                         }
                         .padding()
-                        .background(Color.orange.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .background(AppColors.warning.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     } else {
                         HStack {
                             Image(systemName: "checkmark.circle")
@@ -346,6 +395,27 @@ struct QuickCaptureReviewView: View {
                 }
                 if !components.isEmpty {
                     locationName = components.joined(separator: ", ")
+                }
+            }
+        }
+    }
+
+    private func redetectFaces() {
+        isRedetecting = true
+        redetectAttempts += 1
+
+        Task {
+            do {
+                let faceDetectionService = FaceDetectionService()
+                // Use enhanced detection options for re-detection
+                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+                await MainActor.run {
+                    detectedFaces = faces
+                    isRedetecting = false
+                }
+            } catch {
+                await MainActor.run {
+                    isRedetecting = false
                 }
             }
         }

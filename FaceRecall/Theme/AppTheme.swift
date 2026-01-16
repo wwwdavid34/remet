@@ -73,7 +73,21 @@ enum WittyCopy {
         "You're on fire!",
         "Memory champion!",
         "Boom! Got it!",
-        "Your brain says thanks!"
+        "Your brain says thanks!",
+        "Look at you go!",
+        "Absolutely stellar!",
+        "That's the one!",
+        "You remembered!",
+        "Perfect recall!",
+        "Gold star for you!",
+        "Crushed it!",
+        "Face: recognized!",
+        "Neural pathways firing!",
+        "Your memory impresses me!",
+        "Spot on!",
+        "Like a pro!",
+        "Mental high-five!",
+        "Synapse success!"
     ]
 
     static let quizIncorrect = [
@@ -81,7 +95,20 @@ enum WittyCopy {
         "That's what practice is for!",
         "Learning in progress...",
         "Every miss makes you stronger!",
-        "Your brain is taking notes."
+        "Your brain is taking notes.",
+        "Not quite, but you're learning!",
+        "Close! Keep at it!",
+        "Building those connections...",
+        "Memory under construction!",
+        "One step closer to mastery!",
+        "The neurons are rewiring!",
+        "Practice makes progress!",
+        "Your brain appreciates the workout!",
+        "Feedback received, adjusting...",
+        "Next time you'll nail it!",
+        "Oops! But hey, now you know!",
+        "Adding to the memory bank...",
+        "Brain update downloading..."
     ]
 
     static let sessionComplete80Plus = [

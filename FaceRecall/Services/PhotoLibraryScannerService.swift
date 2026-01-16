@@ -315,6 +315,55 @@ final class PhotoLibraryScannerService {
         return boundingBoxes
     }
 
+    /// Process detected faces and match to known people (for re-detection)
+    func matchFacesToPeopleWithFaces(
+        faces: [DetectedFace],
+        people: [Person],
+        autoAcceptThreshold: Float? = nil
+    ) async -> [FaceBoundingBox] {
+        let threshold = autoAcceptThreshold ?? AppSettings.shared.autoAcceptThreshold
+        let embeddingService = FaceEmbeddingService()
+        let matchingService = FaceMatchingService()
+
+        var boundingBoxes: [FaceBoundingBox] = []
+
+        for face in faces {
+            do {
+                let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
+                let matches = matchingService.findMatches(for: embedding, in: people)
+
+                var box = FaceBoundingBox(
+                    rect: face.normalizedBoundingBox,
+                    personId: nil,
+                    personName: nil,
+                    confidence: nil,
+                    isAutoAccepted: false
+                )
+
+                if let topMatch = matches.first {
+                    box.personId = topMatch.person.id
+                    box.personName = topMatch.person.name
+                    box.confidence = topMatch.similarity
+                    box.isAutoAccepted = topMatch.similarity >= threshold
+                }
+
+                boundingBoxes.append(box)
+            } catch {
+                // Still add the bounding box without match info
+                let box = FaceBoundingBox(
+                    rect: face.normalizedBoundingBox,
+                    personId: nil,
+                    personName: nil,
+                    confidence: nil,
+                    isAutoAccepted: false
+                )
+                boundingBoxes.append(box)
+            }
+        }
+
+        return boundingBoxes
+    }
+
     /// Group scanned photos by time and location proximity
     func groupPhotosByEncounter(_ photos: [ScannedPhoto]) -> [PhotoGroup] {
         guard !photos.isEmpty else { return [] }

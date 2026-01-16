@@ -26,8 +26,12 @@ struct EncounterReviewView: View {
     @State private var selectedFaceCrop: UIImage?
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
+    @State private var isRedetecting = false
+    @State private var redetectAttempts = 0
+    @State private var localDetectedFaces: [DetectedFace] = []
 
     private let scannerService = PhotoLibraryScannerService()
+    private let faceDetectionService = FaceDetectionService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
 
     var body: some View {
@@ -100,15 +104,69 @@ struct EncounterReviewView: View {
     @ViewBuilder
     private var facesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("People in this photo")
-                .font(.headline)
+            HStack {
+                Text("People in this photo")
+                    .font(.headline)
+                Spacer()
 
-            if isProcessing {
+                // Re-detect button
+                if !isProcessing && !isRedetecting {
+                    Button {
+                        redetectFaces()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.clockwise")
+                            Text("Re-detect")
+                        }
+                        .font(.caption)
+                        .foregroundStyle(AppColors.teal)
+                    }
+                }
+            }
+
+            if isProcessing || isRedetecting {
                 HStack {
                     ProgressView()
-                    Text("Analyzing faces...")
-                        .foregroundStyle(.secondary)
+                    Text(isRedetecting ? "Re-analyzing faces..." : "Analyzing faces...")
+                        .foregroundStyle(AppColors.textSecondary)
                 }
+            } else if boundingBoxes.isEmpty {
+                // No faces detected state
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundStyle(AppColors.warning)
+                        Text("No faces detected")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.warning)
+                    }
+
+                    Text("Try re-detecting with enhanced image processing.")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .multilineTextAlignment(.center)
+
+                    Button {
+                        redetectFaces()
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.clockwise")
+                            Text(redetectAttempts == 0 ? "Re-detect Faces" : "Try Again")
+                        }
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(AppColors.teal)
+                        .clipShape(Capsule())
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(AppColors.warning.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
                 ForEach(Array(boundingBoxes.enumerated()), id: \.element.id) { index, box in
                     FaceRowView(
@@ -369,10 +427,11 @@ struct EncounterReviewView: View {
     }
 
     private func loadFaceCropAndMatches() {
+        let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
         guard let boxIndex = selectedBoxIndex,
-              boxIndex < scannedPhoto.detectedFaces.count else { return }
+              boxIndex < faces.count else { return }
 
-        let face = scannedPhoto.detectedFaces[boxIndex]
+        let face = faces[boxIndex]
         selectedFaceCrop = face.cropImage
 
         // Find potential matches
@@ -403,11 +462,12 @@ struct EncounterReviewView: View {
 
     @ViewBuilder
     private var newPersonSheet: some View {
+        let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
         NavigationStack {
             Form {
                 if let index = selectedBoxIndex,
-                   index < scannedPhoto.detectedFaces.count {
-                    let face = scannedPhoto.detectedFaces[index]
+                   index < faces.count {
+                    let face = faces[index]
                     HStack {
                         Spacer()
                         Image(uiImage: face.cropImage)
@@ -459,10 +519,56 @@ struct EncounterReviewView: View {
 
         await MainActor.run {
             boundingBoxes = boxes
+            localDetectedFaces = scannedPhoto.detectedFaces
             if let name = locationName {
                 location = name
             }
             isProcessing = false
+        }
+    }
+
+    private func redetectFaces() {
+        guard let image = scannedPhoto.image else { return }
+
+        isRedetecting = true
+        redetectAttempts += 1
+
+        Task {
+            do {
+                // Use enhanced detection options
+                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+
+                // Create new bounding boxes from detected faces
+                var newBoxes: [FaceBoundingBox] = []
+                for face in faces {
+                    let box = FaceBoundingBox(
+                        rect: face.normalizedBoundingBox,
+                        personId: nil,
+                        personName: nil,
+                        confidence: nil,
+                        isAutoAccepted: false
+                    )
+                    newBoxes.append(box)
+                }
+
+                // Try to match new faces to people
+                let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
+                    faces: faces,
+                    people: people,
+                    autoAcceptThreshold: autoAcceptThreshold
+                )
+
+                await MainActor.run {
+                    boundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
+                    localDetectedFaces = faces
+                    isRedetecting = false
+                }
+            } catch {
+                await MainActor.run {
+                    isRedetecting = false
+                }
+                print("Re-detection error: \(error)")
+            }
         }
     }
 
@@ -503,6 +609,9 @@ struct EncounterReviewView: View {
         // Add embedding to person
         addEmbeddingToPerson(person, faceIndex: index)
 
+        // Auto-propagate label to similar faces in the same encounter
+        propagateLabelToSimilarFaces(person: person, sourceFaceIndex: index)
+
         showPersonPicker = false
         selectedBoxIndex = nil
     }
@@ -520,14 +629,108 @@ struct EncounterReviewView: View {
         // Add embedding to person
         addEmbeddingToPerson(person, faceIndex: index)
 
+        // Auto-propagate label to similar faces in the same encounter
+        propagateLabelToSimilarFaces(person: person, sourceFaceIndex: index)
+
         newPersonName = ""
         showNewPersonSheet = false
         selectedBoxIndex = nil
     }
 
+    /// Automatically label similar faces in the same encounter
+    private func propagateLabelToSimilarFaces(person: Person, sourceFaceIndex: Int) {
+        let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
+        guard sourceFaceIndex < faces.count else { return }
+
+        let sourceFace = faces[sourceFaceIndex]
+
+        Task {
+            let embeddingService = FaceEmbeddingService()
+
+            do {
+                // Generate embedding for the source face
+                let sourceEmbedding = try await embeddingService.generateEmbedding(for: sourceFace.cropImage)
+
+                // Check all other unlabeled faces
+                for (otherIndex, otherFace) in faces.enumerated() {
+                    // Skip the source face and already labeled faces
+                    guard otherIndex != sourceFaceIndex,
+                          otherIndex < boundingBoxes.count,
+                          boundingBoxes[otherIndex].personId == nil else {
+                        continue
+                    }
+
+                    // Generate embedding for this face
+                    let otherEmbedding = try await embeddingService.generateEmbedding(for: otherFace.cropImage)
+
+                    // Calculate similarity
+                    let similarity = cosineSimilarity(sourceEmbedding, otherEmbedding)
+
+                    // If similarity is high enough, auto-label this face
+                    if similarity >= autoAcceptThreshold {
+                        await MainActor.run {
+                            boundingBoxes[otherIndex].personId = person.id
+                            boundingBoxes[otherIndex].personName = person.name
+                            boundingBoxes[otherIndex].confidence = similarity
+                            boundingBoxes[otherIndex].isAutoAccepted = true
+                        }
+
+                        // Also add this face's embedding to the person
+                        await addEmbeddingToPersonAsync(person, face: otherFace)
+                    }
+                }
+            } catch {
+                print("Error propagating labels: \(error)")
+            }
+        }
+    }
+
+    /// Calculate cosine similarity between two embedding vectors
+    private func cosineSimilarity(_ a: [Float], _ b: [Float]) -> Float {
+        guard a.count == b.count, !a.isEmpty else { return 0 }
+
+        var dotProduct: Float = 0
+        var normA: Float = 0
+        var normB: Float = 0
+
+        for i in 0..<a.count {
+            dotProduct += a[i] * b[i]
+            normA += a[i] * a[i]
+            normB += b[i] * b[i]
+        }
+
+        let denominator = sqrt(normA) * sqrt(normB)
+        return denominator > 0 ? dotProduct / denominator : 0
+    }
+
+    /// Add embedding to person asynchronously (for propagated faces)
+    private func addEmbeddingToPersonAsync(_ person: Person, face: DetectedFace) async {
+        let embeddingService = FaceEmbeddingService()
+
+        do {
+            let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
+            let vectorData = embedding.withUnsafeBytes { Data($0) }
+            let imageData = face.cropImage.jpegData(compressionQuality: 0.8) ?? Data()
+
+            await MainActor.run {
+                let faceEmbedding = FaceEmbedding(
+                    vector: vectorData,
+                    faceCropData: imageData
+                )
+                faceEmbedding.person = person
+                modelContext.insert(faceEmbedding)
+                person.lastSeenAt = Date()
+            }
+        } catch {
+            print("Error adding embedding for propagated face: \(error)")
+        }
+    }
+
     private func addEmbeddingToPerson(_ person: Person, faceIndex: Int) {
-        guard faceIndex < scannedPhoto.detectedFaces.count else { return }
-        let face = scannedPhoto.detectedFaces[faceIndex]
+        // Use localDetectedFaces if available (after re-detection), otherwise use original
+        let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
+        guard faceIndex < faces.count else { return }
+        let face = faces[faceIndex]
 
         Task {
             let embeddingService = FaceEmbeddingService()

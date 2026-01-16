@@ -1,5 +1,6 @@
 import UIKit
 import Vision
+import CoreImage
 
 struct DetectedFace {
     let boundingBox: CGRect
@@ -7,9 +8,32 @@ struct DetectedFace {
     let normalizedBoundingBox: CGRect
 }
 
+struct FaceDetectionOptions {
+    var enhanceImage: Bool = false
+    var adjustBrightness: Bool = false
+    var increaseContrast: Bool = false
+
+    static let standard = FaceDetectionOptions()
+    static let enhanced = FaceDetectionOptions(enhanceImage: true, adjustBrightness: true, increaseContrast: true)
+}
+
 final class FaceDetectionService {
 
-    func detectFaces(in image: UIImage) async throws -> [DetectedFace] {
+    private let ciContext = CIContext()
+
+    func detectFaces(in image: UIImage, options: FaceDetectionOptions = .standard) async throws -> [DetectedFace] {
+        // Apply image enhancements if requested
+        let processedImage: UIImage
+        if options.enhanceImage {
+            processedImage = enhanceImage(image, options: options)
+        } else {
+            processedImage = image
+        }
+
+        return try await performDetection(in: processedImage)
+    }
+
+    private func performDetection(in image: UIImage) async throws -> [DetectedFace] {
         // Normalize image orientation first - this ensures cgImage matches visual orientation
         let normalizedImage = normalizeOrientation(image)
 
@@ -45,6 +69,53 @@ final class FaceDetectionService {
                 normalizedBoundingBox: normalizedBox
             )
         }
+    }
+
+    /// Enhance image for better face detection
+    private func enhanceImage(_ image: UIImage, options: FaceDetectionOptions) -> UIImage {
+        guard let ciImage = CIImage(image: image) else { return image }
+
+        var outputImage = ciImage
+
+        // Apply contrast enhancement
+        if options.increaseContrast {
+            if let filter = CIFilter(name: "CIColorControls") {
+                filter.setValue(outputImage, forKey: kCIInputImageKey)
+                filter.setValue(1.1, forKey: kCIInputContrastKey) // Slight contrast boost
+                if let result = filter.outputImage {
+                    outputImage = result
+                }
+            }
+        }
+
+        // Apply brightness adjustment
+        if options.adjustBrightness {
+            if let filter = CIFilter(name: "CIColorControls") {
+                filter.setValue(outputImage, forKey: kCIInputImageKey)
+                filter.setValue(0.05, forKey: kCIInputBrightnessKey) // Slight brightness boost
+                if let result = filter.outputImage {
+                    outputImage = result
+                }
+            }
+        }
+
+        // Apply sharpening for better edge detection
+        if options.enhanceImage {
+            if let filter = CIFilter(name: "CISharpenLuminance") {
+                filter.setValue(outputImage, forKey: kCIInputImageKey)
+                filter.setValue(0.4, forKey: kCIInputSharpnessKey)
+                if let result = filter.outputImage {
+                    outputImage = result
+                }
+            }
+        }
+
+        // Render the enhanced image
+        guard let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent) else {
+            return image
+        }
+
+        return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
 
     /// Normalize image to .up orientation by redrawing if needed

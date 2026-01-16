@@ -56,6 +56,8 @@ final class AppSettings {
         static let photoStorageQuality = "photoStorageQuality"
         static let autoAcceptThreshold = "autoAcceptThreshold"
         static let showConfidenceScores = "showConfidenceScores"
+        static let firstLaunchDate = "firstLaunchDate"
+        static let subscriptionLimitsVersion = "subscriptionLimitsVersion"
     }
 
     var photoStorageQuality: PhotoStorageQuality {
@@ -101,6 +103,62 @@ final class AppSettings {
 
     var photoTargetSize: CGSize {
         CGSize(width: photoResolution, height: photoResolution)
+    }
+
+    // MARK: - Subscription & Grace Period
+
+    /// Date when the app was first launched (used for grace period)
+    var firstLaunchDate: Date? {
+        get {
+            defaults.object(forKey: Keys.firstLaunchDate) as? Date
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.firstLaunchDate)
+        }
+    }
+
+    /// Version of subscription limits (for future migrations)
+    var subscriptionLimitsVersion: Int {
+        get {
+            defaults.integer(forKey: Keys.subscriptionLimitsVersion)
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.subscriptionLimitsVersion)
+        }
+    }
+
+    /// Whether this is an existing user (had data before subscription feature)
+    var isExistingUser: Bool {
+        guard let firstLaunch = firstLaunchDate else { return false }
+        // Subscription feature launch date - users before this are "existing"
+        let subscriptionFeatureLaunchDate = Date() // Will be set to actual launch date
+        return firstLaunch < subscriptionFeatureLaunchDate
+    }
+
+    /// Date when grace period expires for existing users
+    var gracePeriodExpirationDate: Date? {
+        guard let firstLaunch = firstLaunchDate else { return nil }
+        return Calendar.current.date(
+            byAdding: .day,
+            value: SubscriptionLimits.existingUserGracePeriodDays,
+            to: firstLaunch
+        )
+    }
+
+    /// Whether the user is currently in the grace period
+    var isInGracePeriod: Bool {
+        guard isExistingUser,
+              let expiration = gracePeriodExpirationDate else {
+            return false
+        }
+        return Date() < expiration
+    }
+
+    /// Record the first launch if not already recorded
+    func recordFirstLaunchIfNeeded() {
+        if firstLaunchDate == nil {
+            firstLaunchDate = Date()
+        }
     }
 
     private init() {}
