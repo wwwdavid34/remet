@@ -244,8 +244,9 @@ struct QuickCaptureReviewView: View {
     @State private var contextNote = ""
     @State private var locationName = ""
     @State private var isLoadingLocation = false
-    @State private var isRedetecting = false
-    @State private var redetectAttempts = 0
+    @State private var isLocatingFace = false
+    @State private var locateFaceMode = false
+    @State private var locateFaceError: String?
     @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
@@ -257,6 +258,12 @@ struct QuickCaptureReviewView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture { location in
+                            if locateFaceMode {
+                                handleLocateFaceTap(at: location, in: geometry.size, imageSize: image.size)
+                            }
+                        }
 
                     // Face detection overlays using normalized bounding box
                     ForEach(detectedFaces.indices, id: \.self) { index in
@@ -299,23 +306,49 @@ struct QuickCaptureReviewView: View {
 
                         Spacer()
 
-                        // Always-visible re-detect button
+                        // Missing faces button
                         Button {
-                            redetectFaces()
+                            locateFaceMode.toggle()
+                            if !locateFaceMode {
+                                locateFaceError = nil
+                            }
                         } label: {
                             HStack(spacing: 4) {
-                                if isRedetecting {
+                                if isLocatingFace {
                                     ProgressView()
                                         .scaleEffect(0.7)
                                 } else {
-                                    Image(systemName: "arrow.clockwise")
+                                    Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
                                 }
-                                Text("Re-detect")
+                                Text(locateFaceMode ? "Cancel" : "Missing?")
                             }
                             .font(.caption)
-                            .foregroundStyle(AppColors.teal)
+                            .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
                         }
-                        .disabled(isRedetecting)
+                        .disabled(isLocatingFace)
+                    }
+
+                    // Locate face mode indicator
+                    if locateFaceMode {
+                        VStack(spacing: 4) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "hand.tap")
+                                Text("Tap where you see a face in the photo")
+                            }
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.coral)
+
+                            if let error = locateFaceError {
+                                Text(error)
+                                    .font(.caption2)
+                                    .foregroundStyle(AppColors.warning)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(AppColors.coral.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
 
                     TextField("Name (required)", text: $name)
@@ -386,22 +419,85 @@ struct QuickCaptureReviewView: View {
         }
     }
 
-    private func redetectFaces() {
-        isRedetecting = true
-        redetectAttempts += 1
+    private func handleLocateFaceTap(at tapLocation: CGPoint, in viewSize: CGSize, imageSize: CGSize) {
+        isLocatingFace = true
+        locateFaceError = nil
 
         Task {
             do {
+                // Calculate scale and offset for scaledToFit
+                let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
+                let scaledWidth = imageSize.width * scale
+                let scaledHeight = imageSize.height * scale
+                let offsetX = (viewSize.width - scaledWidth) / 2
+                let offsetY = (viewSize.height - scaledHeight) / 2
+
+                // Convert tap location to image coordinates
+                let imageX = (tapLocation.x - offsetX) / scale
+                let imageY = (tapLocation.y - offsetY) / scale
+
+                // Define crop region (centered on tap, sized relative to image)
+                let cropSize = min(imageSize.width, imageSize.height) * 0.4
+                let cropRect = CGRect(
+                    x: max(0, imageX - cropSize / 2),
+                    y: max(0, imageY - cropSize / 2),
+                    width: min(cropSize, imageSize.width - max(0, imageX - cropSize / 2)),
+                    height: min(cropSize, imageSize.height - max(0, imageY - cropSize / 2))
+                )
+
+                // Crop the image
+                guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+                    await MainActor.run {
+                        locateFaceError = "Could not crop image region"
+                        isLocatingFace = false
+                    }
+                    return
+                }
+                let croppedImage = UIImage(cgImage: cgImage)
+
+                // Run face detection on cropped region
                 let faceDetectionService = FaceDetectionService()
-                // Use enhanced detection options for re-detection
-                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
-                await MainActor.run {
-                    detectedFaces = faces
-                    isRedetecting = false
+                let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
+
+                if let face = faces.first {
+                    // Translate bounding box from cropped coordinates to original image coordinates
+                    let cropNormRect = face.normalizedBoundingBox
+                    let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
+                    let originalY = (cropRect.origin.y + cropNormRect.origin.y * cropRect.height) / imageSize.height
+                    let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
+                    let originalHeight = (cropNormRect.height * cropRect.height) / imageSize.height
+
+                    // Create translated coordinates
+                    let translatedNormRect = CGRect(x: originalX, y: originalY, width: originalWidth, height: originalHeight)
+                    let translatedPixelRect = CGRect(
+                        x: originalX * imageSize.width,
+                        y: originalY * imageSize.height,
+                        width: originalWidth * imageSize.width,
+                        height: originalHeight * imageSize.height
+                    )
+
+                    // Create a new DetectedFace with translated coordinates
+                    let newFace = DetectedFace(
+                        boundingBox: translatedPixelRect,
+                        cropImage: face.cropImage,
+                        normalizedBoundingBox: translatedNormRect
+                    )
+
+                    await MainActor.run {
+                        detectedFaces.append(newFace)
+                        locateFaceMode = false
+                        isLocatingFace = false
+                    }
+                } else {
+                    await MainActor.run {
+                        locateFaceError = "No face found at that location"
+                        isLocatingFace = false
+                    }
                 }
             } catch {
                 await MainActor.run {
-                    isRedetecting = false
+                    locateFaceError = "Detection failed: \(error.localizedDescription)"
+                    isLocatingFace = false
                 }
             }
         }

@@ -26,8 +26,11 @@ struct EncounterDetailView: View {
     @State private var sessionEmbeddings: [UUID: (personId: UUID, embedding: [Float])] = [:]
     @State private var isPropagating = false
 
-    // Re-detection state
-    @State private var isRedetecting = false
+    // Manual face location state
+    @State private var isLocatingFace = false
+    @State private var locateFaceMode = false
+    @State private var locateFacePhotoIndex: Int = 0
+    @State private var locateFaceError: String?
 
     // Tag editing state
     @State private var showTagPicker = false
@@ -56,18 +59,21 @@ struct EncounterDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 16) {
-                    // Re-detect button (always visible)
+                    // Missing faces button
                     Button {
-                        redetectFaces()
+                        locateFaceMode.toggle()
+                        if !locateFaceMode {
+                            locateFaceError = nil
+                        }
                     } label: {
-                        if isRedetecting {
+                        if isLocatingFace {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Image(systemName: "arrow.clockwise")
+                            Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
                         }
                     }
-                    .disabled(isRedetecting)
+                    .disabled(isLocatingFace)
 
                     // Edit button
                     Button {
@@ -682,6 +688,22 @@ struct EncounterDetailView: View {
                             .font(.caption2)
                             .foregroundStyle(AppColors.teal)
                     }
+                } else if locateFaceMode {
+                    VStack(spacing: 4) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "hand.tap")
+                            Text("Tap where you see a face")
+                        }
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.coral)
+
+                        if let error = locateFaceError {
+                            Text(error)
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.warning)
+                        }
+                    }
                 } else {
                     Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos • Tap to expand")
                         .font(.caption2)
@@ -690,35 +712,55 @@ struct EncounterDetailView: View {
             }
         } else if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
             // Legacy single photo
-            ZStack {
+            GeometryReader { geometry in
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        if !isEditing {
+                    .onTapGesture { location in
+                        if locateFaceMode {
+                            handleLocateFaceTap(at: location, in: geometry.size, imageSize: image.size, photo: nil, image: image)
+                        } else if !isEditing {
                             showFullPhoto = true
                         }
                     }
-                    .allowsHitTesting(!isEditing)
+                    .allowsHitTesting(!isEditing || locateFaceMode)
                     .overlay {
-                        GeometryReader { geometry in
-                            ForEach(encounter.faceBoundingBoxes) { box in
-                                FaceBoxOverlay(
-                                    box: box,
-                                    imageSize: image.size,
-                                    viewSize: geometry.size,
-                                    onTap: {
+                        ForEach(encounter.faceBoundingBoxes) { box in
+                            FaceBoxOverlay(
+                                box: box,
+                                imageSize: image.size,
+                                viewSize: geometry.size,
+                                onTap: {
+                                    if !locateFaceMode {
                                         handleFaceBoxTap(box: box, photo: nil)
                                     }
-                                )
-                            }
+                                }
+                            )
                         }
                     }
             }
+            .aspectRatio(image.size, contentMode: .fit)
 
-            if isEditing {
+            if locateFaceMode {
+                VStack(spacing: 4) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "hand.tap")
+                        Text("Tap where you see a face")
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.coral)
+
+                    if let error = locateFaceError {
+                        Text(error)
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.warning)
+                    }
+                }
+            } else if isEditing {
                 Text("Tap any face to label or update")
                     .font(.caption2)
                     .foregroundStyle(.blue)
@@ -774,12 +816,14 @@ struct EncounterDetailView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        if !isEditing {
+                    .onTapGesture { location in
+                        if locateFaceMode {
+                            handleLocateFaceTap(at: location, in: geometry.size, imageSize: image.size, photo: photo, image: image)
+                        } else if !isEditing {
                             showFullPhoto = true
                         }
                     }
-                    .allowsHitTesting(!isEditing)
+                    .allowsHitTesting(!isEditing || locateFaceMode)
                     .overlay {
                         ForEach(photo.faceBoundingBoxes) { box in
                             FaceBoxOverlay(
@@ -787,7 +831,9 @@ struct EncounterDetailView: View {
                                 imageSize: image.size,
                                 viewSize: geometry.size,
                                 onTap: {
-                                    handleFaceBoxTap(box: box, photo: photo)
+                                    if !locateFaceMode {
+                                        handleFaceBoxTap(box: box, photo: photo)
+                                    }
                                 }
                             )
                         }
@@ -940,84 +986,84 @@ struct EncounterDetailView: View {
         }
     }
 
-    // MARK: - Re-detection
+    // MARK: - Manual Face Location
 
-    private func redetectFaces() {
-        isRedetecting = true
+    private func handleLocateFaceTap(at tapLocation: CGPoint, in viewSize: CGSize, imageSize: CGSize, photo: EncounterPhoto?, image: UIImage) {
+        isLocatingFace = true
+        locateFaceError = nil
 
         Task {
-            let faceDetectionService = FaceDetectionService()
-            let scannerService = PhotoLibraryScannerService()
-            let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
-
             do {
-                if hasMultiplePhotos {
-                    // Re-detect for multiple photos
-                    for photo in encounter.photos {
-                        guard let image = UIImage(data: photo.imageData) else { continue }
+                // Calculate scale and offset for scaledToFit
+                let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
+                let scaledWidth = imageSize.width * scale
+                let scaledHeight = imageSize.height * scale
+                let offsetX = (viewSize.width - scaledWidth) / 2
+                let offsetY = (viewSize.height - scaledHeight) / 2
 
-                        let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+                // Convert tap location to image coordinates
+                let imageX = (tapLocation.x - offsetX) / scale
+                let imageY = (tapLocation.y - offsetY) / scale
 
-                        // Create new bounding boxes
-                        var newBoxes: [FaceBoundingBox] = []
-                        for face in faces {
-                            let box = FaceBoundingBox(
-                                rect: face.normalizedBoundingBox,
-                                personId: nil,
-                                personName: nil,
-                                confidence: nil,
-                                isAutoAccepted: false
-                            )
-                            newBoxes.append(box)
-                        }
+                // Define crop region (centered on tap, sized relative to image)
+                let cropSize = min(imageSize.width, imageSize.height) * 0.4 // 40% of smaller dimension
+                let cropRect = CGRect(
+                    x: max(0, imageX - cropSize / 2),
+                    y: max(0, imageY - cropSize / 2),
+                    width: min(cropSize, imageSize.width - max(0, imageX - cropSize / 2)),
+                    height: min(cropSize, imageSize.height - max(0, imageY - cropSize / 2))
+                )
 
-                        // Try to match faces to known people
-                        let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
-                            faces: faces,
-                            people: allPeople,
-                            autoAcceptThreshold: autoAcceptThreshold
-                        )
-
-                        await MainActor.run {
-                            photo.faceBoundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
-                        }
+                // Crop the image
+                guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+                    await MainActor.run {
+                        locateFaceError = "Could not crop image region"
+                        isLocatingFace = false
                     }
-                } else if let imageData = encounter.displayImageData,
-                          let image = UIImage(data: imageData) {
-                    // Re-detect for legacy single photo
-                    let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
+                    return
+                }
+                let croppedImage = UIImage(cgImage: cgImage)
 
-                    var newBoxes: [FaceBoundingBox] = []
-                    for face in faces {
-                        let box = FaceBoundingBox(
-                            rect: face.normalizedBoundingBox,
-                            personId: nil,
-                            personName: nil,
-                            confidence: nil,
-                            isAutoAccepted: false
-                        )
-                        newBoxes.append(box)
-                    }
+                // Run face detection on cropped region
+                let faceDetectionService = FaceDetectionService()
+                let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
 
-                    let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
-                        faces: faces,
-                        people: allPeople,
-                        autoAcceptThreshold: autoAcceptThreshold
+                if let face = faces.first {
+                    // Translate bounding box from cropped coordinates to original image coordinates
+                    let cropNormRect = face.normalizedBoundingBox
+                    let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
+                    let originalY = (cropRect.origin.y + cropNormRect.origin.y * cropRect.height) / imageSize.height
+                    let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
+                    let originalHeight = (cropNormRect.height * cropRect.height) / imageSize.height
+
+                    let newBox = FaceBoundingBox(
+                        rect: CGRect(x: originalX, y: originalY, width: originalWidth, height: originalHeight),
+                        personId: nil,
+                        personName: nil,
+                        confidence: nil,
+                        isAutoAccepted: false
                     )
 
                     await MainActor.run {
-                        encounter.faceBoundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
+                        if let photo = photo {
+                            photo.faceBoundingBoxes.append(newBox)
+                        } else {
+                            encounter.faceBoundingBoxes.append(newBox)
+                        }
+                        locateFaceMode = false
+                        isLocatingFace = false
                     }
-                }
-
-                await MainActor.run {
-                    isRedetecting = false
+                } else {
+                    await MainActor.run {
+                        locateFaceError = "No face found at that location"
+                        isLocatingFace = false
+                    }
                 }
             } catch {
                 await MainActor.run {
-                    isRedetecting = false
+                    locateFaceError = "Detection failed: \(error.localizedDescription)"
+                    isLocatingFace = false
                 }
-                print("Re-detection error: \(error)")
             }
         }
     }
