@@ -36,6 +36,9 @@ struct EncounterGroupReviewView: View {
     @State private var lastAddedFaceId: UUID?
     @State private var lastAddedFacePhotoId: String?
 
+    // Focus state for name input
+    @FocusState private var isNameFieldFocused: Bool
+
     private let scannerService = PhotoLibraryScannerService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
 
@@ -584,9 +587,15 @@ struct EncounterGroupReviewView: View {
 
                 TextField("Name", text: $newPersonName)
                     .textContentType(.name)
+                    .focused($isNameFieldFocused)
             }
             .navigationTitle("New Person")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isNameFieldFocused = true
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -802,6 +811,9 @@ struct EncounterGroupReviewView: View {
 
         addEmbeddingToPerson(person, photo: photo, faceIndex: boxIndex)
 
+        // Propagate to other photos with similar faces
+        propagatePersonToOtherPhotos(person: person, sourcePhoto: photo, sourceFaceIndex: boxIndex)
+
         showPersonPicker = false
         selectedBoxIndex = nil
     }
@@ -821,6 +833,9 @@ struct EncounterGroupReviewView: View {
         photoFaceData[photo.id] = boxes
 
         addEmbeddingToPerson(person, photo: photo, faceIndex: boxIndex)
+
+        // Propagate to other photos with similar faces
+        propagatePersonToOtherPhotos(person: person, sourcePhoto: photo, sourceFaceIndex: boxIndex)
 
         newPersonName = ""
         showNewPersonSheet = false
@@ -850,6 +865,69 @@ struct EncounterGroupReviewView: View {
                 }
             } catch {
                 print("Error adding embedding: \(error)")
+            }
+        }
+    }
+
+    /// Propagate a person label to similar unidentified faces in other photos
+    private func propagatePersonToOtherPhotos(person: Person, sourcePhoto: ScannedPhoto, sourceFaceIndex: Int) {
+        guard sourceFaceIndex < sourcePhoto.detectedFaces.count else { return }
+        let sourceFace = sourcePhoto.detectedFaces[sourceFaceIndex]
+
+        Task {
+            let embeddingService = FaceEmbeddingService()
+            let matchingService = FaceMatchingService()
+
+            do {
+                // Generate embedding for the source face
+                let sourceEmbedding = try await embeddingService.generateEmbedding(for: sourceFace.cropImage)
+
+                // Check each other photo for similar unidentified faces
+                for otherPhoto in photoGroup.photos where otherPhoto.id != sourcePhoto.id {
+                    // Get current boxes for this photo
+                    guard let initialBoxes = await MainActor.run(body: { photoFaceData[otherPhoto.id] }) else { continue }
+
+                    // Track which indices to update and their new values
+                    var updates: [(index: Int, similarity: Float)] = []
+
+                    for (index, box) in initialBoxes.enumerated() {
+                        // Skip if already identified
+                        guard box.personId == nil else { continue }
+                        guard index < otherPhoto.detectedFaces.count else { continue }
+
+                        let otherFace = otherPhoto.detectedFaces[index]
+
+                        // Generate embedding for this face and compare
+                        let otherEmbedding = try await embeddingService.generateEmbedding(for: otherFace.cropImage)
+                        let similarity = matchingService.cosineSimilarity(sourceEmbedding, otherEmbedding)
+
+                        // If similar enough, mark for update
+                        if similarity >= autoAcceptThreshold {
+                            updates.append((index: index, similarity: similarity))
+                        }
+                    }
+
+                    // Apply all updates for this photo at once
+                    if !updates.isEmpty {
+                        await MainActor.run {
+                            guard var boxes = photoFaceData[otherPhoto.id] else { return }
+                            for update in updates {
+                                boxes[update.index].personId = person.id
+                                boxes[update.index].personName = person.name
+                                boxes[update.index].confidence = update.similarity
+                                boxes[update.index].isAutoAccepted = true
+                            }
+                            photoFaceData[otherPhoto.id] = boxes
+                        }
+
+                        // Add embeddings for matched faces
+                        for update in updates {
+                            addEmbeddingToPerson(person, photo: otherPhoto, faceIndex: update.index)
+                        }
+                    }
+                }
+            } catch {
+                print("Error propagating person to other photos: \(error)")
             }
         }
     }

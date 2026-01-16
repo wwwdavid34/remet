@@ -22,6 +22,9 @@ final class Person {
     var linkedIn: String?
     var twitter: String?
 
+    // Profile photo selection
+    var profileEmbeddingId: UUID?
+
     // Relationship building fields
     var howWeMet: String?
     var interestsData: Data?  // JSON array of strings
@@ -74,6 +77,15 @@ final class Person {
     /// Whether this person needs review based on spaced repetition
     var needsReview: Bool {
         spacedRepetitionData?.needsReview ?? true
+    }
+
+    /// The embedding to use for the profile photo (selected or first available)
+    var profileEmbedding: FaceEmbedding? {
+        if let profileId = profileEmbeddingId,
+           let selected = embeddings.first(where: { $0.id == profileId }) {
+            return selected
+        }
+        return embeddings.first
     }
 
     /// Recent interaction notes (last 5)

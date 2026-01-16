@@ -31,6 +31,9 @@ struct EncounterReviewView: View {
     @State private var redetectAttempts = 0
     @State private var localDetectedFaces: [DetectedFace] = []
 
+    // Focus state for name input
+    @FocusState private var isNameFieldFocused: Bool
+
     private let scannerService = PhotoLibraryScannerService()
     private let faceDetectionService = FaceDetectionService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
@@ -484,9 +487,15 @@ struct EncounterReviewView: View {
 
                 TextField("Name", text: $newPersonName)
                     .textContentType(.name)
+                    .focused($isNameFieldFocused)
             }
             .navigationTitle("New Person")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isNameFieldFocused = true
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

@@ -121,19 +121,17 @@ struct AddView: View {
                     .padding(.horizontal)
 
                     // Tips Section
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Text("Tips for Best Results")
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.textMuted)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            TipRow(icon: "sun.max", text: "Good lighting helps face detection", color: AppColors.warmYellow)
-                            TipRow(icon: "face.smiling", text: "Front-facing photos work best", color: AppColors.coral)
-                            TipRow(icon: "photo.stack", text: "Multiple photos improve recognition", color: AppColors.teal)
+                        VStack(alignment: .leading, spacing: 6) {
+                            TipRow(icon: "sun.max", text: "Good lighting helps face detection")
+                            TipRow(icon: "face.smiling", text: "Front-facing photos work best")
+                            TipRow(icon: "photo.stack", text: "Multiple photos improve recognition")
                         }
-                        .padding()
-                        .background(AppColors.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
                     }
                     .padding(.horizontal)
                 }
@@ -154,17 +152,17 @@ struct AddView: View {
 struct TipRow: View {
     let icon: String
     let text: String
-    var color: Color = AppColors.textSecondary
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: icon)
-                .foregroundStyle(color)
-                .frame(width: 24)
+                .font(.caption)
+                .foregroundStyle(AppColors.textMuted)
+                .frame(width: 20)
 
             Text(text)
-                .font(.subheadline)
-                .foregroundStyle(AppColors.textSecondary)
+                .font(.caption)
+                .foregroundStyle(AppColors.textMuted)
         }
     }
 }

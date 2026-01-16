@@ -444,8 +444,8 @@ struct PersonDetailView: View {
     @ViewBuilder
     private var headerSection: some View {
         VStack(spacing: 12) {
-            if let firstEmbedding = person.embeddings.first,
-               let image = UIImage(data: firstEmbedding.faceCropData) {
+            if let profileEmbedding = person.profileEmbedding,
+               let image = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -705,17 +705,15 @@ struct PersonDetailView: View {
                 }
 
                 // Legend
-                HStack(spacing: 16) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "photo.fill")
-                            .font(.caption2)
-                            .padding(3)
-                            .background(Circle().fill(AppColors.softPurple))
-                            .foregroundStyle(.white)
-                        Text("Has source photo")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
+                HStack(spacing: 4) {
+                    Image(systemName: "photo.fill")
+                        .font(.caption2)
+                        .padding(3)
+                        .background(Circle().fill(AppColors.softPurple))
+                        .foregroundStyle(.white)
+                    Text("Has source photo")
+                        .font(.caption2)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
                 .padding(.top, 4)
             }
@@ -1238,9 +1236,76 @@ struct EditPersonSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var person: Person
 
+    private let photoColumns = [
+        GridItem(.adaptive(minimum: 60), spacing: 8)
+    ]
+
     var body: some View {
         NavigationStack {
             Form {
+                // Profile Photo Section
+                if !person.embeddings.isEmpty {
+                    Section {
+                        VStack(spacing: 12) {
+                            // Current profile photo
+                            if let profileEmbedding = person.profileEmbedding,
+                               let image = UIImage(data: profileEmbedding.faceCropData) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 80, height: 80)
+                                    .clipShape(Circle())
+                                    .overlay(
+                                        Circle()
+                                            .stroke(AppColors.coral, lineWidth: 3)
+                                    )
+                            }
+
+                            Text("Tap to select profile photo")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textMuted)
+
+                            // Face samples grid
+                            LazyVGrid(columns: photoColumns, spacing: 8) {
+                                ForEach(person.embeddings) { embedding in
+                                    if let image = UIImage(data: embedding.faceCropData) {
+                                        let isSelected = person.profileEmbeddingId == embedding.id ||
+                                            (person.profileEmbeddingId == nil && person.embeddings.first?.id == embedding.id)
+
+                                        Button {
+                                            person.profileEmbeddingId = embedding.id
+                                        } label: {
+                                            Image(uiImage: image)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 60, height: 60)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .stroke(isSelected ? AppColors.coral : Color.clear, lineWidth: 2)
+                                                )
+                                                .overlay(alignment: .bottomTrailing) {
+                                                    if isSelected {
+                                                        Image(systemName: "checkmark.circle.fill")
+                                                            .font(.caption)
+                                                            .foregroundStyle(AppColors.coral)
+                                                            .background(Circle().fill(.white))
+                                                            .offset(x: 4, y: 4)
+                                                    }
+                                                }
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                    } header: {
+                        Text("Profile Photo")
+                    }
+                }
+
                 // Basic Info Section
                 Section {
                     HStack(spacing: 12) {

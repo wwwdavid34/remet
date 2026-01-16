@@ -195,14 +195,20 @@ struct HomeView: View {
                 .padding(.vertical)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Remet")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Remet")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(AppColors.coral)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showAccount = true
                     } label: {
                         Image(systemName: "person.circle.fill")
-                            .font(.title3)
+                            .font(.title2)
                             .foregroundStyle(AppColors.coral)
                     }
                 }
