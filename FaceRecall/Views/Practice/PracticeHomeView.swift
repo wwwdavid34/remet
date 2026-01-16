@@ -90,6 +90,40 @@ struct PracticeHomeView: View {
         totalAttempts > 0 ? Double(totalCorrect) / Double(totalAttempts) : 0
     }
 
+    /// Calculate accuracy trend compared to previous week
+    private var weeklyTrend: Int? {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let oneWeekAgo = calendar.date(byAdding: .day, value: -7, to: now),
+              let twoWeeksAgo = calendar.date(byAdding: .day, value: -14, to: now) else {
+            return nil
+        }
+
+        // Get all quiz attempts
+        let allAttempts = people.flatMap { $0.quizAttempts }
+
+        // This week's attempts
+        let thisWeekAttempts = allAttempts.filter { $0.attemptedAt >= oneWeekAgo }
+        let thisWeekCorrect = thisWeekAttempts.filter { $0.wasCorrect }.count
+        let thisWeekTotal = thisWeekAttempts.count
+
+        // Last week's attempts
+        let lastWeekAttempts = allAttempts.filter { $0.attemptedAt >= twoWeeksAgo && $0.attemptedAt < oneWeekAgo }
+        let lastWeekCorrect = lastWeekAttempts.filter { $0.wasCorrect }.count
+        let lastWeekTotal = lastWeekAttempts.count
+
+        // Need at least some attempts in both weeks
+        guard thisWeekTotal >= 3, lastWeekTotal >= 3 else { return nil }
+
+        let thisWeekAccuracy = Double(thisWeekCorrect) / Double(thisWeekTotal)
+        let lastWeekAccuracy = Double(lastWeekCorrect) / Double(lastWeekTotal)
+
+        let difference = Int((thisWeekAccuracy - lastWeekAccuracy) * 100)
+
+        // Only show if meaningful change
+        return abs(difference) >= 2 ? difference : nil
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -115,9 +149,9 @@ struct PracticeHomeView: View {
                     // Stats Overview
                     HStack(spacing: 12) {
                         PracticeStatCard(
-                            value: "\(peopleNeedingReview.count)",
-                            label: "Due Today",
-                            icon: "clock.badge",
+                            value: peopleNeedingReview.isEmpty ? "✓" : "\(peopleNeedingReview.count)",
+                            label: peopleNeedingReview.isEmpty ? "All Caught Up" : "Due Today",
+                            icon: peopleNeedingReview.isEmpty ? "checkmark.circle.fill" : "clock.badge",
                             color: peopleNeedingReview.isEmpty ? AppColors.success : AppColors.warning
                         )
 
@@ -125,7 +159,8 @@ struct PracticeHomeView: View {
                             value: totalAttempts > 0 ? "\(Int(overallAccuracy * 100))%" : "-",
                             label: "Accuracy",
                             icon: "target",
-                            color: overallAccuracy >= 0.8 ? AppColors.success : (overallAccuracy >= 0.5 ? AppColors.warning : AppColors.coral)
+                            color: overallAccuracy >= 0.8 ? AppColors.success : (overallAccuracy >= 0.5 ? AppColors.warning : AppColors.coral),
+                            trend: weeklyTrend
                         )
 
                         PracticeStatCard(
@@ -145,15 +180,25 @@ struct PracticeHomeView: View {
                                 .padding(.horizontal)
 
                             VStack(spacing: 10) {
-                                ForEach(QuizMode.allCases, id: \.self) { mode in
-                                    QuizModeButton(
-                                        mode: mode,
-                                        count: countForMode(mode),
-                                        isDisabled: mode == .troubleFaces && troubleFaces.isEmpty
-                                    ) {
-                                        selectedMode = mode
-                                        showingQuiz = true
-                                    }
+                                // Spaced Review with Recommended badge
+                                QuizModeButton(
+                                    mode: .spaced,
+                                    count: countForMode(.spaced),
+                                    isDisabled: false,
+                                    isRecommended: true
+                                ) {
+                                    selectedMode = .spaced
+                                    showingQuiz = true
+                                }
+
+                                // Random mode
+                                QuizModeButton(
+                                    mode: .random,
+                                    count: countForMode(.random),
+                                    isDisabled: false
+                                ) {
+                                    selectedMode = .random
+                                    showingQuiz = true
                                 }
                             }
                             .padding(.horizontal)
@@ -163,6 +208,82 @@ struct PracticeHomeView: View {
                                 .foregroundStyle(AppColors.textMuted)
                                 .italic()
                                 .padding(.horizontal)
+                        }
+
+                        // Trouble Faces section - only shown when there are struggling faces
+                        if !troubleFaces.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "flame.fill")
+                                            .foregroundStyle(AppColors.coral)
+                                        Text("Extra Practice Needed")
+                                            .font(.headline)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+
+                                Text("These \(troubleFaces.count) faces need more attention — you've got this!")
+                                    .font(.subheadline)
+                                    .foregroundStyle(AppColors.textSecondary)
+                                    .padding(.horizontal)
+
+                                Button {
+                                    selectedMode = .troubleFaces
+                                    showingQuiz = true
+                                } label: {
+                                    HStack(spacing: 14) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(AppColors.coral.opacity(0.15))
+                                                .frame(width: 44, height: 44)
+
+                                            Image(systemName: "bolt.heart.fill")
+                                                .font(.title3)
+                                                .foregroundStyle(AppColors.coral)
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Focus Practice")
+                                                .font(.subheadline)
+                                                .fontWeight(.semibold)
+                                                .foregroundStyle(AppColors.textPrimary)
+
+                                            Text("Drill the tricky ones")
+                                                .font(.caption)
+                                                .foregroundStyle(AppColors.textSecondary)
+                                        }
+
+                                        Spacer()
+
+                                        Text("\(troubleFaces.count)")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(.white)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(AppColors.coral)
+                                            .clipShape(Capsule())
+
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textMuted)
+                                    }
+                                    .padding(12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .fill(AppColors.cardBackground)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 14)
+                                                    .stroke(AppColors.coral.opacity(0.3), lineWidth: 1)
+                                            )
+                                    )
+                                    .shadow(color: AppColors.coral.opacity(0.1), radius: 6, x: 0, y: 3)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal)
+                            }
                         }
                     }
 
@@ -234,6 +355,7 @@ struct PracticeStatCard: View {
     let label: String
     let icon: String
     let color: Color
+    var trend: Int? = nil
 
     var body: some View {
         VStack(spacing: 8) {
@@ -245,9 +367,21 @@ struct PracticeStatCard: View {
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(AppColors.textPrimary)
 
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(AppColors.textSecondary)
+            VStack(spacing: 2) {
+                Text(label)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+
+                if let trend = trend {
+                    HStack(spacing: 2) {
+                        Image(systemName: trend > 0 ? "arrow.up" : "arrow.down")
+                            .font(.system(size: 9, weight: .bold))
+                        Text("\(abs(trend))% this week")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundStyle(trend > 0 ? AppColors.success : AppColors.coral)
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
@@ -337,6 +471,7 @@ struct QuizModeButton: View {
     let mode: QuizMode
     let count: Int
     let isDisabled: Bool
+    var isRecommended: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -352,15 +487,23 @@ struct QuizModeButton: View {
                         .foregroundStyle(mode.color)
                 }
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(mode.rawValue)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.textPrimary)
 
-                    Text(mode.description)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                    HStack(spacing: 6) {
+                        Text(mode.description)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+
+                        if isRecommended {
+                            Text("Best for learning")
+                                .font(.system(size: 10))
+                                .foregroundStyle(AppColors.success)
+                        }
+                    }
                 }
 
                 Spacer()

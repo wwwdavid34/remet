@@ -67,9 +67,9 @@ struct HomeView: View {
                         )
 
                         HomeStatCard(
-                            title: "Due Today",
-                            value: "\(reviewsDueToday)",
-                            icon: "brain.head.profile",
+                            title: reviewsDueToday > 0 ? "Due Today" : "On Track",
+                            value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "✓",
+                            icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
                             color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
                         )
                     }
@@ -93,14 +93,17 @@ struct HomeView: View {
 
                             HomeActionButton(
                                 title: "Practice",
-                                subtitle: peopleWithFaces.isEmpty ? "Add people first" : "Train your memory",
+                                subtitle: peopleWithFaces.isEmpty ? "Add 3 faces to unlock" : "Train your memory",
                                 icon: "brain.head.profile",
-                                gradient: [AppColors.teal, AppColors.teal.opacity(0.7)]
+                                gradient: [AppColors.teal, AppColors.teal.opacity(0.7)],
+                                isLocked: peopleWithFaces.isEmpty
                             ) {
-                                showPractice = true
+                                if peopleWithFaces.isEmpty {
+                                    showQuickCapture = true
+                                } else {
+                                    showPractice = true
+                                }
                             }
-                            .disabled(peopleWithFaces.isEmpty)
-                            .opacity(peopleWithFaces.isEmpty ? 0.5 : 1)
                         }
                         .padding(.horizontal)
                     }
@@ -284,14 +287,23 @@ struct HomeActionButton: View {
     let subtitle: String
     let icon: String
     let gradient: [Color]
+    var isLocked: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                HStack {
+                    Image(systemName: icon)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    if isLocked {
+                        Spacer()
+                        Image(systemName: "lock.fill")
+                            .font(.caption)
+                            .opacity(0.8)
+                    }
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -306,8 +318,14 @@ struct HomeActionButton: View {
             .padding()
             .background(
                 LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .opacity(isLocked ? 0.7 : 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: isLocked ? [6, 4] : []))
+                    .foregroundStyle(.white.opacity(isLocked ? 0.3 : 0))
+            )
             .shadow(color: gradient[0].opacity(0.4), radius: 8, x: 0, y: 4)
         }
     }

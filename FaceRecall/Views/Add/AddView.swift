@@ -51,6 +51,10 @@ struct AddView: View {
                                     Text("Quickly capture someone you just met")
                                         .font(.subheadline)
                                         .foregroundStyle(AppColors.textSecondary)
+
+                                    Text("You can edit details later")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.teal)
                                 }
 
                                 Spacer()

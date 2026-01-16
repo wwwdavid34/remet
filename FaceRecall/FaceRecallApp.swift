@@ -11,6 +11,7 @@ class AppState {
 struct RemetApp: App {
     @State private var appState = AppState()
     @State private var subscriptionManager = SubscriptionManager.shared
+    @State private var showSplash = true
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -34,18 +35,30 @@ struct RemetApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appState)
-                .environment(subscriptionManager)
-                .onOpenURL { url in
-                    handleIncomingURL(url)
+            Group {
+                if showSplash {
+                    SplashView()
+                } else {
+                    ContentView()
+                        .environment(appState)
+                        .environment(subscriptionManager)
+                        .onOpenURL { url in
+                            handleIncomingURL(url)
+                        }
                 }
-                .task {
-                    // Record first launch for grace period tracking
-                    AppSettings.shared.recordFirstLaunchIfNeeded()
-                    // Load subscription products
-                    await subscriptionManager.loadProducts()
+            }
+            .task {
+                // Record first launch for grace period tracking
+                AppSettings.shared.recordFirstLaunchIfNeeded()
+                // Load subscription products
+                await subscriptionManager.loadProducts()
+
+                // Dismiss splash after a brief delay
+                try? await Task.sleep(for: .seconds(1.8))
+                withAnimation(.easeOut(duration: 0.4)) {
+                    showSplash = false
                 }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

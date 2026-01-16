@@ -58,6 +58,7 @@
 		SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456006 /* LimitWarningBanner.swift */; };
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
 		SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SEARCH11234567890123001 /* GlobalSearchView.swift */; };
+		SPLASH01234567890123001 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SPLASH11234567890123001 /* SplashView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +116,7 @@
 		SUB101234567890123456006 /* LimitWarningBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitWarningBanner.swift; sourceTree = "<group>"; };
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
 		SEARCH11234567890123001 /* GlobalSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchView.swift; sourceTree = "<group>"; };
+		SPLASH11234567890123001 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -308,6 +310,7 @@
 			children = (
 				LOTTIE11234567890123403 /* AppLogoView.swift */,
 				LOTTIE11234567890123402 /* ScanningAnimationView.swift */,
+				SPLASH11234567890123001 /* SplashView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -459,6 +462,7 @@
 				LOTTIE01234567890123402 /* ScanningAnimationView.swift in Sources */,
 				LOTTIE01234567890123403 /* AppLogoView.swift in Sources */,
 				SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */,
+				SPLASH01234567890123001 /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

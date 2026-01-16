@@ -32,7 +32,7 @@ struct ContentView: View {
 
             AddView()
                 .tabItem {
-                    Label("Add", systemImage: "plus.circle.fill")
+                    Label("Capture", systemImage: "camera.fill")
                 }
 
             PracticeHomeView()
