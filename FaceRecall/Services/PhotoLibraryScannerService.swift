@@ -48,16 +48,29 @@ struct PhotoGroup: Identifiable {
 
 /// Time range options for scanning photos
 enum ScanTimeRange: String, CaseIterable, Identifiable {
-    case last24Hours = "Last 24 Hours"
-    case last3Days = "Last 3 Days"
-    case lastWeek = "Last Week"
-    case last2Weeks = "Last 2 Weeks"
-    case lastMonth = "Last Month"
-    case last3Months = "Last 3 Months"
-    case lastYear = "Last Year"
-    case allTime = "All Time"
+    case last24Hours
+    case last3Days
+    case lastWeek
+    case last2Weeks
+    case lastMonth
+    case last3Months
+    case lastYear
+    case allTime
 
     var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .last24Hours: return String(localized: "Last 24 Hours")
+        case .last3Days: return String(localized: "Last 3 Days")
+        case .lastWeek: return String(localized: "Last Week")
+        case .last2Weeks: return String(localized: "Last 2 Weeks")
+        case .lastMonth: return String(localized: "Last Month")
+        case .last3Months: return String(localized: "Last 3 Months")
+        case .lastYear: return String(localized: "Last Year")
+        case .allTime: return String(localized: "All Time")
+        }
+    }
 
     var startDate: Date? {
         let calendar = Calendar.current

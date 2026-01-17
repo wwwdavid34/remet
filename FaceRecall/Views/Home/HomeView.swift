@@ -258,7 +258,7 @@ struct HomeView: View {
 
 struct HomeStatCard: View {
     @Environment(\.colorScheme) private var colorScheme
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     let icon: String
     let color: Color
@@ -296,8 +296,8 @@ struct HomeStatCard: View {
 }
 
 struct HomeActionButton: View {
-    let title: String
-    let subtitle: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
     let icon: String
     let gradient: [Color]
     var isLocked: Bool = false

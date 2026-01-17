@@ -116,117 +116,117 @@ extension Color {
 
 enum WittyCopy {
     // Empty states
-    static let emptyPeopleTitle = "Your memory palace awaits"
-    static let emptyPeopleSubtitle = "Add your first person and watch the magic happen. Your future self will thank you."
+    static var emptyPeopleTitle: String { String(localized: "Your memory palace awaits") }
+    static var emptyPeopleSubtitle: String { String(localized: "Add your first person and watch the magic happen. Your future self will thank you.") }
 
-    static let emptyPracticeTitle = "Nothing to quiz... yet"
-    static let emptyPracticeSubtitle = "Add some faces first, then come back when your brain's ready for a workout."
+    static var emptyPracticeTitle: String { String(localized: "Nothing to quiz... yet") }
+    static var emptyPracticeSubtitle: String { String(localized: "Add some faces first, then come back when your brain's ready for a workout.") }
 
-    static let emptyEncountersTitle = "No encounters recorded"
-    static let emptyEncountersSubtitle = "Every great relationship starts somewhere. Start capturing those moments!"
+    static var emptyEncountersTitle: String { String(localized: "No encounters recorded") }
+    static var emptyEncountersSubtitle: String { String(localized: "Every great relationship starts somewhere. Start capturing those moments!") }
 
     // Quiz encouragement
-    static let quizGreetings = [
-        "Time to flex those brain muscles!",
-        "Let's see what you remember...",
-        "Your neurons are warming up!",
-        "Ready to impress yourself?",
-        "Challenge accepted?"
-    ]
+    static var quizGreetings: [String] { [
+        String(localized: "Time to flex those brain muscles!"),
+        String(localized: "Let's see what you remember..."),
+        String(localized: "Your neurons are warming up!"),
+        String(localized: "Ready to impress yourself?"),
+        String(localized: "Challenge accepted?")
+    ] }
 
-    static let quizCorrect = [
-        "Nailed it!",
-        "You're on fire!",
-        "Memory champion!",
-        "Boom! Got it!",
-        "Your brain says thanks!",
-        "Look at you go!",
-        "Absolutely stellar!",
-        "That's the one!",
-        "You remembered!",
-        "Perfect recall!",
-        "Gold star for you!",
-        "Crushed it!",
-        "Face: recognized!",
-        "Neural pathways firing!",
-        "Your memory impresses me!",
-        "Spot on!",
-        "Like a pro!",
-        "Mental high-five!",
-        "Synapse success!"
-    ]
+    static var quizCorrect: [String] { [
+        String(localized: "Nailed it!"),
+        String(localized: "You're on fire!"),
+        String(localized: "Memory champion!"),
+        String(localized: "Boom! Got it!"),
+        String(localized: "Your brain says thanks!"),
+        String(localized: "Look at you go!"),
+        String(localized: "Absolutely stellar!"),
+        String(localized: "That's the one!"),
+        String(localized: "You remembered!"),
+        String(localized: "Perfect recall!"),
+        String(localized: "Gold star for you!"),
+        String(localized: "Crushed it!"),
+        String(localized: "Face: recognized!"),
+        String(localized: "Neural pathways firing!"),
+        String(localized: "Your memory impresses me!"),
+        String(localized: "Spot on!"),
+        String(localized: "Like a pro!"),
+        String(localized: "Mental high-five!"),
+        String(localized: "Synapse success!")
+    ] }
 
-    static let quizIncorrect = [
-        "Almost! You'll get it next time.",
-        "That's what practice is for!",
-        "Learning in progress...",
-        "Every miss makes you stronger!",
-        "Your brain is taking notes.",
-        "Not quite, but you're learning!",
-        "Close! Keep at it!",
-        "Building those connections...",
-        "Memory under construction!",
-        "One step closer to mastery!",
-        "The neurons are rewiring!",
-        "Practice makes progress!",
-        "Your brain appreciates the workout!",
-        "Feedback received, adjusting...",
-        "Next time you'll nail it!",
-        "Oops! But hey, now you know!",
-        "Adding to the memory bank...",
-        "Brain update downloading..."
-    ]
+    static var quizIncorrect: [String] { [
+        String(localized: "Almost! You'll get it next time."),
+        String(localized: "That's what practice is for!"),
+        String(localized: "Learning in progress..."),
+        String(localized: "Every miss makes you stronger!"),
+        String(localized: "Your brain is taking notes."),
+        String(localized: "Not quite, but you're learning!"),
+        String(localized: "Close! Keep at it!"),
+        String(localized: "Building those connections..."),
+        String(localized: "Memory under construction!"),
+        String(localized: "One step closer to mastery!"),
+        String(localized: "The neurons are rewiring!"),
+        String(localized: "Practice makes progress!"),
+        String(localized: "Your brain appreciates the workout!"),
+        String(localized: "Feedback received, adjusting..."),
+        String(localized: "Next time you'll nail it!"),
+        String(localized: "Oops! But hey, now you know!"),
+        String(localized: "Adding to the memory bank..."),
+        String(localized: "Brain update downloading...")
+    ] }
 
-    static let sessionComplete80Plus = [
-        "Absolutely crushing it!",
-        "Your memory is elite!",
-        "Future you is impressed!",
-        "Memory master status: unlocked!"
-    ]
+    static var sessionComplete80Plus: [String] { [
+        String(localized: "Absolutely crushing it!"),
+        String(localized: "Your memory is elite!"),
+        String(localized: "Future you is impressed!"),
+        String(localized: "Memory master status: unlocked!")
+    ] }
 
-    static let sessionComplete50to80 = [
-        "Solid work! Keep building!",
-        "Getting better every session!",
-        "The neurons are connecting!",
-        "Progress looks good on you!"
-    ]
+    static var sessionComplete50to80: [String] { [
+        String(localized: "Solid work! Keep building!"),
+        String(localized: "Getting better every session!"),
+        String(localized: "The neurons are connecting!"),
+        String(localized: "Progress looks good on you!")
+    ] }
 
-    static let sessionCompleteUnder50 = [
-        "Every expert was once a beginner!",
-        "Rome wasn't built in a day!",
-        "You showed up - that's what counts!",
-        "Practice makes progress!"
-    ]
+    static var sessionCompleteUnder50: [String] { [
+        String(localized: "Every expert was once a beginner!"),
+        String(localized: "Rome wasn't built in a day!"),
+        String(localized: "You showed up - that's what counts!"),
+        String(localized: "Practice makes progress!")
+    ] }
 
     // Home screen
-    static let reviewNudge = [
-        "Your brain requested a workout",
-        "Some friendly faces need attention",
-        "Time for a quick review sesh?",
-        "Your memory muscles are getting restless"
-    ]
+    static var reviewNudge: [String] { [
+        String(localized: "Your brain requested a workout"),
+        String(localized: "Some friendly faces need attention"),
+        String(localized: "Time for a quick review sesh?"),
+        String(localized: "Your memory muscles are getting restless")
+    ] }
 
-    static let noReviewsNeeded = [
-        "All caught up! You're a star!",
-        "Memory inbox: zero. Nice work!",
-        "Nothing due - you're ahead of the game!"
-    ]
+    static var noReviewsNeeded: [String] { [
+        String(localized: "All caught up! You're a star!"),
+        String(localized: "Memory inbox: zero. Nice work!"),
+        String(localized: "Nothing due - you're ahead of the game!")
+    ] }
 
     // Quick capture
-    static let captureHints = [
-        "Smile! This one's for your memory bank.",
-        "Capturing a new connection...",
-        "Another face for the collection!"
-    ]
+    static var captureHints: [String] { [
+        String(localized: "Smile! This one's for your memory bank."),
+        String(localized: "Capturing a new connection..."),
+        String(localized: "Another face for the collection!")
+    ] }
 
     // Random greeting based on time
     static var timeBasedGreeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 5..<12: return "Good morning!"
-        case 12..<17: return "Good afternoon!"
-        case 17..<21: return "Good evening!"
-        default: return "Burning the midnight oil?"
+        case 5..<12: return String(localized: "Good morning!")
+        case 12..<17: return String(localized: "Good afternoon!")
+        case 17..<21: return String(localized: "Good evening!")
+        default: return String(localized: "Burning the midnight oil?")
         }
     }
 
