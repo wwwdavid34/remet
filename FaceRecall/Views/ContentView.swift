@@ -1,18 +1,11 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     init() {
-        // Set tab bar appearance with theme colors
+        // Configure tab bar with system appearance
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.systemBackground
-
-        // Selected item color
-        UITabBar.appearance().tintColor = UIColor(AppColors.coral)
-
-        // Unselected item color
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(AppColors.textMuted)
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textMuted)]
+        appearance.configureWithDefaultBackground()
 
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance

@@ -46,22 +46,21 @@ struct SettingsView: View {
                             .fontWeight(.medium)
                         Text("john@example.com")
                             .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(.secondary)
                     }
 
                     Spacer()
 
-                    Button("Sign Out") {
+                    Button("Sign Out", role: .destructive) {
                         // TODO: Implement sign out
                     }
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.coral)
                 }
             } else {
                 VStack(spacing: 12) {
                     Text("Sign in to sync your data across devices")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 4)
 
@@ -73,13 +72,10 @@ struct SettingsView: View {
                             Text("Sign In")
                         }
                         .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(AppColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppColors.teal)
+                    .controlSize(.large)
                 }
             }
         } header: {
@@ -367,7 +363,7 @@ struct PremiumFeatureRow: View {
                 .frame(width: 20)
             Text(text)
                 .font(.subheadline)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(.secondary)
         }
     }
 }
@@ -412,7 +408,7 @@ struct SignInSheet: View {
 
                     Text("Sync your data across all your devices")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 }
 
@@ -447,23 +443,15 @@ struct SignInSheet: View {
                             Text("Continue with Google")
                         }
                         .fontWeight(.medium)
-                        .foregroundStyle(AppColors.textPrimary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(AppColors.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
                 }
                 .padding(.horizontal, 32)
 
                 Text("By continuing, you agree to our Terms of Service and Privacy Policy")
                     .font(.caption)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
 

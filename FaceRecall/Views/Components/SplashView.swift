@@ -2,8 +2,7 @@ import SwiftUI
 
 struct SplashView: View {
     @State private var isAnimating = false
-    @State private var showTagline = false
-    @State private var currentTaglineIndex = 0
+    @State private var visibleTaglineCount = 0
 
     private let taglines = ["remember", "refresh", "remet"]
 
@@ -63,14 +62,17 @@ struct SplashView: View {
                     .font(.system(size: 42, weight: .bold, design: .rounded))
                     .foregroundStyle(AppColors.coral)
 
-                // Rolling tagline
-                Text(taglines[currentTaglineIndex])
-                    .font(.title2)
-                    .fontWeight(.medium)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .contentTransition(.numericText())
-                    .opacity(showTagline ? 1 : 0)
-                    .offset(y: showTagline ? 0 : 10)
+                // Stacked taglines appearing one by one
+                VStack(spacing: 4) {
+                    ForEach(Array(taglines.enumerated()), id: \.offset) { index, tagline in
+                        Text(tagline)
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .opacity(index < visibleTaglineCount ? 1 : 0)
+                            .offset(y: index < visibleTaglineCount ? 0 : 10)
+                    }
+                }
 
                 Spacer()
                 Spacer()
@@ -80,19 +82,18 @@ struct SplashView: View {
             withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
                 isAnimating = true
             }
-            withAnimation(.easeOut(duration: 0.3).delay(0.2)) {
-                showTagline = true
-            }
-            // Start rolling taglines
-            startTaglineRotation()
+            // Show taglines one by one
+            startTaglineSequence()
         }
     }
 
-    private func startTaglineRotation() {
-        // Cycle every 0.5s to fit all 3 words within 1.8s splash duration
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                currentTaglineIndex = (currentTaglineIndex + 1) % taglines.count
+    private func startTaglineSequence() {
+        // Show each tagline with 0.5s delay, fitting within 1.8s splash
+        for index in 0..<taglines.count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 + Double(index) * 0.5) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    visibleTaglineCount = index + 1
+                }
             }
         }
     }

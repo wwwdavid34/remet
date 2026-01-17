@@ -1,32 +1,82 @@
 import SwiftUI
+import UIKit
 
 // MARK: - App Colors
 
 enum AppColors {
-    // Primary palette - warm and friendly
-    static let coral = Color(red: 1.0, green: 0.42, blue: 0.42)       // #FF6B6B
-    static let teal = Color(red: 0.31, green: 0.80, blue: 0.77)       // #4ECDC4
-    static let warmYellow = Color(red: 1.0, green: 0.90, blue: 0.55)  // #FFE66D
-    static let softPurple = Color(red: 0.58, green: 0.44, blue: 0.86) // #9370DB
+    // MARK: - Brand Colors (Adaptive for Dark Mode)
 
-    // Backgrounds
-    static let warmBackground = Color(red: 0.99, green: 0.97, blue: 0.95)  // Warm cream
-    static let cardBackground = Color(red: 0.98, green: 0.98, blue: 0.97)  // Soft off-white #FAFAF7
-    static let cardShadow = Color.black.opacity(0.06)
+    /// Primary brand color - coral/salmon
+    static let coral = Color(
+        light: Color(red: 1.0, green: 0.42, blue: 0.42),      // #FF6B6B
+        dark: Color(red: 1.0, green: 0.50, blue: 0.50)        // Slightly brighter for dark mode
+    )
 
-    // Text colors - softer for less contrast
-    static let textPrimary = Color(red: 0.20, green: 0.20, blue: 0.20)     // #333333 - softer black
-    static let textSecondary = Color(red: 0.45, green: 0.45, blue: 0.45)   // #737373 - medium gray
-    static let textMuted = Color(red: 0.60, green: 0.60, blue: 0.60)       // #999999 - lighter gray
+    /// Secondary brand color - teal
+    static let teal = Color(
+        light: Color(red: 0.31, green: 0.80, blue: 0.77),     // #4ECDC4
+        dark: Color(red: 0.40, green: 0.85, blue: 0.82)       // Slightly brighter for dark mode
+    )
 
-    // Semantic colors
-    static let primary = coral
-    static let secondary = teal
-    static let accent = warmYellow
-    static let success = Color(red: 0.4, green: 0.8, blue: 0.5)       // Soft green
-    static let warning = Color(red: 1.0, green: 0.7, blue: 0.3)       // Warm orange
+    /// Accent color - warm yellow
+    static let warmYellow = Color(
+        light: Color(red: 1.0, green: 0.90, blue: 0.55),      // #FFE66D
+        dark: Color(red: 1.0, green: 0.85, blue: 0.45)        // Adjusted for dark mode
+    )
 
-    // Gradients
+    /// Soft purple accent
+    static let softPurple = Color(
+        light: Color(red: 0.58, green: 0.44, blue: 0.86),     // #9370DB
+        dark: Color(red: 0.68, green: 0.54, blue: 0.92)       // Brighter for dark mode
+    )
+
+    // MARK: - Semantic Text Colors (Use System Colors)
+
+    /// Primary text - use for main content
+    static var textPrimary: Color { .primary }
+
+    /// Secondary text - use for subtitles, captions
+    static var textSecondary: Color { .secondary }
+
+    /// Muted text - use for disabled, tertiary content
+    static var textMuted: Color { Color(UIColor.tertiaryLabel) }
+
+    // MARK: - Background Colors (Use System Backgrounds)
+
+    /// Primary background
+    static var background: Color { Color(UIColor.systemBackground) }
+
+    /// Grouped background (for lists, settings)
+    static var groupedBackground: Color { Color(UIColor.systemGroupedBackground) }
+
+    /// Card/elevated surface background
+    static var cardBackground: Color { Color(UIColor.secondarySystemBackground) }
+
+    /// Nested content within cards
+    static var tertiaryBackground: Color { Color(UIColor.tertiarySystemBackground) }
+
+    // MARK: - Semantic Action Colors
+
+    /// Primary action color
+    static var primary: Color { coral }
+
+    /// Secondary action color
+    static var secondary: Color { teal }
+
+    /// Accent color for highlights
+    static var accent: Color { warmYellow }
+
+    /// Success state - using system green for accessibility
+    static var success: Color { .green }
+
+    /// Warning state - using system orange for accessibility
+    static var warning: Color { .orange }
+
+    /// Error/destructive state
+    static var error: Color { .red }
+
+    // MARK: - Gradients
+
     static let primaryGradient = LinearGradient(
         colors: [coral, coral.opacity(0.8)],
         startPoint: .topLeading,
@@ -44,6 +94,22 @@ enum AppColors {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+
+    // MARK: - Legacy Support (for gradual migration)
+
+    /// Card shadow - use sparingly, prefer elevation in dark mode
+    static var cardShadow: Color { Color.black.opacity(0.06) }
+}
+
+// MARK: - Adaptive Color Extension
+
+extension Color {
+    /// Creates a color that adapts to light/dark mode
+    init(light: Color, dark: Color) {
+        self.init(UIColor { traits in
+            traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
+        })
+    }
 }
 
 // MARK: - Witty Copy
@@ -172,15 +238,23 @@ enum WittyCopy {
 // MARK: - Custom View Modifiers
 
 struct CardStyle: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
     func body(content: Content) -> some View {
         content
-            .background(AppColors.cardBackground)
+            .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: AppColors.cardShadow, radius: 6, x: 0, y: 2)
+            .shadow(
+                color: colorScheme == .dark ? .clear : Color.black.opacity(0.08),
+                radius: 8,
+                x: 0,
+                y: 4
+            )
     }
 }
 
 struct GradientCard: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
     let colors: [Color]
 
     func body(content: Content) -> some View {
@@ -189,13 +263,39 @@ struct GradientCard: ViewModifier {
                 LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
             )
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: colors[0].opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(
+                color: colorScheme == .dark ? .clear : colors[0].opacity(0.3),
+                radius: 8,
+                x: 0,
+                y: 4
+            )
+    }
+}
+
+/// Elevated card style using system backgrounds
+struct ElevatedCardStyle: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background(Color(UIColor.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(
+                color: colorScheme == .dark ? .clear : Color.black.opacity(0.06),
+                radius: 6,
+                x: 0,
+                y: 2
+            )
     }
 }
 
 extension View {
     func cardStyle() -> some View {
         modifier(CardStyle())
+    }
+
+    func elevatedCard() -> some View {
+        modifier(ElevatedCardStyle())
     }
 
     func gradientCard(colors: [Color]) -> some View {
@@ -215,24 +315,19 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: icon)
-                .font(.system(size: 70))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [AppColors.coral, AppColors.teal],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .font(.system(size: 64))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(AppColors.coral)
 
             VStack(spacing: 8) {
                 Text(title)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(.primary)
 
                 Text(subtitle)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -241,12 +336,10 @@ struct EmptyStateView: View {
                 Button(action: action) {
                     Text(actionTitle)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(AppColors.primaryGradient)
-                        .clipShape(Capsule())
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.coral)
+                .controlSize(.large)
                 .padding(.top, 8)
             }
         }
@@ -262,17 +355,19 @@ struct StatBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.title)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
                 .foregroundStyle(color)
 
             Text(label)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(color.opacity(0.1))
+        .background(color.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
