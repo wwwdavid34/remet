@@ -39,6 +39,8 @@
 	<string>Remet can save processed photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Remet needs access to your photos to identify people.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Remet can link people to your contacts and optionally update contact photos.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

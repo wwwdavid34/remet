@@ -22,6 +22,9 @@ final class Person {
     var linkedIn: String?
     var twitter: String?
 
+    // Contacts integration
+    var contactIdentifier: String?  // CNContact.identifier for linked contact
+
     // Profile photo selection
     var profileEmbeddingId: UUID?
 
