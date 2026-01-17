@@ -37,8 +37,9 @@ struct QuickCaptureView: View {
                     QuickCaptureReviewView(
                         image: image,
                         detectedFaces: $detectedFaces,
+                        existingPeople: people.filter { !$0.embeddings.isEmpty },
                         location: capturedLocation,
-                        onSave: { name, context, locationName in
+                        onSaveNew: { name, context, locationName in
                             // Check if we need to show the camera roll hint
                             if !AppSettings.shared.hasShownCameraRollHint {
                                 pendingSave = (name, context, locationName)
@@ -50,6 +51,12 @@ struct QuickCaptureView: View {
                                 }
                                 savePersonWithFace(name: name, context: context, locationName: locationName)
                             }
+                        },
+                        onSaveExisting: { person, context, locationName in
+                            if AppSettings.shared.savePhotosToCameraRoll {
+                                savePhotoToCameraRoll(image, location: capturedLocation)
+                            }
+                            addFaceToExistingPerson(person: person, context: context, locationName: locationName)
                         },
                         onRetake: {
                             capturedImage = nil
@@ -261,6 +268,87 @@ struct QuickCaptureView: View {
         }
     }
 
+    private func addFaceToExistingPerson(person: Person, context: String?, locationName: String?) {
+        guard capturedImage != nil else { return }
+        isProcessing = true
+
+        Task {
+            do {
+                // Get first detected face and create embedding
+                if let detectedFace = detectedFaces.first {
+                    let faceImage = detectedFace.cropImage
+                    let embeddingService = FaceEmbeddingService()
+                    let embedding = try await embeddingService.generateEmbedding(for: faceImage)
+                    if let faceData = faceImage.jpegData(compressionQuality: 0.8) {
+                        let faceEmbedding = FaceEmbedding(
+                            vector: embedding.withUnsafeBytes { Data($0) },
+                            faceCropData: faceData
+                        )
+                        faceEmbedding.person = person
+                        person.embeddings.append(faceEmbedding)
+                    }
+                }
+
+                // Prepare image data for encounter
+                let settings = AppSettings.shared
+                let resizedImage = resizeImage(capturedImage!, targetSize: settings.photoTargetSize)
+                guard let imageData = resizedImage.jpegData(compressionQuality: settings.photoJpegQuality) else {
+                    await MainActor.run {
+                        isProcessing = false
+                    }
+                    return
+                }
+
+                // Create an encounter to record the meeting with GPS
+                let encounter = Encounter(
+                    imageData: imageData,
+                    occasion: context ?? "Saw \(person.name)",
+                    location: locationName,
+                    latitude: capturedLocation?.coordinate.latitude,
+                    longitude: capturedLocation?.coordinate.longitude,
+                    date: Date()
+                )
+
+                // Create bounding boxes for detected faces
+                var boundingBoxes: [FaceBoundingBox] = []
+                for (index, face) in detectedFaces.enumerated() {
+                    let box = FaceBoundingBox(
+                        rect: face.normalizedBoundingBox,
+                        personId: index == 0 ? person.id : nil,
+                        personName: index == 0 ? person.name : nil,
+                        confidence: nil,
+                        isAutoAccepted: false
+                    )
+                    boundingBoxes.append(box)
+                }
+                encounter.faceBoundingBoxes = boundingBoxes
+
+                encounter.people.append(person)
+                person.encounters.append(encounter)
+
+                // Link embedding to encounter
+                if let embedding = person.embeddings.last {
+                    embedding.encounterId = encounter.id
+                    if let firstBox = boundingBoxes.first {
+                        embedding.boundingBoxId = firstBox.id
+                    }
+                }
+
+                await MainActor.run {
+                    modelContext.insert(encounter)
+                    try? modelContext.save()
+                    isProcessing = false
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    isProcessing = false
+                    print("Error adding face to person: \(error)")
+                }
+            }
+        }
+    }
+
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
         let size = image.size
         let widthRatio = targetSize.width / size.width
@@ -353,8 +441,10 @@ struct CameraPreviewView: View {
 struct QuickCaptureReviewView: View {
     let image: UIImage
     @Binding var detectedFaces: [DetectedFace]
+    let existingPeople: [Person]
     let location: CLLocation?
-    let onSave: (String, String?, String?) -> Void
+    let onSaveNew: (String, String?, String?) -> Void
+    let onSaveExisting: (Person, String?, String?) -> Void
     let onRetake: () -> Void
     let onCancel: () -> Void
 
@@ -366,7 +456,106 @@ struct QuickCaptureReviewView: View {
     @State private var locateFaceMode = false
     @State private var locateFaceError: String?
     @State private var lastAddedFaceIndex: Int?
+    @State private var matchSuggestions: [MatchResult] = []
+    @State private var isCheckingMatches = false
+    @State private var selectedExistingPerson: Person?
+    @State private var showExistingPersonPicker = false
     @FocusState private var nameFieldFocused: Bool
+
+    private let faceMatchingService = FaceMatchingService()
+    private let faceEmbeddingService = FaceEmbeddingService()
+
+    // MARK: - Match Suggestion Row
+    @ViewBuilder
+    private func matchSuggestionRow(for match: MatchResult) -> some View {
+        Button {
+            selectedExistingPerson = match.person
+            name = match.person.name
+        } label: {
+            HStack(spacing: 10) {
+                matchPersonThumbnail(for: match.person)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(match.person.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                    Text("\(Int(match.similarity * 100))% match")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                if selectedExistingPerson?.id == match.person.id {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(AppColors.teal)
+                } else {
+                    Image(systemName: "circle")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(selectedExistingPerson?.id == match.person.id ? AppColors.teal.opacity(0.1) : Color(UIColor.tertiarySystemBackground))
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func matchPersonThumbnail(for person: Person) -> some View {
+        if let embedding = person.embeddings.first,
+           let uiImage = UIImage(data: embedding.faceCropData) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(AppColors.teal.opacity(0.2))
+                .frame(width: 40, height: 40)
+                .overlay {
+                    Image(systemName: "person.fill")
+                        .foregroundStyle(AppColors.teal)
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var matchSuggestionsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Possible matches")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(AppColors.teal)
+
+            ForEach(matchSuggestions.prefix(3), id: \.person.id) { match in
+                matchSuggestionRow(for: match)
+            }
+
+            // Option to create new person instead
+            if selectedExistingPerson != nil {
+                Button {
+                    selectedExistingPerson = nil
+                    name = ""
+                } label: {
+                    HStack {
+                        Image(systemName: "person.badge.plus")
+                        Text("Create new person instead")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(AppColors.coral)
+                }
+                .padding(.top, 4)
+            }
+        }
+        .padding()
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -496,9 +685,37 @@ struct QuickCaptureReviewView: View {
                         .padding(.vertical, 4)
                     }
 
-                    TextField("Name (required)", text: $name)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($nameFieldFocused)
+                    // Match suggestions section
+                    if isCheckingMatches {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Checking for matches...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else if !matchSuggestions.isEmpty {
+                        matchSuggestionsSection
+                    }
+
+                    // Name field (hidden if existing person selected)
+                    if selectedExistingPerson == nil {
+                        TextField("Name (required)", text: $name)
+                            .textFieldStyle(.roundedBorder)
+                            .focused($nameFieldFocused)
+                    } else {
+                        HStack {
+                            Image(systemName: "person.fill.checkmark")
+                                .foregroundStyle(AppColors.teal)
+                            Text("Adding face to: \(selectedExistingPerson!.name)")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(AppColors.teal.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
 
                     TextField("Context (e.g., Met at conference)", text: $contextNote)
                         .textFieldStyle(.roundedBorder)
@@ -526,11 +743,20 @@ struct QuickCaptureReviewView: View {
                         }
                         .buttonStyle(.bordered)
 
-                        Button("Save") {
-                            onSave(name, contextNote.isEmpty ? nil : contextNote, locationName.isEmpty ? nil : locationName)
+                        if let existingPerson = selectedExistingPerson {
+                            Button("Add Face") {
+                                onSaveExisting(existingPerson, contextNote.isEmpty ? nil : contextNote, locationName.isEmpty ? nil : locationName)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColors.teal)
+                            .disabled(detectedFaces.isEmpty)
+                        } else {
+                            Button("Save New") {
+                                onSaveNew(name, contextNote.isEmpty ? nil : contextNote, locationName.isEmpty ? nil : locationName)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(name.isEmpty || detectedFaces.isEmpty)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(name.isEmpty || detectedFaces.isEmpty)
                     }
                 }
                 .padding()
@@ -539,6 +765,41 @@ struct QuickCaptureReviewView: View {
         .onAppear {
             nameFieldFocused = true
             reverseGeocodeIfNeeded()
+            checkForMatches()
+        }
+        .onChange(of: detectedFaces.count) { _, _ in
+            checkForMatches()
+        }
+    }
+
+    private func checkForMatches() {
+        guard let firstFace = detectedFaces.first, !existingPeople.isEmpty else {
+            matchSuggestions = []
+            return
+        }
+
+        isCheckingMatches = true
+
+        Task {
+            do {
+                let embedding = try await faceEmbeddingService.generateEmbedding(for: firstFace.cropImage)
+                let matches = faceMatchingService.findMatches(
+                    for: embedding,
+                    in: existingPeople,
+                    topK: 3,
+                    threshold: 0.65
+                )
+
+                await MainActor.run {
+                    matchSuggestions = matches
+                    isCheckingMatches = false
+                }
+            } catch {
+                await MainActor.run {
+                    matchSuggestions = []
+                    isCheckingMatches = false
+                }
+            }
         }
     }
 

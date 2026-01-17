@@ -66,6 +66,11 @@
 		CONTACT01234567890123001 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123001 /* ContactsManager.swift */; };
 		CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123002 /* ContactLinkSection.swift */; };
 		ENCEDIT01234567890123001 /* EncounterEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ENCEDIT11234567890123001 /* EncounterEditView.swift */; };
+		MSCAN01234567890123001 /* SilentScanCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123001 /* SilentScanCameraManager.swift */; };
+		MSCAN01234567890123002 /* MemoryScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123002 /* MemoryScanViewModel.swift */; };
+		MSCAN01234567890123003 /* MatchResultCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123003 /* MatchResultCard.swift */; };
+		MSCAN01234567890123004 /* MemoryScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123004 /* MemoryScanView.swift */; };
+		MSCAN01234567890123005 /* EphemeralMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123005 /* EphemeralMatchView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,6 +136,11 @@
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
 		CONTACT11234567890123001 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		CONTACT11234567890123002 /* ContactLinkSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactLinkSection.swift; sourceTree = "<group>"; };
+		MSCAN11234567890123001 /* SilentScanCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentScanCameraManager.swift; sourceTree = "<group>"; };
+		MSCAN11234567890123002 /* MemoryScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanViewModel.swift; sourceTree = "<group>"; };
+		MSCAN11234567890123003 /* MatchResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchResultCard.swift; sourceTree = "<group>"; };
+		MSCAN11234567890123004 /* MemoryScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanView.swift; sourceTree = "<group>"; };
+		MSCAN11234567890123005 /* EphemeralMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralMatchView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -184,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				3288E08FA232E739309636BC /* FaceReviewViewModel.swift */,
+				MSCAN11234567890123002 /* MemoryScanViewModel.swift */,
 				0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */,
 			);
 			path = ViewModels;
@@ -227,6 +238,7 @@
 				FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */,
 				REF001234567890123456001 /* ReferralCloudKitService.swift */,
 				REF001234567890123456002 /* ReferralManager.swift */,
+				MSCAN11234567890123001 /* SilentScanCameraManager.swift */,
 				SUB101234567890123456002 /* SubscriptionLimits.swift */,
 				SUB101234567890123456001 /* SubscriptionManager.swift */,
 			);
@@ -276,6 +288,7 @@
 				LOTTIE21234567890123401 /* Components */,
 				1696A6D6EB005A9CCA04D3C3 /* Encounters */,
 				EE12345678901234ABCD9999 /* Home */,
+				MSCAN21234567890123001 /* MemoryScan */,
 				F59944A0F4855F8DCD9AFD81 /* People */,
 				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
 				EE12345678901234ABCDAAAA /* Practice */,
@@ -368,6 +381,16 @@
 				SUB101234567890123456005 /* PaywallView.swift */,
 			);
 			path = Subscription;
+			sourceTree = "<group>";
+		};
+		MSCAN21234567890123001 /* MemoryScan */ = {
+			isa = PBXGroup;
+			children = (
+				MSCAN11234567890123005 /* EphemeralMatchView.swift */,
+				MSCAN11234567890123003 /* MatchResultCard.swift */,
+				MSCAN11234567890123004 /* MemoryScanView.swift */,
+			);
+			path = MemoryScan;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -499,6 +522,11 @@
 				REF101234567890123456004 /* EnterReferralCodeView.swift in Sources */,
 				CONTACT01234567890123001 /* ContactsManager.swift in Sources */,
 				CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */,
+				MSCAN01234567890123001 /* SilentScanCameraManager.swift in Sources */,
+				MSCAN01234567890123002 /* MemoryScanViewModel.swift in Sources */,
+				MSCAN01234567890123003 /* MatchResultCard.swift in Sources */,
+				MSCAN01234567890123004 /* MemoryScanView.swift in Sources */,
+				MSCAN01234567890123005 /* EphemeralMatchView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
