@@ -379,6 +379,13 @@ struct EncounterEditView: View {
                         .padding()
                         .background(Color(.secondarySystemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                removePersonFromEncounter(person)
+                            } label: {
+                                Label("Remove from Encounter", systemImage: "person.badge.minus")
+                            }
+                        }
                     }
                 }
 
@@ -795,6 +802,29 @@ struct EncounterEditView: View {
         }
         count += encounter.faceBoundingBoxes.filter { $0.personId == personId }.count
         return count
+    }
+
+    private func removePersonFromEncounter(_ person: Person) {
+        // Clear personId/personName from all bounding boxes referencing this person
+        for photo in encounter.photos {
+            for index in photo.faceBoundingBoxes.indices {
+                if photo.faceBoundingBoxes[index].personId == person.id {
+                    photo.faceBoundingBoxes[index].personId = nil
+                    photo.faceBoundingBoxes[index].personName = nil
+                }
+            }
+        }
+
+        // Also check legacy single-photo bounding boxes
+        for index in encounter.faceBoundingBoxes.indices {
+            if encounter.faceBoundingBoxes[index].personId == person.id {
+                encounter.faceBoundingBoxes[index].personId = nil
+                encounter.faceBoundingBoxes[index].personName = nil
+            }
+        }
+
+        // Remove person from encounter's people list
+        encounter.people.removeAll { $0.id == person.id }
     }
 
     private func countUnidentifiedFaces() -> Int {

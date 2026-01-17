@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
@@ -256,6 +257,7 @@ struct HomeView: View {
 // MARK: - Supporting Views
 
 struct HomeStatCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     let title: String
     let value: String
     let icon: String
@@ -273,18 +275,23 @@ struct HomeStatCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(.primary)
 
                 Text(title)
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(AppColors.cardBackground)
+        .background(Color(UIColor.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: color.opacity(0.15), radius: 8, x: 0, y: 4)
+        .shadow(
+            color: colorScheme == .dark ? .clear : color.opacity(0.15),
+            radius: 8,
+            x: 0,
+            y: 4
+        )
     }
 }
 
@@ -371,7 +378,7 @@ struct PersonReviewCard: View {
                 // Overdue indicator
                 if let daysOverdue = person.spacedRepetitionData?.daysUntilReview, daysOverdue < 0 {
                     Circle()
-                        .fill(AppColors.warning)
+                        .fill(.orange)
                         .frame(width: 20, height: 20)
                         .overlay {
                             Text("\(min(abs(daysOverdue), 99))")
@@ -385,7 +392,7 @@ struct PersonReviewCard: View {
             Text(person.name)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
         }
         .frame(width: 80)
@@ -394,6 +401,7 @@ struct PersonReviewCard: View {
 }
 
 struct RecentEncounterRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     let encounter: Encounter
 
     var body: some View {
@@ -426,7 +434,7 @@ struct RecentEncounterRow: View {
                 Text(encounter.occasion ?? "Encounter")
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(.primary)
 
                 HStack(spacing: 12) {
                     Label(encounter.date.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
@@ -435,7 +443,7 @@ struct RecentEncounterRow: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(.secondary)
 
                 if let location = encounter.location, !location.isEmpty {
                     Label(location, systemImage: "mappin")
@@ -449,12 +457,17 @@ struct RecentEncounterRow: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(AppColors.textMuted)
+                .foregroundStyle(.tertiary)
         }
         .padding(12)
-        .background(AppColors.cardBackground)
+        .background(Color(UIColor.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: AppColors.cardShadow, radius: 4, x: 0, y: 2)
+        .shadow(
+            color: colorScheme == .dark ? .clear : Color.black.opacity(0.06),
+            radius: 4,
+            x: 0,
+            y: 2
+        )
     }
 }
 

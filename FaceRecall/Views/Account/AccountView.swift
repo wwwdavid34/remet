@@ -64,22 +64,21 @@ struct AccountView: View {
                             .fontWeight(.medium)
                         Text("john@example.com")
                             .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(.secondary)
                     }
 
                     Spacer()
 
-                    Button("Sign Out") {
+                    Button("Sign Out", role: .destructive) {
                         // TODO: Implement sign out
                     }
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.coral)
                 }
             } else {
                 VStack(spacing: 12) {
                     Text("Sign in to sync your data across devices")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.vertical, 4)
 
@@ -91,13 +90,10 @@ struct AccountView: View {
                             Text("Sign In")
                         }
                         .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(AppColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppColors.teal)
+                    .controlSize(.large)
                 }
             }
         } header: {
@@ -121,7 +117,7 @@ struct AccountView: View {
                         if case .gracePeriod(let expiresAt) = subscriptionManager.subscriptionStatus {
                             Text("Renews \(expiresAt.formatted(date: .abbreviated, time: .omitted))")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(.secondary)
                         }
                     }
                     Spacer()
@@ -149,7 +145,7 @@ struct AccountView: View {
                             .foregroundStyle(AppColors.teal)
                         Text("\(people.count)/\(SubscriptionLimits.freePeopleLimit) people")
                             .font(.subheadline)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(.secondary)
                     }
 
                     VStack(alignment: .leading, spacing: 6) {
@@ -201,10 +197,10 @@ struct AccountView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Invite Friends")
                             .fontWeight(.medium)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(.primary)
                         Text("Get $0.50 credit for each referral")
                             .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(.secondary)
                     }
 
                     Spacer()
@@ -214,12 +210,12 @@ struct AccountView: View {
                         Text(referralManager.formattedBalance)
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .foregroundStyle(AppColors.success)
+                            .foregroundStyle(.green)
                     }
 
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(.tertiary)
                 }
             }
             .buttonStyle(.plain)
@@ -237,17 +233,17 @@ struct AccountView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Enter Code")
                                 .fontWeight(.medium)
-                                .foregroundStyle(AppColors.textPrimary)
+                                .foregroundStyle(.primary)
                             Text("Have a referral or promo code?")
                                 .font(.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(.secondary)
                         }
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(AppColors.textMuted)
+                            .foregroundStyle(.tertiary)
                     }
                 }
                 .buttonStyle(.plain)

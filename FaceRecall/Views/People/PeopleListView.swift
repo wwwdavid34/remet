@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct PeopleListView: View {
     @Environment(\.modelContext) private var modelContext
@@ -104,7 +105,7 @@ struct PeopleListView: View {
                 HStack {
                     Text("\(filteredPeople.count) people")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(.secondary)
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -137,6 +138,7 @@ struct PeopleListView: View {
 }
 
 struct PersonRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     let person: Person
 
     var body: some View {
@@ -147,12 +149,12 @@ struct PersonRow: View {
                 Text(person.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(.primary)
 
                 if let relationship = person.relationship {
                     Text(relationship)
                         .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(.secondary)
                 }
 
                 // Show tags
@@ -170,7 +172,7 @@ struct PersonRow: View {
                         if person.tags.count > 3 {
                             Text("+\(person.tags.count - 3)")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.textMuted)
+                                .foregroundStyle(.tertiary)
                         }
                     }
                 }
@@ -178,7 +180,7 @@ struct PersonRow: View {
                 if let lastSeen = person.lastSeenAt {
                     Text("Last viewed \(lastSeen.formatted(.relative(presentation: .named)))")
                         .font(.caption2)
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(.tertiary)
                 }
             }
 
@@ -197,19 +199,24 @@ struct PersonRow: View {
                     .foregroundStyle(AppColors.teal)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(AppColors.teal.opacity(0.1))
+                    .background(AppColors.teal.opacity(0.12))
                     .clipShape(Capsule())
                 }
 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(.tertiary)
             }
         }
         .padding(12)
-        .background(AppColors.cardBackground)
+        .background(Color(UIColor.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .shadow(
+            color: colorScheme == .dark ? .clear : Color.black.opacity(0.04),
+            radius: 4,
+            x: 0,
+            y: 2
+        )
     }
 
     @ViewBuilder
