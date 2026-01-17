@@ -9,6 +9,13 @@ struct GlobalSearchView: View {
     @State private var searchText = ""
     @State private var selectedTab: SearchTab = .all
 
+    // Memory scan state
+    @State private var showMemoryScan = false
+    @State private var showImageMatch = false
+    @State private var showPremiumRequired = false
+
+    private var subscriptionManager: SubscriptionManager { .shared }
+
     enum SearchTab: String, CaseIterable {
         case all = "All"
         case people = "People"
@@ -59,12 +66,21 @@ struct GlobalSearchView: View {
             }
             .navigationTitle("Search")
             .searchable(text: $searchText, prompt: "Search people, encounters, tags...")
+            .fullScreenCover(isPresented: $showMemoryScan) {
+                MemoryScanView()
+            }
+            .sheet(isPresented: $showImageMatch) {
+                EphemeralMatchView()
+            }
+            .sheet(isPresented: $showPremiumRequired) {
+                PaywallView()
+            }
         }
     }
 
     @ViewBuilder
     private var emptySearchState: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             Spacer()
 
             Image(systemName: "magnifyingglass")
@@ -83,6 +99,73 @@ struct GlobalSearchView: View {
                 .padding(.horizontal, 40)
 
             Spacer()
+
+            // Quick scan buttons
+            VStack(spacing: 12) {
+                Text("Or identify someone quickly")
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
+
+                HStack(spacing: 16) {
+                    // Live Memory Scan (free)
+                    Button {
+                        showMemoryScan = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "eye")
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Live Scan")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text("Use camera")
+                                    .font(.caption)
+                                    .opacity(0.8)
+                            }
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .padding(.horizontal, 16)
+                        .background(AppColors.teal)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .accessibilityLabel("Live Memory Scan")
+                    .accessibilityHint("Scan a face with your camera to identify someone")
+
+                    // Ephemeral Image Match (premium)
+                    Button {
+                        if subscriptionManager.isPremium {
+                            showImageMatch = true
+                        } else {
+                            showPremiumRequired = true
+                        }
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "photo")
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("From Photo")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text(subscriptionManager.isPremium ? "Pick image" : "Premium")
+                                    .font(.caption)
+                                    .opacity(0.8)
+                            }
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .padding(.horizontal, 16)
+                        .background(subscriptionManager.isPremium ? AppColors.softPurple : AppColors.textMuted)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .accessibilityLabel("Quick Match from Photo")
+                    .accessibilityHint(subscriptionManager.isPremium ? "Select a photo to identify a face" : "Premium feature - upgrade to unlock")
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 32)
         }
     }
 
