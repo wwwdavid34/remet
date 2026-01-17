@@ -172,7 +172,7 @@ struct EncounterScannerView: View {
                         // Preset time range picker
                         Picker("Time Range", selection: $selectedTimeRange) {
                             ForEach(ScanTimeRange.allCases) { range in
-                                Text(range.rawValue).tag(range)
+                                Text(range.localizedName).tag(range)
                             }
                         }
                         .pickerStyle(.menu)

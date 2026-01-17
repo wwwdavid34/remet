@@ -43,5 +43,14 @@
 	<string>Remet can link people to your contacts and optionally update contact photos.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+		<string>ja</string>
+	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
 </dict>
 </plist>

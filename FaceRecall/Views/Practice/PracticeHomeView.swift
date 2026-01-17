@@ -4,9 +4,17 @@ import SwiftData
 // MARK: - Quiz Mode
 
 enum QuizMode: String, CaseIterable {
-    case spaced = "Spaced Review"
-    case random = "Random"
-    case troubleFaces = "Trouble Faces"
+    case spaced
+    case random
+    case troubleFaces
+
+    var localizedName: String {
+        switch self {
+        case .spaced: return String(localized: "Spaced Review")
+        case .random: return String(localized: "Random")
+        case .troubleFaces: return String(localized: "Trouble Faces")
+        }
+    }
 
     var icon: String {
         switch self {
@@ -24,11 +32,11 @@ enum QuizMode: String, CaseIterable {
         }
     }
 
-    var description: String {
+    var localizedDescription: String {
         switch self {
-        case .spaced: return "Due for review"
-        case .random: return "Mix it up"
-        case .troubleFaces: return "Need more practice"
+        case .spaced: return String(localized: "Due for review")
+        case .random: return String(localized: "Mix it up")
+        case .troubleFaces: return String(localized: "Need more practice")
         }
     }
 }
@@ -352,7 +360,7 @@ struct PracticeHomeView: View {
 
 struct PracticeStatCard: View {
     let value: String
-    let label: String
+    let label: LocalizedStringKey
     let icon: String
     let color: Color
     var trend: Int? = nil
@@ -431,11 +439,11 @@ struct ReviewPersonRow: View {
                 if let srData = person.spacedRepetitionData {
                     HStack(spacing: 8) {
                         if srData.daysUntilReview < 0 {
-                            Label("\(abs(srData.daysUntilReview))d overdue", systemImage: "exclamationmark.circle")
+                            Label(String(localized: "\(abs(srData.daysUntilReview))d overdue"), systemImage: "exclamationmark.circle")
                                 .font(.caption)
                                 .foregroundStyle(AppColors.warning)
                         } else if srData.daysUntilReview == 0 {
-                            Label("Due today", systemImage: "clock")
+                            Label(String(localized: "Due today"), systemImage: "clock")
                                 .font(.caption)
                                 .foregroundStyle(AppColors.warning)
                         }
@@ -448,7 +456,7 @@ struct ReviewPersonRow: View {
                         }
                     }
                 } else {
-                    Label("New face - never practiced", systemImage: "sparkles")
+                    Label(String(localized: "New face - never practiced"), systemImage: "sparkles")
                         .font(.caption)
                         .foregroundStyle(AppColors.teal)
                 }
@@ -488,13 +496,13 @@ struct QuizModeButton: View {
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(mode.rawValue)
+                    Text(mode.localizedName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.textPrimary)
 
                     HStack(spacing: 6) {
-                        Text(mode.description)
+                        Text(mode.localizedDescription)
                             .font(.caption)
                             .foregroundStyle(AppColors.textSecondary)
 

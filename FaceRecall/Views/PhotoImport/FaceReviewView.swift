@@ -311,11 +311,11 @@ struct FaceReviewView: View {
     private func confidenceText(_ confidence: MatchConfidence) -> String {
         switch confidence {
         case .high:
-            return "High confidence match"
+            return String(localized: "High confidence match")
         case .ambiguous:
-            return "Possible match - please confirm"
+            return String(localized: "Possible match - please confirm")
         case .none:
-            return "Low confidence"
+            return String(localized: "Low confidence")
         }
     }
 

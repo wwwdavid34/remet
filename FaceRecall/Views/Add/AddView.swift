@@ -151,7 +151,7 @@ struct AddView: View {
 
 struct TipRow: View {
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         HStack(spacing: 10) {

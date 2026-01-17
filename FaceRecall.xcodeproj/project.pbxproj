@@ -19,6 +19,7 @@
 		485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */; };
 		5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */; };
 		5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */; };
+		I18N0000000000000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = I18N0000000000000002 /* Localizable.xcstrings */; };
 		64B3A403F33CA30EFE1083F1 /* EncounterPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00B1011B712E7D328924F89 /* EncounterPhoto.swift */; };
 		86694CAB9CF2B96CDF1831B2 /* PhotoLibraryScannerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED0AB82636737E70936358D /* PhotoLibraryScannerService.swift */; };
 		8C36C829234EC13B893C9CB7 /* Encounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348E869ACF2525A268D748AD /* Encounter.swift */; };
@@ -75,6 +76,7 @@
 
 /* Begin PBXFileReference section */
 		02112CCAA67194FC17030246 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		I18N0000000000000002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		08901234567890123456789A /* TagViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViews.swift; sourceTree = "<group>"; };
 		0A582E01238D8B1A2927C2AA /* PhotoImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportViewModel.swift; sourceTree = "<group>"; };
 		136678A83EB1FE26EC1E66DF /* EncounterScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterScannerView.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 				A5DD6B7A59F959F26C22F51C /* FaceRecall.entitlements */,
 				9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */,
 				02112CCAA67194FC17030246 /* Info.plist */,
+				I18N0000000000000002 /* Localizable.xcstrings */,
 				17304AF23F62CBD871866F08 /* Models */,
 				AC72687B36ED8335762E4E5E /* Resources */,
 				6A8A3854AF6914AD996CE1F2 /* Services */,
@@ -455,6 +458,7 @@
 			files = (
 				A786CD912F1A368700B00E0D /* Products.storekit in Resources */,
 				5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */,
+				I18N0000000000000001 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
