@@ -31,30 +31,21 @@ struct SplashView: View {
                             RadialGradient(
                                 colors: [AppColors.coral.opacity(0.3), AppColors.coral.opacity(0)],
                                 center: .center,
-                                startRadius: 40,
-                                endRadius: 80
+                                startRadius: 60,
+                                endRadius: 100
                             )
                         )
-                        .frame(width: 160, height: 160)
-                        .scaleEffect(isAnimating ? 1.2 : 1.0)
+                        .frame(width: 180, height: 180)
+                        .scaleEffect(isAnimating ? 1.15 : 1.0)
 
-                    // Main circle
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral, AppColors.coral.opacity(0.8)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 100, height: 100)
+                    // App icon
+                    Image("SplashLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
+                        .clipShape(RoundedRectangle(cornerRadius: 28))
                         .shadow(color: AppColors.coral.opacity(0.4), radius: 20, x: 0, y: 10)
-
-                    // Icon
-                    Image(systemName: "face.smiling.inverse")
-                        .font(.system(size: 44, weight: .medium))
-                        .foregroundStyle(.white)
-                        .scaleEffect(isAnimating ? 1.05 : 1.0)
+                        .scaleEffect(isAnimating ? 1.03 : 1.0)
                 }
 
                 // App name

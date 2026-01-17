@@ -89,11 +89,14 @@ struct AccountView: View {
                             Image(systemName: "person.crop.circle.badge.plus")
                             Text("Sign In")
                         }
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(AppColors.teal)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.teal)
-                    .controlSize(.large)
+                    .buttonStyle(.plain)
                 }
             }
         } header: {

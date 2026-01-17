@@ -71,11 +71,14 @@ struct SettingsView: View {
                             Image(systemName: "person.crop.circle.badge.plus")
                             Text("Sign In")
                         }
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(AppColors.teal)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.teal)
-                    .controlSize(.large)
+                    .buttonStyle(.plain)
                 }
             }
         } header: {
@@ -424,10 +427,10 @@ struct SignInSheet: View {
                             Image(systemName: "apple.logo")
                             Text("Continue with Apple")
                         }
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .frame(height: 50)
                         .background(Color.black)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
@@ -442,12 +445,20 @@ struct SignInSheet: View {
                             Image(systemName: "g.circle.fill")
                             Text("Continue with Google")
                         }
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(UIColor.separator), lineWidth: 1)
+                        )
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
+                    .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 32)
+                .padding(.horizontal, 24)
 
                 Text("By continuing, you agree to our Terms of Service and Privacy Policy")
                     .font(.caption)
