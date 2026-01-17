@@ -30,6 +30,7 @@ struct PersonDetailView: View {
             VStack(spacing: 20) {
                 headerSection
                 quickActionsSection
+                ContactLinkSection(person: person)
                 tagsSection
                 talkingPointsSection
                 interestsSection
@@ -107,54 +108,61 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var quickActionsSection: some View {
-        if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
-            HStack(spacing: 12) {
-                Link(destination: url) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "phone.fill")
-                            .font(.body)
-                        Text("Call \(person.name.components(separatedBy: " ").first ?? person.name)")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+        let hasPhone = person.phone != nil && !person.phone!.isEmpty
+        let hasEmail = person.email != nil && !person.email!.isEmpty
+
+        if hasPhone || hasEmail {
+            HStack(spacing: 8) {
+                if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
+                    Link(destination: url) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "phone.fill")
+                                .font(.body)
+                            Text("Call")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(AppColors.success.opacity(0.1))
+                        .foregroundStyle(AppColors.success)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(AppColors.success.opacity(0.1))
-                    .foregroundStyle(AppColors.success)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                    if let smsUrl = URL(string: "sms:\(phone)") {
+                        Link(destination: smsUrl) {
+                            VStack(spacing: 4) {
+                                Image(systemName: "message.fill")
+                                    .font(.body)
+                                Text("Message")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(AppColors.coral.opacity(0.1))
+                            .foregroundStyle(AppColors.coral)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
                 }
 
                 if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
                     Link(destination: emailUrl) {
-                        HStack(spacing: 8) {
+                        VStack(spacing: 4) {
                             Image(systemName: "envelope.fill")
                                 .font(.body)
                             Text("Email")
-                                .font(.subheadline)
+                                .font(.caption)
                                 .fontWeight(.medium)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 10)
                         .background(AppColors.teal.opacity(0.1))
                         .foregroundStyle(AppColors.teal)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 }
-            }
-        } else if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
-            Link(destination: emailUrl) {
-                HStack(spacing: 8) {
-                    Image(systemName: "envelope.fill")
-                        .font(.body)
-                    Text("Email \(person.name.components(separatedBy: " ").first ?? person.name)")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(AppColors.teal.opacity(0.1))
-                .foregroundStyle(AppColors.teal)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
     }

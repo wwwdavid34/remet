@@ -63,6 +63,8 @@
 		SUB001234567890123456005 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456005 /* PaywallView.swift */; };
 		SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456006 /* LimitWarningBanner.swift */; };
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
+		CONTACT01234567890123001 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123001 /* ContactsManager.swift */; };
+		CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123002 /* ContactLinkSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -125,6 +127,8 @@
 		SUB101234567890123456005 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456006 /* LimitWarningBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitWarningBanner.swift; sourceTree = "<group>"; };
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
+		CONTACT11234567890123001 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
+		CONTACT11234567890123002 /* ContactLinkSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactLinkSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -212,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				B2C3D4E5F67890123456789A /* AppSettings.swift */,
+				CONTACT11234567890123001 /* ContactsManager.swift */,
 				C7721CC6021EBA1BD7660260 /* FaceDetectionService.swift */,
 				F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */,
 				97598B0F79F458D52747CC36 /* FaceMatchingService.swift */,
@@ -310,6 +315,7 @@
 			isa = PBXGroup;
 			children = (
 				D1936AE11B96771B5BA23123 /* AddPersonView.swift */,
+				CONTACT11234567890123002 /* ContactLinkSection.swift */,
 				1D72EB0E3E569F7446794DCB /* PeopleListView.swift */,
 				B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */,
 			);
@@ -487,6 +493,8 @@
 				REF101234567890123456002 /* ReferralManager.swift in Sources */,
 				REF101234567890123456003 /* InviteFriendsView.swift in Sources */,
 				REF101234567890123456004 /* EnterReferralCodeView.swift in Sources */,
+				CONTACT01234567890123001 /* ContactsManager.swift in Sources */,
+				CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
