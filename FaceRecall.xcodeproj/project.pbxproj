@@ -65,6 +65,7 @@
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
 		CONTACT01234567890123001 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123001 /* ContactsManager.swift */; };
 		CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123002 /* ContactLinkSection.swift */; };
+		ENCEDIT01234567890123001 /* EncounterEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ENCEDIT11234567890123001 /* EncounterEditView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -90,6 +91,7 @@
 		A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
 		A786CD902F1A368700B00E0D /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterGroupReviewView.swift; sourceTree = "<group>"; };
+		ENCEDIT11234567890123001 /* EncounterEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterEditView.swift; sourceTree = "<group>"; };
 		B2C3D4E5F67890123456789A /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
 		BB12345678901234ABCD1111 /* InteractionNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionNote.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			children = (
 				4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */,
 				AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */,
+				ENCEDIT11234567890123001 /* EncounterEditView.swift */,
 				5EB0B5CEB3DEDE4544E11EEF /* EncounterListView.swift */,
 				8BB195FC695B0732BBC46031 /* EncounterReviewView.swift */,
 				136678A83EB1FE26EC1E66DF /* EncounterScannerView.swift */,
@@ -449,6 +452,7 @@
 				8C36C829234EC13B893C9CB7 /* Encounter.swift in Sources */,
 				2B3F40404949E448D027EF57 /* EncounterDetailView.swift in Sources */,
 				A0E4D627C6A490706B71196C /* EncounterGroupReviewView.swift in Sources */,
+				ENCEDIT01234567890123001 /* EncounterEditView.swift in Sources */,
 				98A3959331427B49C4503362 /* EncounterListView.swift in Sources */,
 				64B3A403F33CA30EFE1083F1 /* EncounterPhoto.swift in Sources */,
 				F0E4CA6473B9BB4F3ACDE1FE /* EncounterReviewView.swift in Sources */,

@@ -211,10 +211,15 @@ struct SettingsView: View {
                 get: { settings.showConfidenceScores },
                 set: { settings.showConfidenceScores = $0 }
             ))
+
+            Toggle("Show Face Boxes", isOn: Binding(
+                get: { settings.showBoundingBoxes },
+                set: { settings.showBoundingBoxes = $0 }
+            ))
         } header: {
             Text("Face Matching")
         } footer: {
-            Text("Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives.")
+            Text("Faces matched above the threshold are automatically labeled. Face boxes are always shown when editing.")
         }
     }
 

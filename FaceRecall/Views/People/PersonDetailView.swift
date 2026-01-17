@@ -923,14 +923,16 @@ struct FaceSourcePhotoView: View {
                 .scaledToFit()
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay {
-                    GeometryReader { geometry in
-                        ForEach(encounter.faceBoundingBoxes) { box in
-                            FaceSourceBoxOverlay(
-                                box: box,
-                                imageSize: image.size,
-                                viewSize: geometry.size,
-                                highlightPersonId: person.id
-                            )
+                    if AppSettings.shared.showBoundingBoxes {
+                        GeometryReader { geometry in
+                            ForEach(encounter.faceBoundingBoxes) { box in
+                                FaceSourceBoxOverlay(
+                                    box: box,
+                                    imageSize: image.size,
+                                    viewSize: geometry.size,
+                                    highlightPersonId: person.id
+                                )
+                            }
                         }
                     }
                 }
@@ -945,14 +947,16 @@ struct FaceSourcePhotoView: View {
                 .scaledToFit()
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay {
-                    GeometryReader { geometry in
-                        ForEach(boxes) { box in
-                            FaceSourceBoxOverlay(
-                                box: box,
-                                imageSize: image.size,
-                                viewSize: geometry.size,
-                                highlightPersonId: person.id
-                            )
+                    if AppSettings.shared.showBoundingBoxes {
+                        GeometryReader { geometry in
+                            ForEach(boxes) { box in
+                                FaceSourceBoxOverlay(
+                                    box: box,
+                                    imageSize: image.size,
+                                    viewSize: geometry.size,
+                                    highlightPersonId: person.id
+                                )
+                            }
                         }
                     }
                 }

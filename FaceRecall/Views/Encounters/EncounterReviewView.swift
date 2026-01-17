@@ -450,7 +450,9 @@ struct EncounterReviewView: View {
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
-                let matches = matchingService.findMatches(for: embedding, in: people, topK: 5, threshold: 0.5)
+                // Boost persons already assigned to faces in this encounter
+                let assignedPersonIds = Set(boundingBoxes.compactMap { $0.personId })
+                let matches = matchingService.findMatches(for: embedding, in: people, topK: 5, threshold: 0.5, boostPersonIds: assignedPersonIds)
 
                 await MainActor.run {
                     potentialMatches = matches

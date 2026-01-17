@@ -3,6 +3,9 @@ import SwiftUI
 struct SplashView: View {
     @State private var isAnimating = false
     @State private var showTagline = false
+    @State private var currentTaglineIndex = 0
+
+    private let taglines = ["remember", "refresh", "remet"]
 
     var body: some View {
         ZStack {
@@ -60,19 +63,14 @@ struct SplashView: View {
                     .font(.system(size: 42, weight: .bold, design: .rounded))
                     .foregroundStyle(AppColors.coral)
 
-                // Tagline
-                VStack(spacing: 8) {
-                    Text("Never forget a face")
-                        .font(.title3)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-
-                    Text("Remember everyone you meet")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .opacity(showTagline ? 1 : 0)
-                .offset(y: showTagline ? 0 : 10)
+                // Rolling tagline
+                Text(taglines[currentTaglineIndex])
+                    .font(.title2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .contentTransition(.numericText())
+                    .opacity(showTagline ? 1 : 0)
+                    .offset(y: showTagline ? 0 : 10)
 
                 Spacer()
                 Spacer()
@@ -82,8 +80,19 @@ struct SplashView: View {
             withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
                 isAnimating = true
             }
-            withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
+            withAnimation(.easeOut(duration: 0.3).delay(0.2)) {
                 showTagline = true
+            }
+            // Start rolling taglines
+            startTaglineRotation()
+        }
+    }
+
+    private func startTaglineRotation() {
+        // Cycle every 0.5s to fit all 3 words within 1.8s splash duration
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                currentTaglineIndex = (currentTaglineIndex + 1) % taglines.count
             }
         }
     }

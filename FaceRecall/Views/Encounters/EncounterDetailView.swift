@@ -7,6 +7,7 @@ struct EncounterDetailView: View {
     @Bindable var encounter: Encounter
 
     @State private var isEditing = false
+    @State private var showEditView = false
     @State private var selectedPerson: Person?
     @State private var showFullPhoto = false
     @State private var selectedPhotoIndex = 0
@@ -101,16 +102,11 @@ struct EncounterDetailView: View {
                     }
                     .disabled(isLocatingFace)
 
-                    // Edit button
+                    // Edit button - opens unified edit view
                     Button {
-                        isEditing.toggle()
+                        showEditView = true
                     } label: {
-                        if isEditing {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(AppColors.teal)
-                        } else {
-                            Image(systemName: "pencil.circle")
-                        }
+                        Image(systemName: "pencil.circle")
                     }
                 }
             }
@@ -145,6 +141,9 @@ struct EncounterDetailView: View {
             encounter.tags = selectedTags
         }) {
             TagPickerView(selectedTags: $selectedTags, title: "Tags for Encounter")
+        }
+        .sheet(isPresented: $showEditView) {
+            EncounterEditView(encounter: encounter, people: allPeople)
         }
     }
 
@@ -389,7 +388,9 @@ struct EncounterDetailView: View {
                 }
 
                 // Get regular matches from stored embeddings
-                let regularMatches = matchingService.findMatches(for: embedding, in: allPeople, topK: 5, threshold: 0.5)
+                // Boost persons already in this encounter to encourage consistent labeling
+                let encounterPersonIds = Set(encounter.people.map { $0.id })
+                let regularMatches = matchingService.findMatches(for: embedding, in: allPeople, topK: 5, threshold: 0.5, boostPersonIds: encounterPersonIds)
 
                 // Merge matches, preferring higher similarity and removing duplicates
                 var allMatches: [UUID: MatchResult] = [:]
@@ -859,17 +860,19 @@ struct EncounterDetailView: View {
                     }
                     .allowsHitTesting(!isEditing || locateFaceMode)
                     .overlay {
-                        ForEach(encounter.faceBoundingBoxes) { box in
-                            FaceBoxOverlay(
-                                box: box,
-                                imageSize: image.size,
-                                viewSize: geometry.size,
-                                onTap: {
-                                    if !locateFaceMode {
-                                        handleFaceBoxTap(box: box, photo: nil)
+                        if isEditing || locateFaceMode || AppSettings.shared.showBoundingBoxes {
+                            ForEach(encounter.faceBoundingBoxes) { box in
+                                FaceBoxOverlay(
+                                    box: box,
+                                    imageSize: image.size,
+                                    viewSize: geometry.size,
+                                    onTap: {
+                                        if !locateFaceMode {
+                                            handleFaceBoxTap(box: box, photo: nil)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
             }
@@ -950,8 +953,8 @@ struct EncounterDetailView: View {
                 selectedPhotoForLabeling = photo
                 showFaceLabelPicker = true
             }
-        } else if isEditing {
-            // Unlabeled face in edit mode - show picker
+        } else {
+            // Unlabeled face - always allow labeling
             selectedBoxId = box.id
             selectedPhotoForLabeling = photo
             showFaceLabelPicker = true
@@ -977,17 +980,19 @@ struct EncounterDetailView: View {
                     }
                     .allowsHitTesting(!isEditing || locateFaceMode)
                     .overlay {
-                        ForEach(photo.faceBoundingBoxes) { box in
-                            FaceBoxOverlay(
-                                box: box,
-                                imageSize: image.size,
-                                viewSize: geometry.size,
-                                onTap: {
-                                    if !locateFaceMode {
-                                        handleFaceBoxTap(box: box, photo: photo)
+                        if isEditing || locateFaceMode || AppSettings.shared.showBoundingBoxes {
+                            ForEach(photo.faceBoundingBoxes) { box in
+                                FaceBoxOverlay(
+                                    box: box,
+                                    imageSize: image.size,
+                                    viewSize: geometry.size,
+                                    onTap: {
+                                        if !locateFaceMode {
+                                            handleFaceBoxTap(box: box, photo: photo)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
             } else {
@@ -1283,6 +1288,11 @@ struct EncounterDetailView: View {
                         lastAddedFaceId = newBox.id
                         locateFaceMode = false
                         isLocatingFace = false
+
+                        // Automatically trigger labeling for the newly detected face
+                        selectedBoxId = newBox.id
+                        selectedPhotoForLabeling = photo
+                        showFaceLabelPicker = true
                     }
                 } else {
                     await MainActor.run {
@@ -1620,19 +1630,21 @@ struct FullPhotoView: View {
                             .resizable()
                             .scaledToFit()
                             .overlay {
-                                GeometryReader { imageGeometry in
-                                    ForEach(encounter.faceBoundingBoxes) { box in
-                                        FaceBoxOverlay(
-                                            box: box,
-                                            imageSize: image.size,
-                                            viewSize: imageGeometry.size,
-                                            onTap: {
-                                                if let personId = box.personId,
-                                                   let person = encounter.people.first(where: { $0.id == personId }) {
-                                                    onSelectPerson(person)
+                                if AppSettings.shared.showBoundingBoxes {
+                                    GeometryReader { imageGeometry in
+                                        ForEach(encounter.faceBoundingBoxes) { box in
+                                            FaceBoxOverlay(
+                                                box: box,
+                                                imageSize: image.size,
+                                                viewSize: imageGeometry.size,
+                                                onTap: {
+                                                    if let personId = box.personId,
+                                                       let person = encounter.people.first(where: { $0.id == personId }) {
+                                                        onSelectPerson(person)
+                                                    }
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -1705,19 +1717,21 @@ struct MultiPhotoFullView: View {
                     .scaledToFit()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .overlay {
-                        GeometryReader { imageGeometry in
-                            ForEach(photo.faceBoundingBoxes) { box in
-                                FaceBoxOverlay(
-                                    box: box,
-                                    imageSize: image.size,
-                                    viewSize: imageGeometry.size,
-                                    onTap: {
-                                        if let personId = box.personId,
-                                           let person = encounter.people.first(where: { $0.id == personId }) {
-                                            onSelectPerson(person)
+                        if AppSettings.shared.showBoundingBoxes {
+                            GeometryReader { imageGeometry in
+                                ForEach(photo.faceBoundingBoxes) { box in
+                                    FaceBoxOverlay(
+                                        box: box,
+                                        imageSize: image.size,
+                                        viewSize: imageGeometry.size,
+                                        onTap: {
+                                            if let personId = box.personId,
+                                               let person = encounter.people.first(where: { $0.id == personId }) {
+                                                onSelectPerson(person)
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }

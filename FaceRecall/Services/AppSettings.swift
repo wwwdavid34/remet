@@ -56,6 +56,7 @@ final class AppSettings {
         static let photoStorageQuality = "photoStorageQuality"
         static let autoAcceptThreshold = "autoAcceptThreshold"
         static let showConfidenceScores = "showConfidenceScores"
+        static let showBoundingBoxes = "showBoundingBoxes"
         static let savePhotosToCameraRoll = "savePhotosToCameraRoll"
         static let hasShownCameraRollHint = "hasShownCameraRollHint"
         static let firstLaunchDate = "firstLaunchDate"
@@ -91,6 +92,19 @@ final class AppSettings {
         }
         set {
             defaults.set(newValue, forKey: Keys.showConfidenceScores)
+        }
+    }
+
+    var showBoundingBoxes: Bool {
+        get {
+            // Default to true if not set
+            if defaults.object(forKey: Keys.showBoundingBoxes) == nil {
+                return true
+            }
+            return defaults.bool(forKey: Keys.showBoundingBoxes)
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.showBoundingBoxes)
         }
     }
 

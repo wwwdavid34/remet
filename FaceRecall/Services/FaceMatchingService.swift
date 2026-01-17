@@ -18,22 +18,31 @@ final class FaceMatchingService {
     private let highConfidenceThreshold: Float = 0.85
     private let ambiguousThreshold: Float = 0.75
 
+    /// Boost applied to similarity scores for persons already in the encounter
+    /// This helps ensure consistent labeling when a person appears multiple times
+    private let encounterBoost: Float = 0.05
+
     func findMatches(
         for embedding: [Float],
         in people: [Person],
         topK: Int = 1,
-        threshold: Float? = nil
+        threshold: Float? = nil,
+        boostPersonIds: Set<UUID> = []
     ) -> [MatchResult] {
         let minThreshold = threshold ?? ambiguousThreshold
-        var results: [(person: Person, similarity: Float)] = []
+        var results: [(person: Person, similarity: Float, boosted: Bool)] = []
 
         for person in people {
             let bestSimilarity = person.embeddings
                 .map { cosineSimilarity(embedding, $0.embeddingVector) }
                 .max() ?? 0
 
-            if bestSimilarity > minThreshold {
-                results.append((person, bestSimilarity))
+            // Apply boost for persons already in the encounter
+            let shouldBoost = boostPersonIds.contains(person.id)
+            let adjustedSimilarity = shouldBoost ? min(bestSimilarity + encounterBoost, 1.0) : bestSimilarity
+
+            if adjustedSimilarity > minThreshold {
+                results.append((person, adjustedSimilarity, shouldBoost))
             }
         }
 
