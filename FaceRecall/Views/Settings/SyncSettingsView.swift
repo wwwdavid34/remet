@@ -10,14 +10,14 @@ struct SyncSettingsView: View {
             Section {
                 syncStatusRow
             } header: {
-                Text("iCloud Sync")
+                Text(String(localized: "iCloud Sync"))
             } footer: {
-                Text("Your data syncs automatically across all devices signed into the same iCloud account.")
+                Text(String(localized: "Your data syncs automatically across all devices signed into the same iCloud account."))
             }
 
             Section {
                 if let lastSync = syncManager.lastSyncDate {
-                    LabeledContent("Last Sync") {
+                    LabeledContent(String(localized: "Last Sync")) {
                         Text(lastSync.formatted(date: .abbreviated, time: .shortened))
                     }
                 }
@@ -26,7 +26,7 @@ struct SyncSettingsView: View {
                     checkStatus()
                 } label: {
                     HStack {
-                        Text("Check Sync Status")
+                        Text(String(localized: "Check Sync Status"))
                         Spacer()
                         if isCheckingAccount {
                             ProgressView()
@@ -37,12 +37,12 @@ struct SyncSettingsView: View {
             }
 
             Section {
-                NavigationLink("What Gets Synced") {
+                NavigationLink(String(localized: "What Gets Synced")) {
                     syncDetailsView
                 }
             }
         }
-        .navigationTitle("iCloud Sync")
+        .navigationTitle(String(localized: "iCloud Sync"))
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -73,22 +73,22 @@ struct SyncSettingsView: View {
     @ViewBuilder
     private var syncDetailsView: some View {
         List {
-            Section("Synced Data") {
-                Label("People & Names", systemImage: "person.3")
-                Label("Face Photos", systemImage: "photo")
-                Label("Encounters", systemImage: "calendar")
-                Label("Notes & Tags", systemImage: "tag")
-                Label("Practice Progress", systemImage: "chart.line.uptrend.xyaxis")
+            Section(String(localized: "Synced Data")) {
+                Label(String(localized: "People & Names"), systemImage: "person.3")
+                Label(String(localized: "Face Photos"), systemImage: "photo")
+                Label(String(localized: "Encounters"), systemImage: "calendar")
+                Label(String(localized: "Notes & Tags"), systemImage: "tag")
+                Label(String(localized: "Practice Progress"), systemImage: "chart.line.uptrend.xyaxis")
             }
 
-            Section("Not Synced") {
-                Label("Subscription Status", systemImage: "creditcard")
+            Section(String(localized: "Not Synced")) {
+                Label(String(localized: "Subscription Status"), systemImage: "creditcard")
                     .foregroundStyle(.secondary)
-                Label("App Settings", systemImage: "gearshape")
+                Label(String(localized: "App Settings"), systemImage: "gearshape")
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle("Sync Details")
+        .navigationTitle(String(localized: "Sync Details"))
     }
 
     private var statusIcon: String {

@@ -1827,6 +1827,29 @@
         }
       }
     },
+    "All data synced": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのデータを同期済み"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有数据已同步"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有資料已同步"
+          }
+        }
+      }
+    },
     "All Done!": {
       "localizations": {
         "ja": {
@@ -2664,7 +2687,28 @@
         }
       }
     },
-    "Check Sync Status": {},
+    "Check Sync Status": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期状態を確認"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查同步状态"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檢查同步狀態"
+          }
+        }
+      }
+    },
     "Checking for matches...": {
       "localizations": {
         "ja": {
@@ -2683,6 +2727,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在檢查匹配..."
+          }
+        }
+      }
+    },
+    "Checking...": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "確認中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查中..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檢查中..."
           }
         }
       }
@@ -3780,6 +3847,29 @@
         }
       }
     },
+    "Disabled": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無効"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已禁用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已停用"
+          }
+        }
+      }
+    },
     "Dismiss": {
       "extractionState": "stale",
       "localizations": {
@@ -4301,6 +4391,7 @@
       }
     },
     "Error": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -8156,6 +8247,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "尚未識別到面孔。點擊面孔進行識別。"
+          }
+        }
+      }
+    },
+    "No iCloud account": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloudアカウントなし"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无iCloud账户"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無iCloud帳戶"
           }
         }
       }
@@ -12298,7 +12412,6 @@
       }
     },
     "Subscription Status": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -12389,6 +12502,29 @@
         }
       }
     },
+    "Sync": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步"
+          }
+        }
+      }
+    },
     "Sync your data across all your devices": {
       "extractionState": "stale",
       "localizations": {
@@ -12408,6 +12544,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "在所有裝置間同步資料"
+          }
+        }
+      }
+    },
+    "Syncing...": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步中..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步中..."
           }
         }
       }
@@ -14536,7 +14695,28 @@
         }
       }
     },
-    "Your data syncs automatically across all devices signed into the same iCloud account.": {},
+    "Your data syncs automatically across all devices signed into the same iCloud account.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "データはすべてのデバイスで同じiCloudアカウントにサインインすると自動的に同期されます。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "您的数据会自动在所有登录相同iCloud账户的设备之间同步。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "您的資料會自動在所有登入相同iCloud帳戶的裝置之間同步。"
+          }
+        }
+      }
+    },
     "Your memory impresses me!": {
       "extractionState": "stale",
       "localizations": {
@@ -14719,95 +14899,293 @@
         }
       }
     },
-    "Disabled": {
+    "Last Sync": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "無効"
+            "value": "最終同期"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已禁用"
+            "value": "上次同步"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已停用"
+            "value": "上次同步"
           }
         }
       }
     },
-    "Checking...": {
+    "What Gets Synced": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "確認中..."
+            "value": "同期される内容"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "检查中..."
+            "value": "同步的内容"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "檢查中..."
+            "value": "同步的內容"
           }
         }
       }
     },
-    "Syncing...": {
+    "Synced Data": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "同期中..."
+            "value": "同期されるデータ"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "同步中..."
+            "value": "已同步的数据"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "同步中..."
+            "value": "已同步的資料"
           }
         }
       }
     },
-    "All data synced": {
+    "People & Names": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "すべてのデータを同期済み"
+            "value": "人物と名前"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "所有数据已同步"
+            "value": "人物和姓名"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "所有資料已同步"
+            "value": "人物和姓名"
           }
         }
       }
     },
-    "No iCloud account": {
+    "Face Photos": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顔写真"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "面部照片"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "臉部照片"
+          }
+        }
+      }
+    },
+    "Notes & Tags": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモとタグ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "备注和标签"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "備註和標籤"
+          }
+        }
+      }
+    },
+    "Practice Progress": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "練習の進捗"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "练习进度"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "練習進度"
+          }
+        }
+      }
+    },
+    "Not Synced": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期されないデータ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未同步的数据"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未同步的資料"
+          }
+        }
+      }
+    },
+    "App Settings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリ設定"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用设置"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用設定"
+          }
+        }
+      }
+    },
+    "Sync Details": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期の詳細"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步详情"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步詳情"
+          }
+        }
+      }
+    },
+    "Sync Disabled": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期が無効"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步已禁用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步已停用"
+          }
+        }
+      }
+    },
+    "Synced": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期完了"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已同步"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已同步"
+          }
+        }
+      }
+    },
+    "Sync Error": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期エラー"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步错误"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步錯誤"
+          }
+        }
+      }
+    },
+    "No iCloud Account": {
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14829,24 +15207,112 @@
         }
       }
     },
-    "Sync": {
+    "Upgrade to Premium to enable": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "同期"
+            "value": "プレミアムにアップグレードして有効化"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "同步"
+            "value": "升级到高级版以启用"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "同步"
+            "value": "升級到進階版以啟用"
+          }
+        }
+      }
+    },
+    "Checking iCloud status...": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloudの状態を確認中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在检查iCloud状态..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在檢查iCloud狀態..."
+          }
+        }
+      }
+    },
+    "Uploading changes...": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更をアップロード中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在上传更改..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在上傳更改..."
+          }
+        }
+      }
+    },
+    "All data up to date": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのデータが最新"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有数据均为最新"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有資料均為最新"
+          }
+        }
+      }
+    },
+    "Sign in to iCloud in Settings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定でiCloudにサインイン"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在设置中登录iCloud"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在設定中登入iCloud"
           }
         }
       }
