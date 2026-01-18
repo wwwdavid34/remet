@@ -161,28 +161,28 @@ struct SettingsView: View {
 
     @ViewBuilder
     private var storageInfoSection: some View {
-        Section("Storage Usage") {
+        Section(String(localized: "Storage Usage")) {
             StorageRow(
-                title: "Encounters",
+                title: String(localized: "Encounters"),
                 count: encounters.count,
                 icon: "person.2.crop.square.stack"
             )
 
             StorageRow(
-                title: "People",
+                title: String(localized: "People"),
                 count: people.count,
                 icon: "person.3"
             )
 
             StorageRow(
-                title: "Face Samples",
+                title: String(localized: "Face Samples"),
                 count: embeddings.count,
                 icon: "face.smiling"
             )
 
             if let storageSize = calculateStorageSize() {
                 HStack {
-                    Label("Estimated Storage", systemImage: "internaldrive")
+                    Label(String(localized: "Estimated Storage"), systemImage: "internaldrive")
                     Spacer()
                     Text(storageSize)
                         .foregroundStyle(.secondary)

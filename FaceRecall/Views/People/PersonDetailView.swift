@@ -54,13 +54,13 @@ struct PersonDetailView: View {
                     Button {
                         showEditSheet = true
                     } label: {
-                        Label("Edit Details", systemImage: "pencil")
+                        Label(String(localized: "Edit Details"), systemImage: "pencil")
                     }
 
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
                     } label: {
-                        Label("Delete Person", systemImage: "trash")
+                        Label(String(localized: "Delete Person"), systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -547,26 +547,26 @@ struct PersonDetailView: View {
             }
 
             if let context = person.contextTag {
-                InfoRow(icon: "tag", title: "Context", value: context)
+                InfoRow(icon: "tag", title: String(localized: "Context"), value: context)
             }
 
             InfoRow(
                 icon: "calendar",
-                title: "Added",
+                title: String(localized: "Added"),
                 value: person.createdAt.formatted(date: .abbreviated, time: .omitted)
             )
 
             if let lastSeen = person.lastSeenAt {
                 InfoRow(
                     icon: "eye",
-                    title: "Last Viewed",
+                    title: String(localized: "Last Viewed"),
                     value: lastSeen.formatted(.relative(presentation: .named))
                 )
             }
 
             InfoRow(
                 icon: "person.2.crop.square.stack",
-                title: "Encounters",
+                title: String(localized: "Encounters"),
                 value: "\(person.encounterCount)"
             )
 
@@ -595,7 +595,7 @@ struct PersonDetailView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "person.2.crop.square.stack")
                             .foregroundStyle(AppColors.softPurple)
-                        Text("Encounters")
+                        Text(String(localized: "Encounters"))
                             .font(.headline)
                     }
 
@@ -605,7 +605,7 @@ struct PersonDetailView: View {
                         showEncountersTimeline = true
                     } label: {
                         HStack(spacing: 4) {
-                            Text("View All")
+                            Text(String(localized: "View All"))
                                 .font(.subheadline)
                             Text("\(person.encounters.count)")
                                 .font(.caption)
@@ -1460,18 +1460,18 @@ struct EditPersonSheet: View {
                         Image(systemName: "mappin.circle.fill")
                             .foregroundStyle(AppColors.softPurple)
                             .frame(width: 24)
-                        Picker("Context", selection: Binding(
+                        Picker(String(localized: "Context"), selection: Binding(
                             get: { person.contextTag ?? "" },
                             set: { person.contextTag = $0.isEmpty ? nil : $0 }
                         )) {
-                            Text("Not set").tag("")
-                            Text("Work").tag("Work")
-                            Text("School").tag("School")
-                            Text("Gym").tag("Gym")
-                            Text("Church").tag("Church")
-                            Text("Neighborhood").tag("Neighborhood")
-                            Text("Online").tag("Online")
-                            Text("Event").tag("Event")
+                            Text(String(localized: "Not set")).tag("")
+                            Text(String(localized: "Work")).tag("Work")
+                            Text(String(localized: "School")).tag("School")
+                            Text(String(localized: "Gym")).tag("Gym")
+                            Text(String(localized: "Church")).tag("Church")
+                            Text(String(localized: "Neighborhood")).tag("Neighborhood")
+                            Text(String(localized: "Online")).tag("Online")
+                            Text(String(localized: "Event")).tag("Event")
                         }
                         .tint(AppColors.textPrimary)
                     }
@@ -1523,16 +1523,16 @@ struct EditPersonSheet: View {
                         .foregroundStyle(AppColors.textMuted)
                 }
             }
-            .navigationTitle("Edit Details")
+            .navigationTitle(String(localized: "Edit Details"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(String(localized: "Cancel")) {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(String(localized: "Done")) {
                         dismiss()
                     }
                     .fontWeight(.semibold)

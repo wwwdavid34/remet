@@ -941,6 +941,29 @@
         }
       }
     },
+    "$0.50 credit for each of you": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方に$0.50のクレジット"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每人获得$0.50积分"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每人獲得$0.50積分"
+          }
+        }
+      }
+    },
     "1.0.0": {
       "localizations": {
         "ja": {
@@ -1656,13 +1679,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "添加于"
+            "value": "添加日期"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "添加於"
+            "value": "添加日期"
           }
         }
       }
@@ -2951,13 +2974,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "教堂"
+            "value": "教会"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "教堂"
+            "value": "教會"
           }
         }
       }
@@ -3859,19 +3882,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "この人を削除"
+            "value": "人物を削除"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "删除此人"
+            "value": "删除人物"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "刪除此人"
+            "value": "刪除人物"
           }
         }
       }
@@ -4523,13 +4546,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "预计存储空间"
+            "value": "预估存储"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "预计存储空間"
+            "value": "預估儲存"
           }
         }
       }
@@ -5373,6 +5396,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "朋友"
+          }
+        }
+      }
+    },
+    "Friend joins": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "友達が参加"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友加入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友加入"
+          }
+        }
+      }
+    },
+    "Friend upgrades": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "友達がアップグレード"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友升级"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友升級"
           }
         }
       }
@@ -6841,19 +6910,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "最終閲覧"
+            "value": "最後に閲覧"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "上次查看"
+            "value": "最近查看"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "上次查看"
+            "value": "最近查看"
           }
         }
       }
@@ -7299,13 +7368,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置"
+            "value": "地点"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置"
+            "value": "地點"
           }
         }
       }
@@ -8006,13 +8075,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "邻里"
+            "value": "邻居"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "鄰里"
+            "value": "鄰居"
           }
         }
       }
@@ -8823,7 +8892,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "未設定"
+            "value": "未設置"
           }
         }
       }
@@ -9160,13 +9229,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "线上"
+            "value": "网上"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "線上"
+            "value": "網上"
           }
         }
       }
@@ -11551,7 +11620,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "学校"
+            "value": "學校"
           }
         }
       }
@@ -11630,19 +11699,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "場面、場所、人を検索"
+            "value": "場面、場所、人物を検索"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "搜索场合、地点、联系人"
+            "value": "搜索场合、地点、人物"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "搜尋場合、地點、聯絡人"
+            "value": "搜尋場合、地點、人物"
           }
         }
       }
@@ -11919,6 +11988,29 @@
         }
       }
     },
+    "Send to friends who'd benefit": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "役立つ友達に送信"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "发送给需要的朋友"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "發送給需要的朋友"
+          }
+        }
+      }
+    },
     "Session Complete": {
       "extractionState": "stale",
       "localizations": {
@@ -12006,6 +12098,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "分享"
+          }
+        }
+      }
+    },
+    "Share Invite": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "招待をシェア"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享邀请"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享邀請"
+          }
+        }
+      }
+    },
+    "Share your code": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コードをシェア"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享您的码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分享您的碼"
           }
         }
       }
@@ -12674,7 +12812,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "存储使用情况"
+            "value": "儲存使用情況"
           }
         }
       }
@@ -13513,6 +13651,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "這 %lld 張面孔需要更多關注——你可以的！"
+          }
+        }
+      }
+    },
+    "They enter your code in the app": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリでコードを入力"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "他们在应用中输入您的码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "他們在應用中輸入您的碼"
           }
         }
       }
@@ -14646,6 +14807,29 @@
         }
       }
     },
+    "When they subscribe to Premium": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premiumに登録した時"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当他们订阅高级版时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "當他們訂閱高級版時"
+          }
+        }
+      }
+    },
     "Who is this?": {
       "localizations": {
         "ja": {
@@ -14845,6 +15029,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "昨天"
+          }
+        }
+      }
+    },
+    "You both earn": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方に報酬"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方获得奖励"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雙方獲得獎勵"
           }
         }
       }
@@ -15445,200 +15652,112 @@
         }
       }
     },
-    "Share Invite": {
+    "Date": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "招待をシェア"
+            "value": "日付"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享邀请"
+            "value": "日期"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享邀請"
+            "value": "日期"
           }
         }
       }
     },
-    "Share your code": {
+    "missing faces": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "コードをシェア"
+            "value": "未検出の顔"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享您的码"
+            "value": "缺失的人脸"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "分享您的碼"
+            "value": "缺失的人臉"
           }
         }
       }
     },
-    "Send to friends who'd benefit": {
+    "Edit Details": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "役立つ友達に送信"
+            "value": "詳細を編集"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "发送给需要的朋友"
+            "value": "编辑详情"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "發送給需要的朋友"
+            "value": "編輯詳情"
           }
         }
       }
     },
-    "Friend joins": {
+    "Context": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "友達が参加"
+            "value": "場所・関係"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "好友加入"
+            "value": "场合"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "好友加入"
+            "value": "場合"
           }
         }
       }
     },
-    "They enter your code in the app": {
+    "Missing faces?": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アプリでコードを入力"
+            "value": "顔が見つからない？"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "他们在应用中输入您的码"
+            "value": "缺少人脸？"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "他們在應用中輸入您的碼"
-          }
-        }
-      }
-    },
-    "Friend upgrades": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "友達がアップグレード"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "好友升级"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "好友升級"
-          }
-        }
-      }
-    },
-    "When they subscribe to Premium": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Premiumに登録した時"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "当他们订阅高级版时"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "當他們訂閱高級版時"
-          }
-        }
-      }
-    },
-    "You both earn": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "双方に報酬"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "双方获得奖励"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "雙方獲得獎勵"
-          }
-        }
-      }
-    },
-    "$0.50 credit for each of you": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "双方に$0.50のクレジット"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "每人获得$0.50积分"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "每人獲得$0.50積分"
+            "value": "缺少人臉？"
           }
         }
       }

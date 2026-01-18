@@ -1154,16 +1154,16 @@ struct EncounterDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             DetailRow(
                 icon: "calendar",
-                title: "Date",
+                title: String(localized: "Date"),
                 value: encounter.date.formatted(date: .long, time: .shortened)
             )
 
             if let occasion = encounter.occasion, !occasion.isEmpty {
-                DetailRow(icon: "star", title: "Occasion", value: occasion)
+                DetailRow(icon: "star", title: String(localized: "Occasion"), value: occasion)
             }
 
             if let location = encounter.location, !location.isEmpty {
-                DetailRow(icon: "mappin", title: "Location", value: location)
+                DetailRow(icon: "mappin", title: String(localized: "Location"), value: location)
             }
 
             // Show GPS coordinates with map link
