@@ -32,11 +32,11 @@ struct InviteFriendsView: View {
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Invite Friends")
+            .navigationTitle(String(localized: "Invite Friends"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
+                    Button(String(localized: "Done")) {
                         dismiss()
                     }
                 }
@@ -69,12 +69,12 @@ struct InviteFriendsView: View {
                     .foregroundStyle(AppColors.coral)
             }
 
-            Text("Help Friends Remember Faces")
+            Text(String(localized: "Help Friends Remember Faces"))
                 .font(.title2)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
 
-            Text("Get $0.50 credit for each friend who upgrades to Premium")
+            Text(String(localized: "Get $0.50 credit for each friend who upgrades to Premium"))
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -85,7 +85,7 @@ struct InviteFriendsView: View {
     @ViewBuilder
     private var referralCodeCard: some View {
         VStack(spacing: 16) {
-            Text("Your Referral Code")
+            Text(String(localized: "Your Referral Code"))
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
 
@@ -110,7 +110,7 @@ struct InviteFriendsView: View {
             }
 
             if copiedCode {
-                Text("Copied!")
+                Text(String(localized: "Copied!"))
                     .font(.caption)
                     .foregroundStyle(AppColors.success)
             }
@@ -118,7 +118,7 @@ struct InviteFriendsView: View {
             Button {
                 showShareSheet = true
             } label: {
-                Label("Share Invite", systemImage: "square.and.arrow.up")
+                Label(String(localized: "Share Invite"), systemImage: "square.and.arrow.up")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -136,36 +136,36 @@ struct InviteFriendsView: View {
     @ViewBuilder
     private var howItWorksSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("How It Works")
+            Text(String(localized: "How It Works"))
                 .font(.headline)
 
             VStack(spacing: 12) {
                 HowItWorksRow(
                     number: "1",
                     icon: "square.and.arrow.up",
-                    title: "Share your code",
-                    subtitle: "Send to friends who'd benefit"
+                    title: String(localized: "Share your code"),
+                    subtitle: String(localized: "Send to friends who'd benefit")
                 )
 
                 HowItWorksRow(
                     number: "2",
                     icon: "person.badge.plus",
-                    title: "Friend joins",
-                    subtitle: "They enter your code in the app"
+                    title: String(localized: "Friend joins"),
+                    subtitle: String(localized: "They enter your code in the app")
                 )
 
                 HowItWorksRow(
                     number: "3",
                     icon: "crown",
-                    title: "Friend upgrades",
-                    subtitle: "When they subscribe to Premium"
+                    title: String(localized: "Friend upgrades"),
+                    subtitle: String(localized: "When they subscribe to Premium")
                 )
 
                 HowItWorksRow(
                     number: "4",
                     icon: "dollarsign.circle",
-                    title: "You both earn",
-                    subtitle: "$0.50 credit for each of you"
+                    title: String(localized: "You both earn"),
+                    subtitle: String(localized: "$0.50 credit for each of you")
                 )
             }
         }
@@ -178,20 +178,20 @@ struct InviteFriendsView: View {
     @ViewBuilder
     private var statsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Your Referral Stats")
+            Text(String(localized: "Your Referral Stats"))
                 .font(.headline)
 
             HStack(spacing: 20) {
                 StatBox(
                     value: "\(referralManager.referralCount)",
-                    label: "Friends Referred",
+                    label: String(localized: "Friends Referred"),
                     icon: "person.2.fill",
                     color: AppColors.teal
                 )
 
                 StatBox(
                     value: referralManager.formattedBalance,
-                    label: "Credit Balance",
+                    label: String(localized: "Credit Balance"),
                     icon: "dollarsign.circle.fill",
                     color: AppColors.coral
                 )
@@ -206,7 +206,7 @@ struct InviteFriendsView: View {
     @ViewBuilder
     private var historySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Credit History")
+            Text(String(localized: "Credit History"))
                 .font(.headline)
 
             ForEach(referralManager.credit.creditHistory.suffix(5).reversed()) { transaction in
