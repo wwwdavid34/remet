@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Combine
 
 /// Unified view combining Home dashboard and People list
 /// Primary tab for browsing and managing people
@@ -9,6 +10,7 @@ struct PeopleHomeView: View {
     @Query(sort: \Encounter.date, order: .reverse) private var encounters: [Encounter]
 
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
     @State private var selectedTagFilters: Set<UUID> = []
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
@@ -17,54 +19,58 @@ struct PeopleHomeView: View {
     @State private var showSearchField = false
     @FocusState private var searchFieldFocused: Bool
 
+    // Cached computed values for performance
+    @State private var cachedPeopleNeedingReview: [Person] = []
+    @State private var cachedTagsInUse: [Tag] = []
+    @State private var cachedFilteredPeople: [Person] = []
+
     // Header fade threshold
     private let headerFadeThreshold: CGFloat = 60
 
-    // MARK: - Computed Properties
-
-    private var peopleNeedingReview: [Person] {
-        people.filter { $0.needsReview }
-    }
-
-    private var peopleWithFaces: [Person] {
-        people.filter { !$0.embeddings.isEmpty }
-    }
+    // MARK: - Computed Properties (lightweight)
 
     private var recentEncounters: [Encounter] {
         Array(encounters.prefix(3))
     }
 
     private var reviewsDueToday: Int {
-        peopleNeedingReview.count
+        cachedPeopleNeedingReview.count
     }
 
-    /// Tags currently assigned to at least one person
-    private var tagsInUse: [Tag] {
+    private var isSearching: Bool {
+        !debouncedSearchText.isEmpty || !selectedTagFilters.isEmpty
+    }
+
+    // MARK: - Cache Update Functions
+
+    private func updateCaches() {
+        cachedPeopleNeedingReview = people.filter { $0.needsReview }
+
         var seenIds = Set<UUID>()
-        var result: [Tag] = []
+        var tags: [Tag] = []
         for person in people {
             for tag in person.tags {
                 if !seenIds.contains(tag.id) {
                     seenIds.insert(tag.id)
-                    result.append(tag)
+                    tags.append(tag)
                 }
             }
         }
-        return result.sorted { $0.name < $1.name }
+        cachedTagsInUse = tags.sorted { $0.name < $1.name }
+
+        updateFilteredPeople()
     }
 
-    private var filteredPeople: [Person] {
+    private func updateFilteredPeople() {
         var result = people
 
-        // Filter by search text
-        if !searchText.isEmpty {
+        if !debouncedSearchText.isEmpty {
             result = result.filter {
-                $0.name.localizedCaseInsensitiveContains(searchText) ||
-                $0.tags.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+                $0.name.localizedCaseInsensitiveContains(debouncedSearchText) ||
+                $0.tags.contains { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
             }
         }
 
-        // Filter by selected tags
         if !selectedTagFilters.isEmpty {
             result = result.filter { person in
                 let personTagIds = Set(person.tags.map { $0.id })
@@ -72,11 +78,7 @@ struct PeopleHomeView: View {
             }
         }
 
-        return result
-    }
-
-    private var isSearching: Bool {
-        !searchText.isEmpty || !selectedTagFilters.isEmpty
+        cachedFilteredPeople = result
     }
 
     // MARK: - Body
@@ -168,6 +170,27 @@ struct PeopleHomeView: View {
                         }
                 }
             }
+            .task {
+                updateCaches()
+            }
+            .onChange(of: people) {
+                updateCaches()
+            }
+            .onChange(of: debouncedSearchText) {
+                updateFilteredPeople()
+            }
+            .onChange(of: selectedTagFilters) {
+                updateFilteredPeople()
+            }
+            .onChange(of: searchText) {
+                // Debounce search text to avoid lag while typing
+                Task {
+                    try? await Task.sleep(for: .milliseconds(150))
+                    if searchText == self.searchText {
+                        debouncedSearchText = searchText
+                    }
+                }
+            }
         }
     }
 
@@ -257,7 +280,7 @@ struct PeopleHomeView: View {
                 .padding(.horizontal)
 
             // Review nudge (if needed)
-            if !peopleNeedingReview.isEmpty {
+            if !cachedPeopleNeedingReview.isEmpty {
                 reviewNudgeSection
             }
 
@@ -267,9 +290,9 @@ struct PeopleHomeView: View {
             }
 
             // Tag filter bar
-            if !tagsInUse.isEmpty {
+            if !cachedTagsInUse.isEmpty {
                 TagFilterView(
-                    availableTags: tagsInUse,
+                    availableTags: cachedTagsInUse,
                     selectedTags: $selectedTagFilters,
                     onClear: { selectedTagFilters.removeAll() }
                 )
@@ -337,7 +360,7 @@ struct PeopleHomeView: View {
                         .fontWeight(.semibold)
                 }
                 Spacer()
-                Text("\(peopleNeedingReview.count)")
+                Text("\(cachedPeopleNeedingReview.count)")
                     .font(.caption)
                     .fontWeight(.medium)
                     .padding(.horizontal, 8)
@@ -350,7 +373,7 @@ struct PeopleHomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(peopleNeedingReview.prefix(8)) { person in
+                    ForEach(cachedPeopleNeedingReview.prefix(8)) { person in
                         Button {
                             selectedPerson = person
                         } label: {
@@ -414,14 +437,14 @@ struct PeopleHomeView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text("\(filteredPeople.count)")
+                Text("\(cachedFilteredPeople.count)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal)
 
             LazyVStack(spacing: 10) {
-                ForEach(filteredPeople) { person in
+                ForEach(cachedFilteredPeople) { person in
                     NavigationLink(value: person) {
                         PersonRow(person: person)
                     }
@@ -442,13 +465,13 @@ struct PeopleHomeView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text("\(filteredPeople.count) found")
+                Text("\(cachedFilteredPeople.count) found")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal)
 
-            if filteredPeople.isEmpty {
+            if cachedFilteredPeople.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "magnifyingglass")
                         .font(.largeTitle)
@@ -461,7 +484,7 @@ struct PeopleHomeView: View {
                 .padding(.vertical, 40)
             } else {
                 LazyVStack(spacing: 10) {
-                    ForEach(filteredPeople) { person in
+                    ForEach(cachedFilteredPeople) { person in
                         NavigationLink(value: person) {
                             PersonRow(person: person)
                         }
