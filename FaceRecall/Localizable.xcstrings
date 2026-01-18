@@ -51,6 +51,9 @@
         }
       }
     },
+    "%@ due" : {
+
+    },
     "%@ face(s) identified" : {
       "localizations" : {
         "ja" : {
@@ -128,6 +131,9 @@
           }
         }
       }
+    },
+    "%@ found" : {
+
     },
     "%@ of %@" : {
       "localizations" : {
@@ -530,6 +536,30 @@
         }
       }
     },
+    "%lld due" : {
+      "comment" : "Number of reviews due",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 件期限"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 待复习"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 待複習"
+          }
+        }
+      }
+    },
     "%lld face(s) identified" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -595,6 +625,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "偵測到 %lld 張人臉"
+          }
+        }
+      }
+    },
+    "%lld found" : {
+      "comment" : "Number of search results found",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 件見つかりました"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找到 %lld 个"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找到 %lld 個"
           }
         }
       }
@@ -874,6 +928,9 @@
           }
         }
       }
+    },
+    "•" : {
+
     },
     "• %@" : {
       "localizations" : {
@@ -1352,6 +1409,7 @@
       }
     },
     "Add interests to find common ground" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1396,6 +1454,28 @@
         }
       }
     },
+    "Add People First" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まず人を追加してください"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先添加人物"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先添加人物"
+          }
+        }
+      }
+    },
     "Add people with face samples first" : {
       "localizations" : {
         "ja" : {
@@ -1414,6 +1494,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请先添加带有人臉樣本的人物"
+          }
+        }
+      }
+    },
+    "Add person" : {
+      "comment" : "Accessibility label for capture button",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物を追加"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加人物"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加人物"
           }
         }
       }
@@ -1601,6 +1705,7 @@
       }
     },
     "Add talking points to remember for your next conversation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1623,6 +1728,7 @@
       }
     },
     "Add where or how you first met" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1828,7 +1934,6 @@
       }
     },
     "All Caught Up" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1981,6 +2086,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有位置"
+          }
+        }
+      }
+    },
+    "All People" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての人"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有人"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有人"
           }
         }
       }
@@ -2599,6 +2726,7 @@
       }
     },
     "Call" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4289,6 +4417,7 @@
       }
     },
     "Email" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5038,6 +5167,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "人臉樣本"
+          }
+        }
+      }
+    },
+    "Face the camera directly" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラに正面を向ける"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正对相机"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正對相機"
           }
         }
       }
@@ -5885,6 +6037,29 @@
         }
       }
     },
+    "Good lighting improves accuracy" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良い照明は精度を向上させます"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好的光线可提高准确度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好的光線可提高準確度"
+          }
+        }
+      }
+    },
     "Good morning!" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6319,6 +6494,7 @@
       }
     },
     "How We Met" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6404,6 +6580,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iCloud 同步"
+          }
+        }
+      }
+    },
+    "Identify" : {
+      "comment" : "Tab bar label for identify/scan tab",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "識別"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "识别"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "識別"
+          }
+        }
+      }
+    },
+    "Identify someone using your camera or a photo" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラまたは写真で誰かを識別"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用相机或照片识别某人"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用相機或照片識別某人"
           }
         }
       }
@@ -6498,6 +6720,30 @@
         }
       }
     },
+    "Import Photo" : {
+      "comment" : "Quick action label for importing photo",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真をインポート"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入照片"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入照片"
+          }
+        }
+      }
+    },
     "Import Photos" : {
       "localizations" : {
         "ja" : {
@@ -6567,6 +6813,7 @@
       }
     },
     "Interaction Timeline" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6589,6 +6836,7 @@
       }
     },
     "Interests" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -7342,6 +7590,28 @@
         }
       }
     },
+    "Live Camera Scan" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブカメラスキャン"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实时相机扫描"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即時相機掃描"
+          }
+        }
+      }
+    },
     "Live Memory Scan" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -7726,6 +7996,28 @@
         }
       }
     },
+    "Match from Photo" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真から照合"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从照片匹配"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從照片配對"
+          }
+        }
+      }
+    },
     "Match Threshold" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -7956,6 +8248,7 @@
       }
     },
     "Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -8088,6 +8381,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更多"
+          }
+        }
+      }
+    },
+    "More face samples = better matching" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顔サンプルが多いほど照合精度が向上"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多人脸样本 = 更好的匹配"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多人臉樣本 = 更好的配對"
           }
         }
       }
@@ -8706,6 +9022,7 @@
       }
     },
     "No interactions recorded yet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -8947,6 +9264,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "尚未識別人物。點按人臉即可標記。"
+          }
+        }
+      }
+    },
+    "No People Yet" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ誰もいません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有人"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "還沒有人"
           }
         }
       }
@@ -9815,6 +10154,7 @@
       }
     },
     "Personal Details" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10130,6 +10470,28 @@
         }
       }
     },
+    "Point your camera at someone" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラを誰かに向けてください"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将相机对准某人"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將相機對準某人"
+          }
+        }
+      }
+    },
     "Possible match - please confirm" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -10309,6 +10671,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "練習進度"
+          }
+        }
+      }
+    },
+    "Practice These" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復習が必要"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "练习这些"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "練習這些"
           }
         }
       }
@@ -10810,6 +11194,28 @@
         }
       }
     },
+    "Recent" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近"
+          }
+        }
+      }
+    },
     "Recent Encounters" : {
       "localizations" : {
         "ja" : {
@@ -11290,7 +11696,6 @@
       }
     },
     "Results" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11978,6 +12383,30 @@
         }
       }
     },
+    "Search people..." : {
+      "comment" : "Search field placeholder",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人を検索..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索联系人..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋聯絡人..."
+          }
+        }
+      }
+    },
     "See All" : {
       "localizations" : {
         "ja" : {
@@ -12086,6 +12515,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇照片識別人臉，不儲存任何資料"
+          }
+        }
+      }
+    },
+    "Select a photo to identify faces" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を選んで顔を識別"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择照片识别人脸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇照片識別人臉"
           }
         }
       }
@@ -13555,6 +14006,33 @@
         }
       }
     },
+    "Tap the camera button below to add someone you've met" : {
+
+    },
+    "Tap to open camera, hold for more options" : {
+      "comment" : "Accessibility hint for capture button",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タップでカメラを開く、長押しでその他のオプション"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点按打开相机，长按显示更多选项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點按打開相機，長按顯示更多選項"
+          }
+        }
+      }
+    },
     "Tap to scan" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -14844,6 +15322,28 @@
         }
       }
     },
+    "Use the camera button below to get started" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下のカメラボタンを使って始めましょう"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用下方的相机按钮开始"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用下方的相機按鈕開始"
+          }
+        }
+      }
+    },
     "Version" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -15044,6 +15544,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这是谁？"
+          }
+        }
+      }
+    },
+    "Who's This?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この人は誰？"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是谁？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這是誰？"
           }
         }
       }
@@ -15337,6 +15859,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你有 %@ 積分"
+          }
+        }
+      }
+    },
+    "You need to add at least one person with a face before you can identify them." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "識別するには、まず顔のある人を追加してください。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在识别之前，您需要先添加至少一个带有人脸的人物。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在識別之前，您需要先添加至少一個帶有人臉的人物。"
           }
         }
       }
