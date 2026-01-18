@@ -36,9 +36,7 @@ struct MemoryScanView: View {
             case .processing:
                 processingOverlay
             case .results(let faceResults):
-                // For live scan, use first face result (camera typically captures one face)
-                let suggestions = faceResults.first?.suggestions ?? []
-                resultsOverlay(suggestions: suggestions)
+                resultsOverlay(faceResults: faceResults)
             case .noFaceDetected:
                 noFaceOverlay
             case .error(let message):
@@ -202,42 +200,48 @@ struct MemoryScanView: View {
     }
 
     @ViewBuilder
-    private func resultsOverlay(suggestions: [MatchSuggestion]) -> some View {
+    private func resultsOverlay(faceResults: [FaceMatchResult]) -> some View {
         VStack {
             Spacer()
 
-            VStack(spacing: 16) {
-                // Header
-                HStack {
-                    Text(suggestions.isEmpty ? "No Matches" : "Possible Matches")
-                        .font(.headline)
-                    Spacer()
-                    Button {
-                        viewModel.reset()
-                    } label: {
-                        Text("Scan Again")
-                            .font(.subheadline)
-                            .foregroundStyle(AppColors.teal)
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        if faceResults.count > 1 {
+                            Text(String(localized: "\(faceResults.count) faces detected"))
+                                .font(.headline)
+                        } else {
+                            let hasMatches = faceResults.first?.hasMatches ?? false
+                            Text(hasMatches ? String(localized: "Possible Matches") : String(localized: "No Matches"))
+                                .font(.headline)
+                        }
+                        Spacer()
+                        Button {
+                            viewModel.reset()
+                        } label: {
+                            Text(String(localized: "Scan Again"))
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.teal)
+                        }
                     }
-                }
 
-                if suggestions.isEmpty {
-                    NoMatchesView()
-                } else {
-                    // Match cards
-                    ForEach(suggestions) { suggestion in
-                        MatchResultCard(
-                            suggestion: suggestion,
-                            showConfirmButton: true,
-                            onConfirm: {
+                    // Results for each face
+                    ForEach(faceResults) { faceResult in
+                        LiveScanFaceResultView(
+                            faceResult: faceResult,
+                            faceIndex: faceResults.firstIndex(where: { $0.id == faceResult.id }) ?? 0,
+                            totalFaces: faceResults.count,
+                            onConfirm: { suggestion in
                                 selectedMatch = suggestion
                                 showConfirmation = true
                             }
                         )
                     }
                 }
+                .padding()
             }
-            .padding()
+            .frame(maxHeight: UIScreen.main.bounds.height * 0.6)
             .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .padding()
@@ -336,6 +340,67 @@ private class ScanDelegate: NSObject, SilentScanCameraManagerDelegate {
         Task { @MainActor in
             viewModel.updateProgress(progress)
         }
+    }
+}
+
+// MARK: - Live Scan Face Result View
+
+/// Displays results for a single detected face in live scan mode
+struct LiveScanFaceResultView: View {
+    let faceResult: FaceMatchResult
+    let faceIndex: Int
+    let totalFaces: Int
+    let onConfirm: (MatchSuggestion) -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Face preview (show for multiple faces)
+            if totalFaces > 1 {
+                HStack(spacing: 12) {
+                    Image(uiImage: faceResult.faceCrop)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+                        .overlay {
+                            Circle()
+                                .stroke(faceResult.hasMatches ? AppColors.teal : AppColors.textMuted, lineWidth: 2)
+                        }
+
+                    Text(String(localized: "Face \(faceIndex + 1)"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Spacer()
+                }
+            }
+
+            // Match results
+            if faceResult.suggestions.isEmpty {
+                HStack {
+                    Image(systemName: "person.crop.circle.badge.questionmark")
+                        .foregroundStyle(AppColors.textMuted)
+                    Text(String(localized: "No matches found"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+            } else {
+                ForEach(faceResult.suggestions) { suggestion in
+                    MatchResultCard(
+                        suggestion: suggestion,
+                        showConfirmButton: true,
+                        onConfirm: {
+                            onConfirm(suggestion)
+                        }
+                    )
+                }
+            }
+        }
+        .padding(.vertical, totalFaces > 1 ? 12 : 0)
+        .background(totalFaces > 1 ? Color(UIColor.tertiarySystemBackground).opacity(0.5) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
