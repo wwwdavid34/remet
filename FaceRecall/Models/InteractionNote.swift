@@ -27,10 +27,10 @@ enum InteractionCategory: String, Codable, CaseIterable, Identifiable {
 /// A note about an interaction or observation about a person
 @Model
 final class InteractionNote {
-    var id: UUID
-    var content: String
-    var categoryRaw: String
-    var createdAt: Date
+    var id: UUID = UUID()
+    var content: String = ""
+    var categoryRaw: String = "General"
+    var createdAt: Date = Date()
 
     @Relationship(inverse: \Person.interactionNotes)
     var person: Person?

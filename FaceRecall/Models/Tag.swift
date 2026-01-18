@@ -4,10 +4,10 @@ import SwiftUI
 
 @Model
 final class Tag {
-    var id: UUID
-    var name: String
-    var colorHex: String
-    var createdAt: Date
+    var id: UUID = UUID()
+    var name: String = ""
+    var colorHex: String = "#007AFF"
+    var createdAt: Date = Date()
 
     // Inverse relationships
     @Relationship(inverse: \Person.tags)

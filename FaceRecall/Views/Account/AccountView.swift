@@ -9,6 +9,7 @@ struct AccountView: View {
     private var settings = AppSettings.shared
     @State private var subscriptionManager = SubscriptionManager.shared
     @State private var referralManager = ReferralManager.shared
+    @State private var cloudSyncManager = CloudSyncManager.shared
 
     @State private var showSignInSheet = false
     @State private var showPaywall = false
@@ -20,6 +21,9 @@ struct AccountView: View {
             List {
                 accountSection
                 subscriptionSection
+                if subscriptionManager.isPremium {
+                    syncSection
+                }
                 referralSection
                 photoStorageSection
                 faceMatchingSection
@@ -101,6 +105,55 @@ struct AccountView: View {
             }
         } header: {
             Text("Account")
+        }
+    }
+
+    // MARK: - Sync Section
+
+    @ViewBuilder
+    private var syncSection: some View {
+        Section {
+            NavigationLink {
+                SyncSettingsView()
+                    .environment(cloudSyncManager)
+            } label: {
+                HStack {
+                    Image(systemName: cloudSyncManager.syncStatus.icon)
+                        .foregroundStyle(syncStatusColor)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("iCloud Sync")
+                            .fontWeight(.medium)
+                        Text(syncStatusText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Text("Sync")
+        }
+    }
+
+    private var syncStatusColor: Color {
+        switch cloudSyncManager.syncStatus {
+        case .disabled: return .secondary
+        case .checking, .syncing: return .blue
+        case .synced: return .green
+        case .error: return .red
+        case .noAccount: return .orange
+        }
+    }
+
+    private var syncStatusText: String {
+        switch cloudSyncManager.syncStatus {
+        case .disabled: return String(localized: "Disabled")
+        case .checking: return String(localized: "Checking...")
+        case .syncing: return String(localized: "Syncing...")
+        case .synced: return String(localized: "All data synced")
+        case .error: return String(localized: "Error")
+        case .noAccount: return String(localized: "No iCloud account")
         }
     }
 

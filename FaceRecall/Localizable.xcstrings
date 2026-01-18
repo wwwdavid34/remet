@@ -236,7 +236,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ / %2$@ 張照片 • 點按展開"
+            "value" : "%1$@ / %2$@ 張照片 • 觸按展開"
           }
         }
       }
@@ -547,7 +547,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "識別到 %lld 張面孔"
+            "value" : "識別到 %lld 張臉孔"
           }
         }
       }
@@ -570,7 +570,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檢測到 %1$lld 張面孔"
+            "value" : "檢測到 %1$lld 張臉孔"
           }
         }
       }
@@ -731,7 +731,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "發現 %lld 個潛在會面"
+            "value" : "發現 %lld 個可能的相遇"
           }
         }
       }
@@ -800,7 +800,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld%% 配對"
+            "value" : "相似度%lld%%"
           }
         }
       }
@@ -1003,7 +1003,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "表現卓越！"
+            "value" : "水啦！"
           }
         }
       }
@@ -1026,7 +1026,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "絕對出色！"
+            "value" : "有夠讚！"
           }
         }
       }
@@ -2591,6 +2591,9 @@
           }
         }
       }
+    },
+    "Check Sync Status" : {
+
     },
     "Checking for matches..." : {
       "localizations" : {
@@ -5763,6 +5766,9 @@
           }
         }
       }
+    },
+    "iCloud Sync" : {
+
     },
     "Identifying..." : {
       "localizations" : {
@@ -12166,6 +12172,9 @@
         }
       }
     },
+    "Sync" : {
+
+    },
     "Sync your data across all your devices" : {
       "localizations" : {
         "ja" : {
@@ -14311,6 +14320,9 @@
           }
         }
       }
+    },
+    "Your data syncs automatically across all devices signed into the same iCloud account." : {
+
     },
     "Your memory impresses me!" : {
       "extractionState" : "stale",

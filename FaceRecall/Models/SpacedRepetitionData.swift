@@ -4,30 +4,30 @@ import SwiftData
 /// Spaced repetition learning data for a person (SM-2 algorithm)
 @Model
 final class SpacedRepetitionData {
-    var id: UUID
+    var id: UUID = UUID()
 
     @Relationship(inverse: \Person.spacedRepetitionData)
     var person: Person?
 
     // SM-2 Algorithm fields
     /// Ease factor - affects interval growth (default 2.5, min 1.3)
-    var easeFactor: Double
+    var easeFactor: Double = 2.5
 
     /// Days until next review
-    var interval: Int
+    var interval: Int = 0
 
     /// Consecutive correct answers
-    var repetitions: Int
+    var repetitions: Int = 0
 
     /// When the next review is due
-    var nextReviewDate: Date
+    var nextReviewDate: Date = Date()
 
     /// When the last review occurred
     var lastReviewDate: Date?
 
     // Statistics
-    var totalAttempts: Int
-    var correctAttempts: Int
+    var totalAttempts: Int = 0
+    var correctAttempts: Int = 0
 
     /// Accuracy percentage (0.0 - 1.0)
     var accuracy: Double {

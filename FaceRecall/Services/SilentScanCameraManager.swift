@@ -32,8 +32,8 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
     /// Frame buffer - cleared immediately after scan completion (privacy invariant)
     private var capturedFrames: [(image: UIImage, sharpnessScore: Float)] = []
 
-    /// Scan timing
-    private let scanDuration: TimeInterval = 0.75
+    /// Scan timing (increased for better frame selection)
+    private let scanDuration: TimeInterval = 1.5
     private var scanStartTime: Date?
     private var scanTimer: Timer?
 
@@ -46,7 +46,8 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
         guard !session.isRunning else { return }
 
         session.beginConfiguration()
-        session.sessionPreset = .high
+        // Use photo preset for higher quality frames (matches QuickCapture quality)
+        session.sessionPreset = .photo
 
         // Add camera input (front camera for face scanning)
         if let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: currentCameraPosition),
@@ -67,15 +68,9 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
             session.addOutput(videoOutput)
         }
 
-        // Set video orientation
-        if let connection = videoOutput.connection(with: .video) {
-            if connection.isVideoRotationAngleSupported(90) {
-                connection.videoRotationAngle = 90
-            }
-            if connection.isVideoMirroringSupported && currentCameraPosition == .front {
-                connection.isVideoMirrored = true
-            }
-        }
+        // Note: Don't set videoRotationAngle or isVideoMirrored here
+        // We handle orientation/mirroring in imageFromSampleBuffer() for consistency
+        // with how AVCapturePhotoOutput processes photos
 
         session.commitConfiguration()
 
@@ -115,12 +110,7 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
             }
         }
 
-        // Update video connection
-        if let connection = videoOutput.connection(with: .video) {
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = currentCameraPosition == .front
-            }
-        }
+        // Note: Don't set mirroring - handled in imageFromSampleBuffer()
 
         session.commitConfiguration()
     }
@@ -256,19 +246,37 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
         return variance
     }
 
-    /// Convert CMSampleBuffer to UIImage
+    /// CIContext for high-quality image processing (reused for performance)
+    private lazy var ciContext: CIContext = {
+        CIContext(options: [.useSoftwareRenderer: false, .highQualityDownsample: true])
+    }()
+
+    /// Convert CMSampleBuffer to UIImage with proper orientation using GPU-accelerated transforms
     private func imageFromSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> UIImage? {
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
+
+        let bufferWidth = CVPixelBufferGetWidth(imageBuffer)
+        let bufferHeight = CVPixelBufferGetHeight(imageBuffer)
 
         CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly) }
 
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let context = CIContext()
+        var ciImage = CIImage(cvPixelBuffer: imageBuffer)
 
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+        // Check if buffer is in landscape (width > height) when device is in portrait
+        let isBufferLandscape = bufferWidth > bufferHeight
 
-        return UIImage(cgImage: cgImage)
+        if isBufferLandscape {
+            // Use CIImage's built-in orientation correction
+            // Both cameras: rotate to portrait without mirroring
+            // This matches how AVCapturePhotoOutput saves photos
+            // .right = rotate 90° clockwise
+            ciImage = ciImage.oriented(.right)
+        }
+
+        guard let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+
+        return UIImage(cgImage: cgImage, scale: 1.0, orientation: .up)
     }
 }
 

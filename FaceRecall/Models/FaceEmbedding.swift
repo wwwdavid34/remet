@@ -3,14 +3,15 @@ import SwiftData
 
 @Model
 final class FaceEmbedding {
-    var id: UUID
-    var vector: Data
-    var faceCropData: Data
+    var id: UUID = UUID()
+    var vector: Data = Data()
+    var faceCropData: Data = Data()
     var sourcePhotoId: UUID?
     var encounterId: UUID?
     var boundingBoxId: UUID?
-    var createdAt: Date
+    var createdAt: Date = Date()
 
+    @Relationship(inverse: \Person.embeddings)
     var person: Person?
 
     init(

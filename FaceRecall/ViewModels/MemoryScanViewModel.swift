@@ -92,8 +92,8 @@ final class MemoryScanViewModel {
     /// Maximum number of match suggestions to return
     private let maxSuggestions = 3
 
-    /// Minimum threshold for showing matches (lower than normal to be inclusive)
-    private let suggestionThreshold: Float = 0.65
+    /// Minimum threshold for showing matches (lower to be inclusive for varied conditions)
+    private let suggestionThreshold: Float = 0.45
 
     // MARK: - Public Methods
 

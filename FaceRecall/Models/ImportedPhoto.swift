@@ -3,10 +3,10 @@ import SwiftData
 
 @Model
 final class ImportedPhoto {
-    var id: UUID
-    var imageData: Data
-    var importedAt: Date
-    var processed: Bool
+    var id: UUID = UUID()
+    var imageData: Data = Data()
+    var importedAt: Date = Date()
+    var processed: Bool = false
 
     init(
         id: UUID = UUID(),
