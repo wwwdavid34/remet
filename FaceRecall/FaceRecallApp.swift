@@ -11,6 +11,7 @@ class AppState {
 struct RemetApp: App {
     @State private var appState = AppState()
     @State private var subscriptionManager = SubscriptionManager.shared
+    @State private var cloudSyncManager = CloudSyncManager.shared
     @State private var showSplash = true
 
     var sharedModelContainer: ModelContainer = {
@@ -19,17 +20,47 @@ struct RemetApp: App {
             FaceEmbedding.self,
             ImportedPhoto.self,
             Encounter.self,
+            EncounterPhoto.self,
             Tag.self,
             InteractionNote.self,
             SpacedRepetitionData.self,
             QuizAttempt.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
+        // First try with CloudKit enabled for sync capability
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let cloudConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .private(CloudSyncManager.containerIdentifier)
+            )
+            let container = try ModelContainer(for: schema, configurations: [cloudConfig])
+            print("=== ModelContainer Created with CloudKit ===")
+            return container
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // Log CloudKit error details
+            print("=== CloudKit ModelContainer Failed ===")
+            print("Error: \(error)")
+            print("Error Type: \(type(of: error))")
+            print("Will attempt local-only storage...")
+            print("========================================")
+
+            // Fall back to local storage (sync will be disabled)
+            do {
+                let localConfig = ModelConfiguration(
+                    schema: schema,
+                    isStoredInMemoryOnly: false,
+                    cloudKitDatabase: .none
+                )
+                let container = try ModelContainer(for: schema, configurations: [localConfig])
+                print("=== ModelContainer Created (Local Only) ===")
+                return container
+            } catch {
+                print("=== Local ModelContainer Also Failed ===")
+                print("Error: \(error)")
+                print("=========================================")
+                fatalError("Could not create ModelContainer: \(error)")
+            }
         }
     }()
 
@@ -42,6 +73,7 @@ struct RemetApp: App {
                     ContentView()
                         .environment(appState)
                         .environment(subscriptionManager)
+                        .environment(cloudSyncManager)
                         .onOpenURL { url in
                             handleIncomingURL(url)
                         }

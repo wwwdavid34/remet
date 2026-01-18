@@ -236,7 +236,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ / %2$@ 張照片 • 點按展開"
+            "value" : "%1$@ / %2$@ 張照片 • 觸按展開"
           }
         }
       }
@@ -436,6 +436,7 @@
       }
     },
     "%@/%@ people" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -547,7 +548,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "識別到 %lld 張面孔"
+            "value" : "識別到 %lld 張臉孔"
           }
         }
       }
@@ -570,7 +571,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檢測到 %1$lld 張面孔"
+            "value" : "檢測到 %1$lld 張臉孔"
           }
         }
       }
@@ -731,7 +732,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "發現 %lld 個潛在會面"
+            "value" : "發現 %lld 個可能的相遇"
           }
         }
       }
@@ -800,7 +801,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld%% 配對"
+            "value" : "相似度%lld%%"
           }
         }
       }
@@ -940,6 +941,29 @@
         }
       }
     },
+    "$0.50 credit for each of you" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双方に$0.50のクレジット"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每人获得$0.50积分"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每人獲得$0.50積分"
+          }
+        }
+      }
+    },
     "1.0.0" : {
       "localizations" : {
         "ja" : {
@@ -1003,7 +1027,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "表現卓越！"
+            "value" : "水啦！"
           }
         }
       }
@@ -1026,7 +1050,30 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "絕對出色！"
+            "value" : "有夠讚！"
+          }
+        }
+      }
+    },
+    "Acceptable quality, smallest storage (~40 KB/photo)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許容画質、最小容量（約40 KB/枚）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可接受质量，最小存储（约40 KB/张）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可接受畫質，最小儲存（約40 KB/張）"
           }
         }
       }
@@ -1055,6 +1102,7 @@
       }
     },
     "Account" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -1631,13 +1679,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加于"
+            "value" : "添加日期"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加於"
+            "value" : "添加日期"
           }
         }
       }
@@ -1802,6 +1850,52 @@
         }
       }
     },
+    "All data synced" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのデータを同期済み"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有数据已同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有資料已同步"
+          }
+        }
+      }
+    },
+    "All data up to date" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのデータが最新"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有数据均为最新"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有資料均為最新"
+          }
+        }
+      }
+    },
     "All Done!" : {
       "localizations" : {
         "ja" : {
@@ -1959,6 +2053,29 @@
         }
       }
     },
+    "App Settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ設定"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "應用設定"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2005,6 +2122,7 @@
       }
     },
     "Apply" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2015,7 +2133,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用"
+            "value" : "应用"
           }
         },
         "zh-Hant" : {
@@ -2027,6 +2145,7 @@
       }
     },
     "Apply Code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2037,13 +2156,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用代码"
+            "value" : "使用优惠码"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "套用代碼"
+            "value" : "使用優惠碼"
           }
         }
       }
@@ -2159,6 +2278,29 @@
         }
       }
     },
+    "Balanced" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バランス"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "均衡"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "均衡"
+          }
+        }
+      }
+    },
     "Basic Info" : {
       "localizations" : {
         "ja" : {
@@ -2199,6 +2341,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最佳學習方式"
+          }
+        }
+      }
+    },
+    "Best quality, largest storage (~200 KB/photo)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最高画質、最大容量（約200 KB/枚）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最佳质量，最大存储（约200 KB/张）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最佳畫質，最大儲存（約200 KB/張）"
           }
         }
       }
@@ -2342,6 +2507,7 @@
       }
     },
     "By continuing, you agree to our Terms of Service and Privacy Policy" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2592,6 +2758,29 @@
         }
       }
     },
+    "Check Sync Status" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期状態を確認"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查同步状态"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檢查同步狀態"
+          }
+        }
+      }
+    },
     "Checking for matches..." : {
       "localizations" : {
         "ja" : {
@@ -2610,6 +2799,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在檢查匹配..."
+          }
+        }
+      }
+    },
+    "Checking iCloud status..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudの状態を確認中..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查iCloud状态..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在檢查iCloud狀態..."
+          }
+        }
+      }
+    },
+    "Checking..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確認中..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查中..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檢查中..."
           }
         }
       }
@@ -2729,6 +2964,7 @@
       }
     },
     "Church" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2739,13 +2975,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "教堂"
+            "value" : "教会"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "教堂"
+            "value" : "教會"
           }
         }
       }
@@ -2909,6 +3145,29 @@
         }
       }
     },
+    "Compact" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コンパクト"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紧凑"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "精簡"
+          }
+        }
+      }
+    },
     "Company" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3045,6 +3304,52 @@
         }
       }
     },
+    "Contact Support" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポートに連絡"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "联系支持"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聯繫支援"
+          }
+        }
+      }
+    },
+    "Context" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "場所・関係"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "场合"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "場合"
+          }
+        }
+      }
+    },
     "Context (e.g., Met at conference)" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3115,6 +3420,7 @@
       }
     },
     "Continue with Apple" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3137,6 +3443,7 @@
       }
     },
     "Continue with Google" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3159,6 +3466,7 @@
       }
     },
     "Copied!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3408,7 +3716,31 @@
         }
       }
     },
+    "Credit Balance" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クレジット残高"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "积分余额"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "積分餘額"
+          }
+        }
+      }
+    },
     "Credit History" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3419,13 +3751,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "抵扣记录"
+            "value" : "积分历史"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "抵扣紀錄"
+            "value" : "積分歷史"
           }
         }
       }
@@ -3522,6 +3854,29 @@
         }
       }
     },
+    "Date" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日付"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期"
+          }
+        }
+      }
+    },
     "Delete" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3574,19 +3929,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "この人を削除"
+            "value" : "人物を削除"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除此人"
+            "value" : "删除人物"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除此人"
+            "value" : "刪除人物"
           }
         }
       }
@@ -3655,6 +4010,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不知道"
+          }
+        }
+      }
+    },
+    "Disabled" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已禁用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已停用"
           }
         }
       }
@@ -3864,6 +4242,29 @@
         }
       }
     },
+    "Edit Details" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細を編集"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑详情"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編輯詳情"
+          }
+        }
+      }
+    },
     "Email" : {
       "localizations" : {
         "ja" : {
@@ -3954,6 +4355,7 @@
       }
     },
     "Encounters" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4066,23 +4468,24 @@
       }
     },
     "Enter a referral or promo code to get Premium credit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "紹介コードまたはプロモコードを入力してプレミアムクレジットを獲得しましょう。"
+            "value" : "紹介コードまたはプロモコードを入力してクレジットを取得"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入推荐码或优惠码以获取高级版抵扣"
+            "value" : "输入推荐码或优惠码以获取积分"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "輸入推薦碼或優惠碼以獲得進階版抵扣"
+            "value" : "輸入推薦碼或優惠碼以獲取積分"
           }
         }
       }
@@ -4099,35 +4502,36 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入代码"
+            "value" : "输入码"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "輸入代碼"
+            "value" : "輸入碼"
           }
         }
       }
     },
     "Enter Code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コードを入力"
+            "value" : "コード入力"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入代码"
+            "value" : "输入码"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "輸入代碼"
+            "value" : "輸入碼"
           }
         }
       }
@@ -4213,18 +4617,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预计存储空间"
+            "value" : "预估存储"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预计存储空間"
+            "value" : "預估儲存"
           }
         }
       }
     },
     "Event" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4546,6 +4951,29 @@
         }
       }
     },
+    "Face Photos" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顔写真"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "面部照片"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "臉部照片"
+          }
+        }
+      }
+    },
     "Face Samples" : {
       "localizations" : {
         "ja" : {
@@ -4660,6 +5088,7 @@
       }
     },
     "Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4699,6 +5128,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "家人"
+          }
+        }
+      }
+    },
+    "FAQ" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "よくある質問"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常见问题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常見問題"
           }
         }
       }
@@ -5020,6 +5472,75 @@
         }
       }
     },
+    "Friend joins" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "友達が参加"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好友加入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好友加入"
+          }
+        }
+      }
+    },
+    "Friend upgrades" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "友達がアップグレード"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好友升级"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好友升級"
+          }
+        }
+      }
+    },
+    "Friends Referred" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紹介した友達"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已推荐好友"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已推薦好友"
+          }
+        }
+      }
+    },
     "From" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -5135,6 +5656,7 @@
       }
     },
     "Get $0.50 credit for each friend who upgrades to Premium" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5157,6 +5679,7 @@
       }
     },
     "Get $0.50 credit for each referral" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5339,6 +5862,29 @@
         }
       }
     },
+    "Good quality, moderate storage (~80 KB/photo)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好画質、中程度の容量（約80 KB/枚）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好质量，适中存储（约80 KB/张）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好畫質，適中儲存（約80 KB/張）"
+          }
+        }
+      }
+    },
     "GPS captured - add a location name above" : {
       "localizations" : {
         "ja" : {
@@ -5385,6 +5931,7 @@
       }
     },
     "Gym" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5429,6 +5976,7 @@
       }
     },
     "Have a Code?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5439,13 +5987,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有兑换码？"
+            "value" : "有优惠码吗？"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有兌換碼？"
+            "value" : "有優惠碼嗎？"
           }
         }
       }
@@ -5474,23 +6022,24 @@
       }
     },
     "Have a referral or promo code?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "紹介コードまたはプロモーションコードをお持ちですか？"
+            "value" : "紹介コードまたはプロモコードをお持ちですか？"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有推荐码或促销码？"
+            "value" : "有推荐码或优惠码吗？"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有推薦码或促銷码？"
+            "value" : "有推薦碼或優惠碼嗎？"
           }
         }
       }
@@ -5519,6 +6068,7 @@
       }
     },
     "Help Friends Remember Faces" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5586,6 +6136,29 @@
         }
       }
     },
+    "High Quality" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高画質"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高质量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高畫質"
+          }
+        }
+      }
+    },
     "Higher limits may take longer to scan" : {
       "localizations" : {
         "ja" : {
@@ -5609,6 +6182,7 @@
       }
     },
     "Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5676,6 +6250,7 @@
       }
     },
     "How It Works" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5760,6 +6335,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "我知道！"
+          }
+        }
+      }
+    },
+    "iCloud Sync" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 同步"
           }
         }
       }
@@ -5967,6 +6565,7 @@
       }
     },
     "Invite Friends" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6057,6 +6656,7 @@
       }
     },
     "John Doe" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6079,6 +6679,7 @@
       }
     },
     "john@example.com" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6330,6 +6931,29 @@
         }
       }
     },
+    "Last Sync" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終同期"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次同步"
+          }
+        }
+      }
+    },
     "Last viewed" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6359,19 +6983,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最終閲覧"
+            "value" : "最後に閲覧"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上次查看"
+            "value" : "最近查看"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上次查看"
+            "value" : "最近查看"
           }
         }
       }
@@ -6817,13 +7441,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位置"
+            "value" : "地点"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位置"
+            "value" : "地點"
           }
         }
       }
@@ -7307,6 +7931,52 @@
         }
       }
     },
+    "missing faces" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未検出の顔"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺失的人脸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺失的人臉"
+          }
+        }
+      }
+    },
+    "Missing faces?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顔が見つからない？"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少人脸？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少人臉？"
+          }
+        }
+      }
+    },
     "Mix it up" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -7514,6 +8184,7 @@
       }
     },
     "Neighborhood" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -7524,13 +8195,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "邻里"
+            "value" : "邻居"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鄰里"
+            "value" : "鄰居"
           }
         }
       }
@@ -7942,6 +8613,52 @@
         }
       }
     },
+    "No iCloud account" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudアカウントなし"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无iCloud账户"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無iCloud帳戶"
+          }
+        }
+      }
+    },
+    "No iCloud Account" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudアカウントなし"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无iCloud账户"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無iCloud帳戶"
+          }
+        }
+      }
+    },
     "No interactions recorded yet" : {
       "localizations" : {
         "ja" : {
@@ -8295,7 +9012,30 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未設定"
+            "value" : "未設置"
+          }
+        }
+      }
+    },
+    "Not Synced" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期されないデータ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未同步的数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未同步的資料"
           }
         }
       }
@@ -8341,6 +9081,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "備註"
+          }
+        }
+      }
+    },
+    "Notes & Tags" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモとタグ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "备注和标签"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備註和標籤"
           }
         }
       }
@@ -8576,6 +9339,7 @@
       }
     },
     "Online" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -8586,13 +9350,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "线上"
+            "value" : "网上"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "線上"
+            "value" : "網上"
           }
         }
       }
@@ -8773,6 +9537,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "人物"
+          }
+        }
+      }
+    },
+    "People & Names" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物と名前"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物和姓名"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人物和姓名"
           }
         }
       }
@@ -9434,6 +10221,29 @@
         }
       }
     },
+    "Practice Progress" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "練習の進捗"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "练习进度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "練習進度"
+          }
+        }
+      }
+    },
     "Premium" : {
       "localizations" : {
         "ja" : {
@@ -9657,6 +10467,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "進步看起来很棒！"
+          }
+        }
+      }
+    },
+    "Promo code" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロモコード"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "优惠码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "優惠碼"
           }
         }
       }
@@ -9999,24 +10832,48 @@
         }
       }
     },
-    "Referral codes start with REMET-\nOther codes are promo codes" : {
+    "Referral code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "紹介コードは REMET- で始まります\nそれ以外はプロモコードです"
+            "value" : "紹介コード"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "推荐码以 REMET- 开头\n其他代码为优惠码"
+            "value" : "推荐码"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "推薦碼以 REMET- 開頭\n其他代碼為優惠碼"
+            "value" : "推薦碼"
+          }
+        }
+      }
+    },
+    "Referral codes start with REMET-\nOther codes are promo codes" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "紹介コードはREMET-で始まります\nその他はプロモコードです"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推荐码以REMET-开头\n其他为优惠码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推薦碼以REMET-開頭\n其他為優惠碼"
           }
         }
       }
@@ -10045,6 +10902,7 @@
       }
     },
     "Referrals & Promos" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10226,6 +11084,7 @@
       }
     },
     "Renews %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10866,6 +11725,7 @@
       }
     },
     "School" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10882,7 +11742,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "学校"
+            "value" : "學校"
           }
         }
       }
@@ -10961,19 +11821,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "場面、場所、人を検索"
+            "value" : "場面、場所、人物を検索"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜索场合、地点、联系人"
+            "value" : "搜索场合、地点、人物"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜尋場合、地點、聯絡人"
+            "value" : "搜尋場合、地點、人物"
           }
         }
       }
@@ -11250,6 +12110,29 @@
         }
       }
     },
+    "Send to friends who'd benefit" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "役立つ友達に送信"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送给需要的朋友"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發送給需要的朋友"
+          }
+        }
+      }
+    },
     "Session Complete" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -11337,6 +12220,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
+          }
+        }
+      }
+    },
+    "Share Invite" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "招待をシェア"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享邀请"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享邀請"
+          }
+        }
+      }
+    },
+    "Share your code" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コードをシェア"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享您的码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享您的碼"
           }
         }
       }
@@ -11531,6 +12460,7 @@
       }
     },
     "Sign In" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11552,7 +12482,31 @@
         }
       }
     },
+    "Sign in to iCloud in Settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定でiCloudにサインイン"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在设置中登录iCloud"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在設定中登入iCloud"
+          }
+        }
+      }
+    },
     "Sign in to Remet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11575,6 +12529,7 @@
       }
     },
     "Sign in to sync your data across devices" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11979,7 +12934,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "存储使用情况"
+            "value" : "儲存使用情況"
           }
         }
       }
@@ -12166,7 +13121,100 @@
         }
       }
     },
+    "Sync" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步"
+          }
+        }
+      }
+    },
+    "Sync Details" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期の詳細"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步详情"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步詳情"
+          }
+        }
+      }
+    },
+    "Sync Disabled" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期が無効"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步已禁用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步已停用"
+          }
+        }
+      }
+    },
+    "Sync Error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期エラー"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步錯誤"
+          }
+        }
+      }
+    },
     "Sync your data across all your devices" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -12184,6 +13232,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在所有裝置間同步資料"
+          }
+        }
+      }
+    },
+    "Synced" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期完了"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已同步"
+          }
+        }
+      }
+    },
+    "Synced Data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期されるデータ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已同步的数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已同步的資料"
+          }
+        }
+      }
+    },
+    "Syncing..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期中..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步中..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步中..."
           }
         }
       }
@@ -12656,6 +13773,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這 %lld 張面孔需要更多關注——你可以的！"
+          }
+        }
+      }
+    },
+    "They enter your code in the app" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリでコードを入力"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "他们在应用中输入您的码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "他們在應用中輸入您的碼"
           }
         }
       }
@@ -13494,6 +14634,52 @@
         }
       }
     },
+    "Upgrade to Premium to enable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレミアムにアップグレードして有効化"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "升级到高级版以启用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "升級到進階版以啟用"
+          }
+        }
+      }
+    },
+    "Uploading changes..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更をアップロード中..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在上传更改..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在上傳更改..."
+          }
+        }
+      }
+    },
     "Use camera" : {
       "localizations" : {
         "ja" : {
@@ -13609,6 +14795,7 @@
       }
     },
     "View All" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -13720,6 +14907,52 @@
         }
       }
     },
+    "What Gets Synced" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期される内容"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步的内容"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步的內容"
+          }
+        }
+      }
+    },
+    "When they subscribe to Premium" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premiumに登録した時"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当他们订阅高级版时"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當他們訂閱高級版時"
+          }
+        }
+      }
+    },
     "Who is this?" : {
       "localizations" : {
         "ja" : {
@@ -13743,6 +14976,7 @@
       }
     },
     "Work" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -13919,6 +15153,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "昨天"
+          }
+        }
+      }
+    },
+    "You both earn" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双方に報酬"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双方获得奖励"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙方獲得獎勵"
           }
         }
       }
@@ -14312,6 +15569,29 @@
         }
       }
     },
+    "Your data syncs automatically across all devices signed into the same iCloud account." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データはすべてのデバイスで同じiCloudアカウントにサインインすると自動的に同期されます。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的数据会自动在所有登录相同iCloud账户的设备之间同步。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的資料會自動在所有登入相同iCloud帳戶的裝置之間同步。"
+          }
+        }
+      }
+    },
     "Your memory impresses me!" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -14451,6 +15731,7 @@
       }
     },
     "Your Referral Code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -14473,23 +15754,24 @@
       }
     },
     "Your Referral Stats" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "紹介実績"
+            "value" : "あなたの紹介統計"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的推荐统计"
+            "value" : "您的推荐统计"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的推薦統計"
+            "value" : "您的推薦統計"
           }
         }
       }

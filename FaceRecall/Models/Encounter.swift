@@ -3,12 +3,12 @@ import SwiftData
 
 @Model
 final class Encounter {
-    var id: UUID
+    var id: UUID = UUID()
     var occasion: String?
     var notes: String?
     var location: String?
-    var date: Date
-    var createdAt: Date
+    var date: Date = Date()
+    var createdAt: Date = Date()
 
     // GPS coordinates (from first photo or average)
     var latitude: Double?
@@ -25,7 +25,7 @@ final class Encounter {
     @Relationship(deleteRule: .cascade)
     var photos: [EncounterPhoto] = []
 
-    @Relationship(deleteRule: .nullify)
+    @Relationship(deleteRule: .nullify, inverse: \Person.encounters)
     var people: [Person] = []
 
     @Relationship(deleteRule: .nullify)

@@ -3,9 +3,9 @@ import SwiftData
 
 @Model
 final class EncounterPhoto {
-    var id: UUID
-    var imageData: Data
-    var date: Date
+    var id: UUID = UUID()
+    var imageData: Data = Data()
+    var date: Date = Date()
     var latitude: Double?
     var longitude: Double?
     var assetIdentifier: String?
@@ -13,6 +13,7 @@ final class EncounterPhoto {
     // Store face bounding boxes as JSON
     var faceBoundingBoxesData: Data?
 
+    @Relationship(inverse: \Encounter.photos)
     var encounter: Encounter?
 
     init(

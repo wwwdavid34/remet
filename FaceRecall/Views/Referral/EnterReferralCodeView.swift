@@ -21,11 +21,11 @@ struct EnterReferralCodeView: View {
                         .font(.system(size: 48))
                         .foregroundStyle(AppColors.coral)
 
-                    Text("Have a Code?")
+                    Text(String(localized: "Have a Code?"))
                         .font(.title2)
                         .fontWeight(.bold)
 
-                    Text("Enter a referral or promo code to get Premium credit")
+                    Text(String(localized: "Enter a referral or promo code to get Premium credit"))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -35,7 +35,7 @@ struct EnterReferralCodeView: View {
                 // Code input
                 VStack(spacing: 12) {
                     HStack {
-                        TextField("Enter code", text: $code)
+                        TextField(String(localized: "Enter code"), text: $code)
                             .textFieldStyle(.plain)
                             .font(.title3)
                             .fontDesign(.monospaced)
@@ -65,7 +65,7 @@ struct EnterReferralCodeView: View {
                         HStack {
                             Image(systemName: code.hasPrefix("REMET-") ? "person.2" : "tag")
                                 .font(.caption)
-                            Text(code.hasPrefix("REMET-") ? "Referral code" : "Promo code")
+                            Text(code.hasPrefix("REMET-") ? String(localized: "Referral code") : String(localized: "Promo code"))
                                 .font(.caption)
                         }
                         .foregroundStyle(AppColors.textMuted)
@@ -114,7 +114,7 @@ struct EnterReferralCodeView: View {
                             ProgressView()
                                 .tint(.white)
                         } else {
-                            Text("Apply Code")
+                            Text(String(localized: "Apply Code"))
                         }
                     }
                     .font(.headline)
@@ -128,17 +128,17 @@ struct EnterReferralCodeView: View {
                 .padding(.horizontal)
 
                 // Info text
-                Text("Referral codes start with REMET-\nOther codes are promo codes")
+                Text(String(localized: "Referral codes start with REMET-\nOther codes are promo codes"))
                     .font(.caption)
                     .foregroundStyle(AppColors.textMuted)
                     .multilineTextAlignment(.center)
                     .padding(.bottom)
             }
-            .navigationTitle("Enter Code")
+            .navigationTitle(String(localized: "Enter Code"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(String(localized: "Cancel")) {
                         dismiss()
                     }
                 }
@@ -203,7 +203,7 @@ struct EnterCodeInlineView: View {
                     Image(systemName: "ticket")
                         .foregroundStyle(AppColors.teal)
 
-                    Text("Have a referral or promo code?")
+                    Text(String(localized: "Have a referral or promo code?"))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textPrimary)
 
@@ -218,7 +218,7 @@ struct EnterCodeInlineView: View {
             if isExpanded {
                 // Input field
                 HStack {
-                    TextField("Enter code", text: $code)
+                    TextField(String(localized: "Enter code"), text: $code)
                         .textFieldStyle(.plain)
                         .font(.subheadline)
                         .fontDesign(.monospaced)
@@ -236,7 +236,7 @@ struct EnterCodeInlineView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Text("Apply")
+                            Text(String(localized: "Apply"))
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                         }

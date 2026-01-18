@@ -3,11 +3,11 @@ import SwiftData
 
 @Model
 final class Person {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var relationship: String?
     var contextTag: String?
-    var createdAt: Date
+    var createdAt: Date = Date()
     var lastSeenAt: Date?
 
     // Personal details
@@ -33,10 +33,10 @@ final class Person {
     var interestsData: Data?  // JSON array of strings
     var talkingPointsData: Data?  // JSON array of strings
 
-    @Relationship(deleteRule: .cascade, inverse: \FaceEmbedding.person)
+    @Relationship(deleteRule: .cascade)
     var embeddings: [FaceEmbedding] = []
 
-    @Relationship(deleteRule: .nullify, inverse: \Encounter.people)
+    @Relationship(deleteRule: .nullify)
     var encounters: [Encounter] = []
 
     @Relationship(deleteRule: .nullify)

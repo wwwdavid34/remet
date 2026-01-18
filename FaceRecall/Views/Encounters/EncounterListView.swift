@@ -175,8 +175,8 @@ struct EncounterListView: View {
                 encountersList
             }
         }
-        .navigationTitle("Encounters")
-        .searchable(text: $searchText, prompt: "Search occasions, locations, people")
+        .navigationTitle(String(localized: "Encounters"))
+        .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 12) {

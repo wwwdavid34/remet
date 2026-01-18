@@ -4,19 +4,19 @@ import SwiftData
 /// A single quiz attempt for a person
 @Model
 final class QuizAttempt {
-    var id: UUID
+    var id: UUID = UUID()
 
     @Relationship(inverse: \Person.quizAttempts)
     var person: Person?
 
     /// Whether the user correctly identified the person
-    var wasCorrect: Bool
+    var wasCorrect: Bool = false
 
     /// Response time in milliseconds (optional)
     var responseTimeMs: Int?
 
     /// When the attempt occurred
-    var attemptedAt: Date
+    var attemptedAt: Date = Date()
 
     /// The user's guess (for incorrect attempts)
     var userGuess: String?

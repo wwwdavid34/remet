@@ -158,7 +158,7 @@ struct EncounterEditView: View {
                         } else {
                             Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
                         }
-                        Text(locateFaceMode ? "Cancel" : "Missing faces?")
+                        Text(locateFaceMode ? String(localized: "Cancel") : String(localized: "Missing faces?"))
                     }
                     .font(.caption)
                     .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
@@ -282,7 +282,7 @@ struct EncounterEditView: View {
                         } else {
                             Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
                         }
-                        Text(locateFaceMode ? "Cancel" : "Missing faces?")
+                        Text(locateFaceMode ? String(localized: "Cancel") : String(localized: "Missing faces?"))
                     }
                     .font(.caption)
                     .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
