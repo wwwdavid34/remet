@@ -35,7 +35,9 @@ struct MemoryScanView: View {
                 scanningOverlay
             case .processing:
                 processingOverlay
-            case .results(let suggestions):
+            case .results(let faceResults):
+                // For live scan, use first face result (camera typically captures one face)
+                let suggestions = faceResults.first?.suggestions ?? []
                 resultsOverlay(suggestions: suggestions)
             case .noFaceDetected:
                 noFaceOverlay

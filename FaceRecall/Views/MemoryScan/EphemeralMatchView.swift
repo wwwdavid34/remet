@@ -31,8 +31,8 @@ struct EphemeralMatchView: View {
                     idleContent
                 case .processing:
                     processingContent
-                case .results(let suggestions):
-                    resultsContent(suggestions: suggestions)
+                case .results(let faceResults):
+                    resultsContent(faceResults: faceResults)
                 case .noFaceDetected:
                     noFaceContent
                 case .error(let message):
@@ -178,48 +178,24 @@ struct EphemeralMatchView: View {
     }
 
     @ViewBuilder
-    private func resultsContent(suggestions: [MatchSuggestion]) -> some View {
+    private func resultsContent(faceResults: [FaceMatchResult]) -> some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Scanned face preview (if available)
-                if let faceCrop = viewModel.lastProcessedFaceCrop {
-                    VStack(spacing: 8) {
-                        Image(uiImage: faceCrop)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay {
-                                Circle()
-                                    .stroke(AppColors.teal, lineWidth: 3)
-                            }
-
-                        Text("Scanned Face")
-                            .font(.caption)
+                // Summary header
+                if faceResults.count > 1 {
+                    HStack(spacing: 8) {
+                        Image(systemName: "person.2.fill")
+                            .foregroundStyle(AppColors.teal)
+                        Text(String(localized: "\(faceResults.count) faces detected"))
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                     .padding(.top)
                 }
 
-                // Results section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(suggestions.isEmpty ? "No Matches Found" : "Possible Matches")
-                        .font(.headline)
-                        .padding(.horizontal)
-
-                    if suggestions.isEmpty {
-                        NoMatchesView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        // Read-only match cards (no confirm button)
-                        ForEach(suggestions) { suggestion in
-                            MatchResultCard(
-                                suggestion: suggestion,
-                                showConfirmButton: false
-                            )
-                            .padding(.horizontal)
-                        }
-                    }
+                // Results for each detected face
+                ForEach(faceResults) { faceResult in
+                    FaceResultSection(faceResult: faceResult, faceIndex: faceResults.firstIndex(where: { $0.id == faceResult.id }) ?? 0, totalFaces: faceResults.count)
                 }
 
                 // Try another button
@@ -228,7 +204,7 @@ struct EphemeralMatchView: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.counterclockwise")
-                        Text("Try Another Photo")
+                        Text(String(localized: "Try Another Photo"))
                     }
                     .fontWeight(.medium)
                 }
@@ -240,7 +216,7 @@ struct EphemeralMatchView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark.shield")
                         .font(.caption)
-                    Text("This match was not saved")
+                    Text(String(localized: "This match was not saved"))
                         .font(.caption)
                 }
                 .foregroundStyle(.secondary)
@@ -274,6 +250,80 @@ struct EphemeralMatchView: View {
 
             Spacer()
         }
+    }
+}
+
+// MARK: - Face Result Section
+
+/// Displays results for a single detected face
+struct FaceResultSection: View {
+    let faceResult: FaceMatchResult
+    let faceIndex: Int
+    let totalFaces: Int
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Face preview with label
+            VStack(spacing: 8) {
+                Image(uiImage: faceResult.faceCrop)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 80, height: 80)
+                    .clipShape(Circle())
+                    .overlay {
+                        Circle()
+                            .stroke(faceResult.hasMatches ? AppColors.teal : AppColors.textMuted, lineWidth: 3)
+                    }
+
+                if totalFaces > 1 {
+                    Text(String(localized: "Face \(faceIndex + 1)"))
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(String(localized: "Scanned Face"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // Match results for this face
+            VStack(alignment: .leading, spacing: 8) {
+                if faceResult.suggestions.isEmpty {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Image(systemName: "person.crop.circle.badge.questionmark")
+                                .font(.title2)
+                                .foregroundStyle(AppColors.textMuted)
+                            Text(String(localized: "No matches found"))
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 12)
+                } else {
+                    Text(String(localized: "Possible Matches"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+
+                    ForEach(faceResult.suggestions) { suggestion in
+                        MatchResultCard(
+                            suggestion: suggestion,
+                            showConfirmButton: false
+                        )
+                        .padding(.horizontal)
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 12)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal)
     }
 }
 

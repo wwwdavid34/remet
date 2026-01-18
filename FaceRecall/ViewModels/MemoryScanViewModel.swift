@@ -38,12 +38,29 @@ struct MatchSuggestion: Identifiable {
     }
 }
 
+/// Groups match suggestions with the detected face crop
+struct FaceMatchResult: Identifiable {
+    let id = UUID()
+    let faceCrop: UIImage
+    let suggestions: [MatchSuggestion]
+
+    /// Whether this face has any matches
+    var hasMatches: Bool {
+        !suggestions.isEmpty
+    }
+
+    /// Best match if available
+    var bestMatch: MatchSuggestion? {
+        suggestions.first
+    }
+}
+
 /// State machine for memory scan workflow
 enum ScanState: Equatable {
     case idle
     case scanning
     case processing
-    case results([MatchSuggestion])
+    case results([FaceMatchResult])
     case noFaceDetected
     case error(String)
 
@@ -80,8 +97,14 @@ final class MemoryScanViewModel {
     /// Photo picker selection (for Ephemeral Image Match)
     var selectedPhotoItem: PhotosPickerItem?
 
-    /// Last processed image (kept only for display during results)
-    var lastProcessedFaceCrop: UIImage?
+    /// Last processed face crops (kept only for display during results)
+    /// For single-face scans (like live camera), this contains one image
+    var lastProcessedFaceCrops: [UIImage] = []
+
+    /// Convenience for single face (backwards compatibility with live scan)
+    var lastProcessedFaceCrop: UIImage? {
+        lastProcessedFaceCrops.first
+    }
 
     // MARK: - Private Properties
 
@@ -106,49 +129,65 @@ final class MemoryScanViewModel {
     @MainActor
     func processImageEphemerally(_ image: UIImage, people: [Person]) async {
         scanState = .processing
+        lastProcessedFaceCrops = []
 
         do {
-            // Step 1: Detect faces in image
+            // Step 1: Detect all faces in image
             let detectedFaces = try await faceDetectionService.detectFaces(in: image)
 
-            guard let firstFace = detectedFaces.first else {
+            guard !detectedFaces.isEmpty else {
                 scanState = .noFaceDetected
                 return
             }
 
-            // Keep face crop for display (ephemeral - will be discarded when view dismisses)
-            lastProcessedFaceCrop = firstFace.cropImage
+            // Store all face crops for display
+            lastProcessedFaceCrops = detectedFaces.map { $0.cropImage }
 
-            // Step 2: Generate embedding (ephemeral - not persisted)
-            let embedding = try await faceEmbeddingService.generateEmbedding(for: firstFace.cropImage)
-
-            // Step 3: Find matches
+            // Step 2: Get people with embeddings
             let peopleWithEmbeddings = people.filter { !$0.embeddings.isEmpty }
 
             guard !peopleWithEmbeddings.isEmpty else {
-                scanState = .results([])
+                // No people to match against - return results with no matches
+                let results = detectedFaces.map { face in
+                    FaceMatchResult(faceCrop: face.cropImage, suggestions: [])
+                }
+                scanState = .results(results)
                 return
             }
 
-            let matches = faceMatchingService.findMatches(
-                for: embedding,
-                in: peopleWithEmbeddings,
-                topK: maxSuggestions,
-                threshold: suggestionThreshold
-            )
+            // Step 3: Process each detected face
+            var faceResults: [FaceMatchResult] = []
 
-            // Convert to suggestions
-            let suggestions = matches.map { match in
-                MatchSuggestion(
-                    person: match.person,
-                    similarity: match.similarity,
-                    confidence: match.confidence
+            for face in detectedFaces {
+                // Generate embedding for this face (ephemeral - not persisted)
+                let embedding = try await faceEmbeddingService.generateEmbedding(for: face.cropImage)
+
+                // Find matches for this face
+                let matches = faceMatchingService.findMatches(
+                    for: embedding,
+                    in: peopleWithEmbeddings,
+                    topK: maxSuggestions,
+                    threshold: suggestionThreshold
                 )
+
+                // Convert to suggestions
+                let suggestions = matches.map { match in
+                    MatchSuggestion(
+                        person: match.person,
+                        similarity: match.similarity,
+                        confidence: match.confidence
+                    )
+                }
+
+                faceResults.append(FaceMatchResult(
+                    faceCrop: face.cropImage,
+                    suggestions: suggestions
+                ))
             }
 
-            scanState = .results(suggestions)
+            scanState = .results(faceResults)
 
-            // Privacy invariant: embedding is now out of scope and will be deallocated
+            // Privacy invariant: embeddings are now out of scope and will be deallocated
 
         } catch {
             scanState = .error(error.localizedDescription)
@@ -191,7 +230,7 @@ final class MemoryScanViewModel {
         scanState = .idle
         scanProgress = 0
         selectedPhotoItem = nil
-        lastProcessedFaceCrop = nil
+        lastProcessedFaceCrops = []
     }
 
     /// Update scan progress (called from camera manager)
