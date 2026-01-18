@@ -11,15 +11,14 @@ struct AccountView: View {
     @State private var referralManager = ReferralManager.shared
     @State private var cloudSyncManager = CloudSyncManager.shared
 
-    @State private var showSignInSheet = false
     @State private var showPaywall = false
+    @State private var isRestoringPurchases = false
     @State private var showInviteFriends = false
     @State private var showEnterCode = false
 
     var body: some View {
         NavigationStack {
             List {
-                accountSection
                 subscriptionSection
                 if subscriptionManager.isPremium {
                     syncSection
@@ -31,9 +30,6 @@ struct AccountView: View {
                 aboutSection
             }
             .navigationTitle("Account")
-            .sheet(isPresented: $showSignInSheet) {
-                SignInSheet()
-            }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }
@@ -46,65 +42,6 @@ struct AccountView: View {
             .task {
                 await referralManager.syncCredits()
             }
-        }
-    }
-
-    // MARK: - Account Section
-
-    @ViewBuilder
-    private var accountSection: some View {
-        Section {
-            // TODO: Replace with actual authentication state
-            let isSignedIn = false
-
-            if isSignedIn {
-                HStack {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(AppColors.teal)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("John Doe")
-                            .fontWeight(.medium)
-                        Text("john@example.com")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    Button("Sign Out", role: .destructive) {
-                        // TODO: Implement sign out
-                    }
-                    .font(.subheadline)
-                }
-            } else {
-                VStack(spacing: 12) {
-                    Text("Sign in to sync your data across devices")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 4)
-
-                    Button {
-                        showSignInSheet = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "person.crop.circle.badge.plus")
-                            Text("Sign In")
-                        }
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(AppColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        } header: {
-            Text("Account")
         }
     }
 
@@ -123,7 +60,7 @@ struct AccountView: View {
                         .frame(width: 28)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("iCloud Sync")
+                        Text(String(localized: "iCloud Sync"))
                             .fontWeight(.medium)
                         Text(syncStatusText)
                             .font(.caption)
@@ -132,7 +69,7 @@ struct AccountView: View {
                 }
             }
         } header: {
-            Text("Sync")
+            Text(String(localized: "Sync"))
         }
     }
 
@@ -168,16 +105,16 @@ struct AccountView: View {
                     Image(systemName: "crown.fill")
                         .foregroundStyle(AppColors.warmYellow)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Premium Active")
+                        Text(String(localized: "Premium Active"))
                             .fontWeight(.medium)
                         if case .gracePeriod(let expiresAt) = subscriptionManager.subscriptionStatus {
-                            Text("Renews \(expiresAt.formatted(date: .abbreviated, time: .omitted))")
+                            Text(String(localized: "Renews \(expiresAt.formatted(date: .abbreviated, time: .omitted))"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
                     }
                     Spacer()
-                    Button("Manage") {
+                    Button(String(localized: "Manage")) {
                         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
                             UIApplication.shared.open(url)
                         }
@@ -191,7 +128,7 @@ struct AccountView: View {
                     HStack {
                         Image(systemName: "crown.fill")
                             .foregroundStyle(AppColors.warmYellow)
-                        Text("Upgrade to Premium")
+                        Text(String(localized: "Upgrade to Premium"))
                             .fontWeight(.semibold)
                     }
 
@@ -199,21 +136,21 @@ struct AccountView: View {
                     HStack {
                         Image(systemName: "person.3")
                             .foregroundStyle(AppColors.teal)
-                        Text("\(people.count)/\(SubscriptionLimits.freePeopleLimit) people")
+                        Text(String(localized: "\(people.count)/\(SubscriptionLimits.freePeopleLimit) people"))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
 
                     VStack(alignment: .leading, spacing: 6) {
-                        PremiumFeatureRow(icon: "infinity", text: "Unlimited people & encounters")
-                        PremiumFeatureRow(icon: "icloud", text: "Cloud sync across devices")
-                        PremiumFeatureRow(icon: "chart.bar", text: "Advanced analytics")
+                        PremiumFeatureRow(icon: "infinity", text: String(localized: "Unlimited people & encounters"))
+                        PremiumFeatureRow(icon: "icloud", text: String(localized: "Cloud sync across devices"))
+                        PremiumFeatureRow(icon: "chart.bar", text: String(localized: "Advanced analytics"))
                     }
 
                     Button {
                         showPaywall = true
                     } label: {
-                        Text("View Plans")
+                        Text(String(localized: "View Plans"))
                             .fontWeight(.medium)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -231,8 +168,26 @@ struct AccountView: View {
                 }
                 .padding(.vertical, 4)
             }
+
+            // Restore Purchases - always visible
+            Button {
+                Task {
+                    isRestoringPurchases = true
+                    await subscriptionManager.restorePurchases()
+                    isRestoringPurchases = false
+                }
+            } label: {
+                HStack {
+                    if isRestoringPurchases {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    }
+                    Text(String(localized: "Restore Purchases"))
+                }
+            }
+            .disabled(isRestoringPurchases)
         } header: {
-            Text("Subscription")
+            Text(String(localized: "Subscription"))
         }
     }
 
@@ -251,10 +206,10 @@ struct AccountView: View {
                         .frame(width: 28)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Invite Friends")
+                        Text(String(localized: "Invite Friends"))
                             .fontWeight(.medium)
                             .foregroundStyle(.primary)
-                        Text("Get $0.50 credit for each referral")
+                        Text(String(localized: "Get $0.50 credit for each referral"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -287,10 +242,10 @@ struct AccountView: View {
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Enter Code")
+                            Text(String(localized: "Enter Code"))
                                 .fontWeight(.medium)
                                 .foregroundStyle(.primary)
-                            Text("Have a referral or promo code?")
+                            Text(String(localized: "Have a referral or promo code?"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -305,7 +260,7 @@ struct AccountView: View {
                 .buttonStyle(.plain)
             }
         } header: {
-            Text("Referrals & Promos")
+            Text(String(localized: "Referrals & Promos"))
         }
     }
 
@@ -314,12 +269,12 @@ struct AccountView: View {
     @ViewBuilder
     private var photoStorageSection: some View {
         Section {
-            Picker("Photo Quality", selection: Binding(
+            Picker(String(localized: "Photo Quality"), selection: Binding(
                 get: { settings.photoStorageQuality },
                 set: { settings.photoStorageQuality = $0 }
             )) {
                 ForEach(PhotoStorageQuality.allCases) { quality in
-                    Text(quality.rawValue).tag(quality)
+                    Text(quality.displayName).tag(quality)
                 }
             }
 
@@ -328,15 +283,15 @@ struct AccountView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                Text("Resolution: \(Int(settings.photoResolution))px")
+                Text(String(localized: "Resolution: \(Int(settings.photoResolution))px"))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 4)
         } header: {
-            Text("Photo Storage")
+            Text(String(localized: "Photo Storage"))
         } footer: {
-            Text("Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only.")
+            Text(String(localized: "Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only."))
         }
     }
 
@@ -347,7 +302,7 @@ struct AccountView: View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Auto-Accept Threshold")
+                    Text(String(localized: "Auto-Accept Threshold"))
                     Spacer()
                     Text("\(Int(settings.autoAcceptThreshold * 100))%")
                         .foregroundStyle(.secondary)
@@ -363,14 +318,14 @@ struct AccountView: View {
                 )
             }
 
-            Toggle("Show Confidence Scores", isOn: Binding(
+            Toggle(String(localized: "Show Confidence Scores"), isOn: Binding(
                 get: { settings.showConfidenceScores },
                 set: { settings.showConfidenceScores = $0 }
             ))
         } header: {
-            Text("Face Matching")
+            Text(String(localized: "Face Matching"))
         } footer: {
-            Text("Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives.")
+            Text(String(localized: "Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives."))
         }
     }
 
@@ -378,28 +333,28 @@ struct AccountView: View {
 
     @ViewBuilder
     private var storageInfoSection: some View {
-        Section("Storage Usage") {
+        Section(String(localized: "Storage Usage")) {
             StorageRow(
-                title: "Encounters",
+                title: String(localized: "Encounters"),
                 count: encounters.count,
                 icon: "person.2.crop.square.stack"
             )
 
             StorageRow(
-                title: "People",
+                title: String(localized: "People"),
                 count: people.count,
                 icon: "person.3"
             )
 
             StorageRow(
-                title: "Face Samples",
+                title: String(localized: "Face Samples"),
                 count: embeddings.count,
                 icon: "face.smiling"
             )
 
             if let storageSize = calculateStorageSize() {
                 HStack {
-                    Label("Estimated Storage", systemImage: "internaldrive")
+                    Label(String(localized: "Estimated Storage"), systemImage: "internaldrive")
                     Spacer()
                     Text(storageSize)
                         .foregroundStyle(.secondary)
@@ -412,23 +367,61 @@ struct AccountView: View {
 
     @ViewBuilder
     private var aboutSection: some View {
-        Section("About") {
+        Section(String(localized: "About")) {
             HStack {
-                Label("Version", systemImage: "info.circle")
+                Label(String(localized: "Version"), systemImage: "info.circle")
                 Spacer()
                 Text("1.0.0")
                     .foregroundStyle(.secondary)
             }
 
             NavigationLink {
+                FAQView()
+            } label: {
+                Label(String(localized: "FAQ"), systemImage: "questionmark.circle")
+            }
+
+            NavigationLink {
                 PrivacyInfoView()
             } label: {
-                Label("Privacy", systemImage: "hand.raised")
+                Label(String(localized: "Privacy"), systemImage: "hand.raised")
+            }
+
+            Button {
+                openSupportEmail()
+            } label: {
+                Label(String(localized: "Contact Support"), systemImage: "envelope")
             }
         }
     }
 
     // MARK: - Helpers
+
+    private func openSupportEmail() {
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? String(localized: "Unknown")
+        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? String(localized: "Unknown")
+        let iosVersion = UIDevice.current.systemVersion
+        let deviceModel = UIDevice.current.model
+        let isPremium = subscriptionManager.isPremium ? String(localized: "Yes") : String(localized: "No")
+
+        let subject = String(localized: "Remet Support Request")
+        let body = """
+
+
+        ---
+        \(String(localized: "App Version")): \(appVersion) (\(buildNumber))
+        \(String(localized: "iOS Version")): \(iosVersion)
+        \(String(localized: "Device")): \(deviceModel)
+        \(String(localized: "Premium")): \(isPremium)
+        """
+
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "mailto:support@remet-app.com?subject=\(encodedSubject)&body=\(encodedBody)") {
+            UIApplication.shared.open(url)
+        }
+    }
 
     private func calculateStorageSize() -> String? {
         // Rough estimate based on counts

@@ -3,11 +3,19 @@ import SwiftUI
 
 /// Photo storage quality presets
 enum PhotoStorageQuality: String, CaseIterable, Identifiable {
-    case high = "High Quality"
-    case balanced = "Balanced"
-    case compact = "Compact"
+    case high = "high"
+    case balanced = "balanced"
+    case compact = "compact"
 
     var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .high: return String(localized: "High Quality")
+        case .balanced: return String(localized: "Balanced")
+        case .compact: return String(localized: "Compact")
+        }
+    }
 
     var resolution: CGFloat {
         switch self {
@@ -28,11 +36,11 @@ enum PhotoStorageQuality: String, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .high:
-            return "Best quality, largest storage (~200 KB/photo)"
+            return String(localized: "Best quality, largest storage (~200 KB/photo)")
         case .balanced:
-            return "Good quality, moderate storage (~80 KB/photo)"
+            return String(localized: "Good quality, moderate storage (~80 KB/photo)")
         case .compact:
-            return "Acceptable quality, smallest storage (~40 KB/photo)"
+            return String(localized: "Acceptable quality, smallest storage (~40 KB/photo)")
         }
     }
 
@@ -63,65 +71,59 @@ final class AppSettings {
         static let subscriptionLimitsVersion = "subscriptionLimitsVersion"
     }
 
+    // MARK: - Stored Properties (for @Observable tracking)
+
+    private var _photoStorageQuality: PhotoStorageQuality = .balanced
+    private var _autoAcceptThreshold: Float = 0.90
+    private var _showConfidenceScores: Bool = false
+    private var _showBoundingBoxes: Bool = true
+    private var _savePhotosToCameraRoll: Bool = false
+    private var _hasShownCameraRollHint: Bool = false
+
     var photoStorageQuality: PhotoStorageQuality {
-        get {
-            if let rawValue = defaults.string(forKey: Keys.photoStorageQuality),
-               let quality = PhotoStorageQuality(rawValue: rawValue) {
-                return quality
-            }
-            return .balanced
-        }
+        get { _photoStorageQuality }
         set {
+            _photoStorageQuality = newValue
             defaults.set(newValue.rawValue, forKey: Keys.photoStorageQuality)
         }
     }
 
     var autoAcceptThreshold: Float {
-        get {
-            let value = defaults.float(forKey: Keys.autoAcceptThreshold)
-            return value > 0 ? value : 0.90
-        }
+        get { _autoAcceptThreshold }
         set {
+            _autoAcceptThreshold = newValue
             defaults.set(newValue, forKey: Keys.autoAcceptThreshold)
         }
     }
 
     var showConfidenceScores: Bool {
-        get {
-            defaults.bool(forKey: Keys.showConfidenceScores)
-        }
+        get { _showConfidenceScores }
         set {
+            _showConfidenceScores = newValue
             defaults.set(newValue, forKey: Keys.showConfidenceScores)
         }
     }
 
     var showBoundingBoxes: Bool {
-        get {
-            // Default to true if not set
-            if defaults.object(forKey: Keys.showBoundingBoxes) == nil {
-                return true
-            }
-            return defaults.bool(forKey: Keys.showBoundingBoxes)
-        }
+        get { _showBoundingBoxes }
         set {
+            _showBoundingBoxes = newValue
             defaults.set(newValue, forKey: Keys.showBoundingBoxes)
         }
     }
 
     var savePhotosToCameraRoll: Bool {
-        get {
-            defaults.bool(forKey: Keys.savePhotosToCameraRoll)
-        }
+        get { _savePhotosToCameraRoll }
         set {
+            _savePhotosToCameraRoll = newValue
             defaults.set(newValue, forKey: Keys.savePhotosToCameraRoll)
         }
     }
 
     var hasShownCameraRollHint: Bool {
-        get {
-            defaults.bool(forKey: Keys.hasShownCameraRollHint)
-        }
+        get { _hasShownCameraRollHint }
         set {
+            _hasShownCameraRollHint = newValue
             defaults.set(newValue, forKey: Keys.hasShownCameraRollHint)
         }
     }
@@ -195,5 +197,40 @@ final class AppSettings {
         }
     }
 
-    private init() {}
+    private init() {
+        // Load saved values from UserDefaults
+        if let rawValue = defaults.string(forKey: Keys.photoStorageQuality) {
+            // Try new rawValue format first
+            if let quality = PhotoStorageQuality(rawValue: rawValue) {
+                _photoStorageQuality = quality
+            } else {
+                // Migrate old rawValue format ("High Quality" -> "high", etc.)
+                let migratedQuality: PhotoStorageQuality? = switch rawValue {
+                case "High Quality": .high
+                case "Balanced": .balanced
+                case "Compact": .compact
+                default: nil
+                }
+                if let quality = migratedQuality {
+                    _photoStorageQuality = quality
+                    // Save with new format
+                    defaults.set(quality.rawValue, forKey: Keys.photoStorageQuality)
+                }
+            }
+        }
+
+        let savedThreshold = defaults.float(forKey: Keys.autoAcceptThreshold)
+        if savedThreshold > 0 {
+            _autoAcceptThreshold = savedThreshold
+        }
+
+        _showConfidenceScores = defaults.bool(forKey: Keys.showConfidenceScores)
+
+        if defaults.object(forKey: Keys.showBoundingBoxes) != nil {
+            _showBoundingBoxes = defaults.bool(forKey: Keys.showBoundingBoxes)
+        }
+
+        _savePhotosToCameraRoll = defaults.bool(forKey: Keys.savePhotosToCameraRoll)
+        _hasShownCameraRollHint = defaults.bool(forKey: Keys.hasShownCameraRollHint)
+    }
 }

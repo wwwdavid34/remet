@@ -8,12 +8,9 @@ struct SettingsView: View {
 
     private var settings = AppSettings.shared
 
-    @State private var showSignInSheet = false
-
     var body: some View {
         NavigationStack {
             List {
-                accountSection
                 subscriptionSection
                 photoStorageSection
                 faceMatchingSection
@@ -21,68 +18,6 @@ struct SettingsView: View {
                 aboutSection
             }
             .navigationTitle("Settings")
-            .sheet(isPresented: $showSignInSheet) {
-                SignInSheet()
-            }
-        }
-    }
-
-    // MARK: - Account Section
-
-    @ViewBuilder
-    private var accountSection: some View {
-        Section {
-            // TODO: Replace with actual authentication state
-            let isSignedIn = false
-
-            if isSignedIn {
-                HStack {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(AppColors.teal)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("John Doe")
-                            .fontWeight(.medium)
-                        Text("john@example.com")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    Button("Sign Out", role: .destructive) {
-                        // TODO: Implement sign out
-                    }
-                    .font(.subheadline)
-                }
-            } else {
-                VStack(spacing: 12) {
-                    Text("Sign in to sync your data across devices")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 4)
-
-                    Button {
-                        showSignInSheet = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "person.crop.circle.badge.plus")
-                            Text("Sign In")
-                        }
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(AppColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        } header: {
-            Text("Account")
         }
     }
 
@@ -157,7 +92,7 @@ struct SettingsView: View {
                 set: { settings.photoStorageQuality = $0 }
             )) {
                 ForEach(PhotoStorageQuality.allCases) { quality in
-                    Text(quality.rawValue).tag(quality)
+                    Text(quality.displayName).tag(quality)
                 }
             }
 
@@ -371,120 +306,6 @@ struct PremiumFeatureRow: View {
     }
 }
 
-// MARK: - Sign In Sheet
-
-struct SignInSheet: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Spacer()
-
-                // Logo
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral.opacity(0.15), AppColors.teal.opacity(0.15)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "face.smiling")
-                        .font(.system(size: 50))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [AppColors.coral, AppColors.teal],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                }
-
-                VStack(spacing: 8) {
-                    Text("Sign in to Remet")
-                        .font(.title2)
-                        .fontWeight(.bold)
-
-                    Text("Sync your data across all your devices")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-
-                Spacer()
-
-                VStack(spacing: 12) {
-                    // Apple Sign In
-                    Button {
-                        // TODO: Implement Apple Sign In
-                        // Use AuthenticationServices framework
-                    } label: {
-                        HStack {
-                            Image(systemName: "apple.logo")
-                            Text("Continue with Apple")
-                        }
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-
-                    // Google Sign In
-                    Button {
-                        // TODO: Implement Google Sign In
-                        // Use GoogleSignIn SDK
-                    } label: {
-                        HStack {
-                            Image(systemName: "g.circle.fill")
-                            Text("Continue with Google")
-                        }
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(UIColor.separator), lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 24)
-
-                Text("By continuing, you agree to our Terms of Service and Privacy Policy")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                Spacer()
-            }
-            .padding()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
 #Preview("Settings") {
     SettingsView()
-}
-
-#Preview("Sign In") {
-    SignInSheet()
 }

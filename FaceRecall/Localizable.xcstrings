@@ -436,6 +436,7 @@
       }
     },
     "%@/%@ people" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1055,6 +1056,7 @@
       }
     },
     "Account" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -2342,6 +2344,7 @@
       }
     },
     "By continuing, you agree to our Terms of Service and Privacy Policy" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3118,6 +3121,7 @@
       }
     },
     "Continue with Apple" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3140,6 +3144,7 @@
       }
     },
     "Continue with Google" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4114,6 +4119,7 @@
       }
     },
     "Enter Code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -4663,6 +4669,7 @@
       }
     },
     "Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5160,6 +5167,7 @@
       }
     },
     "Get $0.50 credit for each referral" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5612,6 +5620,7 @@
       }
     },
     "Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5973,6 +5982,7 @@
       }
     },
     "Invite Friends" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6063,6 +6073,7 @@
       }
     },
     "John Doe" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -6085,6 +6096,7 @@
       }
     },
     "john@example.com" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10051,6 +10063,7 @@
       }
     },
     "Referrals & Promos" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -10232,6 +10245,7 @@
       }
     },
     "Renews %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11537,6 +11551,7 @@
       }
     },
     "Sign In" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11559,6 +11574,7 @@
       }
     },
     "Sign in to Remet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -11581,6 +11597,7 @@
       }
     },
     "Sign in to sync your data across devices" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -12172,10 +12189,8 @@
         }
       }
     },
-    "Sync" : {
-
-    },
     "Sync your data across all your devices" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

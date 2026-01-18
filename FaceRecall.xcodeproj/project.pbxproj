@@ -64,6 +64,7 @@
 		SUB001234567890123456005 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456005 /* PaywallView.swift */; };
 		SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456006 /* LimitWarningBanner.swift */; };
 		SUB001234567890123456007 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456007 /* LimitReachedView.swift */; };
+		SUB001234567890123456008 /* FAQView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUB101234567890123456008 /* FAQView.swift */; };
 		CONTACT01234567890123001 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123001 /* ContactsManager.swift */; };
 		CONTACT01234567890123002 /* ContactLinkSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONTACT11234567890123002 /* ContactLinkSection.swift */; };
 		ENCEDIT01234567890123001 /* EncounterEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ENCEDIT11234567890123001 /* EncounterEditView.swift */; };
@@ -138,6 +139,7 @@
 		SUB101234567890123456005 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		SUB101234567890123456006 /* LimitWarningBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitWarningBanner.swift; sourceTree = "<group>"; };
 		SUB101234567890123456007 /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
+		SUB101234567890123456008 /* FAQView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQView.swift; sourceTree = "<group>"; };
 		CONTACT11234567890123001 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		CONTACT11234567890123002 /* ContactLinkSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactLinkSection.swift; sourceTree = "<group>"; };
 		MSCAN11234567890123001 /* SilentScanCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilentScanCameraManager.swift; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				SUB101234567890123456004 /* AccountView.swift */,
+				SUB101234567890123456008 /* FAQView.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -522,6 +525,7 @@
 				SUB001234567890123456005 /* PaywallView.swift in Sources */,
 				SUB001234567890123456006 /* LimitWarningBanner.swift in Sources */,
 				SUB001234567890123456007 /* LimitReachedView.swift in Sources */,
+				SUB001234567890123456008 /* FAQView.swift in Sources */,
 				LOTTIE01234567890123402 /* ScanningAnimationView.swift in Sources */,
 				LOTTIE01234567890123403 /* AppLogoView.swift in Sources */,
 				SEARCH01234567890123001 /* GlobalSearchView.swift in Sources */,
