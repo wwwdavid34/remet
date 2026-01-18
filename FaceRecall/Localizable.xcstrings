@@ -1032,6 +1032,29 @@
         }
       }
     },
+    "Acceptable quality, smallest storage (~40 KB/photo)": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "許容画質、最小容量（約40 KB/枚）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可接受质量，最小存储（约40 KB/张）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可接受畫質，最小儲存（約40 KB/張）"
+          }
+        }
+      }
+    },
     "Access your data across all your devices": {
       "extractionState": "stale",
       "localizations": {
@@ -2161,6 +2184,29 @@
         }
       }
     },
+    "Balanced": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バランス"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        }
+      }
+    },
     "Basic Info": {
       "localizations": {
         "ja": {
@@ -2201,6 +2247,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "最佳學習方式"
+          }
+        }
+      }
+    },
+    "Best quality, largest storage (~200 KB/photo)": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高画質、最大容量（約200 KB/枚）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最佳质量，最大存储（约200 KB/张）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最佳畫質，最大儲存（約200 KB/張）"
           }
         }
       }
@@ -2913,6 +2982,29 @@
         }
       }
     },
+    "Compact": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コンパクト"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紧凑"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "精簡"
+          }
+        }
+      }
+    },
     "Company": {
       "extractionState": "stale",
       "localizations": {
@@ -3045,6 +3137,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "聯絡人照片已成功更新。"
+          }
+        }
+      }
+    },
+    "Contact Support": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サポートに連絡"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "联系支持"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "聯繫支援"
           }
         }
       }
@@ -4186,7 +4301,6 @@
       }
     },
     "Error": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4707,6 +4821,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "家人"
+          }
+        }
+      }
+    },
+    "FAQ": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "よくある質問"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "常见问题"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "常見問題"
           }
         }
       }
@@ -5348,6 +5485,29 @@
         }
       }
     },
+    "Good quality, moderate storage (~80 KB/photo)": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "良好画質、中程度の容量（約80 KB/枚）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "良好质量，适中存储（约80 KB/张）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "良好畫質，適中儲存（約80 KB/張）"
+          }
+        }
+      }
+    },
     "GPS captured - add a location name above": {
       "localizations": {
         "ja": {
@@ -5591,6 +5751,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "高置信度配對"
+          }
+        }
+      }
+    },
+    "High Quality": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高画質"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高质量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高畫質"
           }
         }
       }
@@ -14536,178 +14719,134 @@
         }
       }
     },
-    "Contact Support": {
+    "Disabled": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "サポートに連絡"
+            "value": "無効"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "联系支持"
+            "value": "已禁用"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "聯繫支援"
+            "value": "已停用"
           }
         }
       }
     },
-    "High Quality": {
+    "Checking...": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "高画質"
+            "value": "確認中..."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "高质量"
+            "value": "检查中..."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "高畫質"
+            "value": "檢查中..."
           }
         }
       }
     },
-    "Balanced": {
+    "Syncing...": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "バランス"
+            "value": "同期中..."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "均衡"
+            "value": "同步中..."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "均衡"
+            "value": "同步中..."
           }
         }
       }
     },
-    "Compact": {
+    "All data synced": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "コンパクト"
+            "value": "すべてのデータを同期済み"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "紧凑"
+            "value": "所有数据已同步"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "精簡"
+            "value": "所有資料已同步"
           }
         }
       }
     },
-    "Best quality, largest storage (~200 KB/photo)": {
+    "No iCloud account": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "最高画質、最大容量（約200 KB/枚）"
+            "value": "iCloudアカウントなし"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "最佳质量，最大存储（约200 KB/张）"
+            "value": "无iCloud账户"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "最佳畫質，最大儲存（約200 KB/張）"
+            "value": "無iCloud帳戶"
           }
         }
       }
     },
-    "Good quality, moderate storage (~80 KB/photo)": {
+    "Sync": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "良好画質、中程度の容量（約80 KB/枚）"
+            "value": "同期"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "良好质量，适中存储（约80 KB/张）"
+            "value": "同步"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "良好畫質，適中儲存（約80 KB/張）"
-          }
-        }
-      }
-    },
-    "Acceptable quality, smallest storage (~40 KB/photo)": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "許容画質、最小容量（約40 KB/枚）"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "可接受质量，最小存储（约40 KB/张）"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "可接受畫質，最小儲存（約40 KB/張）"
-          }
-        }
-      }
-    },
-    "FAQ": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "よくある質問"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "常见问题"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "常見問題"
+            "value": "同步"
           }
         }
       }
