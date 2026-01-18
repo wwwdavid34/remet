@@ -2099,6 +2099,7 @@
       }
     },
     "Apply": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -2121,6 +2122,7 @@
       }
     },
     "Apply Code": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3417,6 +3419,7 @@
       }
     },
     "Copied!": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3666,7 +3669,31 @@
         }
       }
     },
+    "Credit Balance": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クレジット残高"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "积分余额"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "積分餘額"
+          }
+        }
+      }
+    },
     "Credit History": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4347,6 +4374,7 @@
       }
     },
     "Enter a referral or promo code to get Premium credit": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5349,6 +5377,29 @@
         }
       }
     },
+    "Friends Referred": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紹介した友達"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已推荐好友"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已推薦好友"
+          }
+        }
+      }
+    },
     "From": {
       "extractionState": "stale",
       "localizations": {
@@ -5464,6 +5515,7 @@
       }
     },
     "Get $0.50 credit for each friend who upgrades to Premium": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5782,6 +5834,7 @@
       }
     },
     "Have a Code?": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5827,6 +5880,7 @@
       }
     },
     "Have a referral or promo code?": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5872,6 +5926,7 @@
       }
     },
     "Help Friends Remember Faces": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -6053,6 +6108,7 @@
       }
     },
     "How It Works": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -10225,6 +10281,29 @@
         }
       }
     },
+    "Promo code": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロモコード"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "优惠码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "優惠碼"
+          }
+        }
+      }
+    },
     "Quick Actions": {
       "localizations": {
         "ja": {
@@ -10563,7 +10642,31 @@
         }
       }
     },
+    "Referral code": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紹介コード"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "推荐码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "推薦碼"
+          }
+        }
+      }
+    },
     "Referral codes start with REMET-\nOther codes are promo codes": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -15297,6 +15400,7 @@
       }
     },
     "Your Referral Code": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -15319,6 +15423,7 @@
       }
     },
     "Your Referral Stats": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -15340,90 +15445,200 @@
         }
       }
     },
-    "Friends Referred": {
+    "Share Invite": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "紹介した友達"
+            "value": "招待をシェア"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已推荐好友"
+            "value": "分享邀请"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已推薦好友"
+            "value": "分享邀請"
           }
         }
       }
     },
-    "Credit Balance": {
+    "Share your code": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "クレジット残高"
+            "value": "コードをシェア"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "积分余额"
+            "value": "分享您的码"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "積分餘額"
+            "value": "分享您的碼"
           }
         }
       }
     },
-    "Referral code": {
+    "Send to friends who'd benefit": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "紹介コード"
+            "value": "役立つ友達に送信"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "推荐码"
+            "value": "发送给需要的朋友"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "推薦碼"
+            "value": "發送給需要的朋友"
           }
         }
       }
     },
-    "Promo code": {
+    "Friend joins": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "プロモコード"
+            "value": "友達が参加"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "优惠码"
+            "value": "好友加入"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "優惠碼"
+            "value": "好友加入"
+          }
+        }
+      }
+    },
+    "They enter your code in the app": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリでコードを入力"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "他们在应用中输入您的码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "他們在應用中輸入您的碼"
+          }
+        }
+      }
+    },
+    "Friend upgrades": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "友達がアップグレード"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友升级"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友升級"
+          }
+        }
+      }
+    },
+    "When they subscribe to Premium": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premiumに登録した時"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当他们订阅高级版时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "當他們訂閱高級版時"
+          }
+        }
+      }
+    },
+    "You both earn": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方に報酬"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方获得奖励"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雙方獲得獎勵"
+          }
+        }
+      }
+    },
+    "$0.50 credit for each of you": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双方に$0.50のクレジット"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每人获得$0.50积分"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每人獲得$0.50積分"
           }
         }
       }
