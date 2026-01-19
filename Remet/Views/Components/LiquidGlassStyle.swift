@@ -27,64 +27,67 @@ struct LiquidGlassBackgroundModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if #available(iOS 26, *) {
-            // iOS 26+ native liquid glass effect
-            if isCapsule {
-                content
-                    .background(.regularMaterial, in: Capsule())
-                    .glassBackgroundEffect(in: Capsule())
-            } else {
-                content
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
-                    .glassBackgroundEffect(in: RoundedRectangle(cornerRadius: cornerRadius))
-            }
-        } else {
-            // Fallback for older iOS - custom translucent effect
-            if isCapsule {
-                content
-                    .background(
+        // Use enhanced glass styling for iOS 26+, standard material for older versions
+        if isCapsule {
+            content
+                .background {
+                    if #available(iOS 26, *) {
+                        // iOS 26+ - enhanced glass effect with thicker material
+                        Capsule()
+                            .fill(.regularMaterial)
+                            .shadow(color: Color.black.opacity(0.2), radius: 24, x: 0, y: 12)
+                    } else {
+                        // Pre-iOS 26 - standard translucent effect
                         Capsule()
                             .fill(.ultraThinMaterial)
                             .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
-                    )
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.white.opacity(0.1),
-                                        Color.clear
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ),
-                                lineWidth: 0.5
-                            )
-                    )
-            } else {
-                content
-                    .background(
+                    }
+                }
+                .overlay {
+                    Capsule()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.3),
+                                    Color.white.opacity(0.1),
+                                    Color.clear
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.5
+                        )
+                }
+        } else {
+            content
+                .background {
+                    if #available(iOS 26, *) {
+                        // iOS 26+ - enhanced glass effect
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(.regularMaterial)
+                            .shadow(color: Color.black.opacity(0.2), radius: 16, x: 0, y: 8)
+                    } else {
+                        // Pre-iOS 26 - standard translucent effect
                         RoundedRectangle(cornerRadius: cornerRadius)
                             .fill(.ultraThinMaterial)
                             .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 6)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .strokeBorder(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.white.opacity(0.1),
-                                        Color.clear
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ),
-                                lineWidth: 0.5
-                            )
-                    )
-            }
+                    }
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.3),
+                                    Color.white.opacity(0.1),
+                                    Color.clear
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.5
+                        )
+                }
         }
     }
 }
@@ -99,33 +102,18 @@ struct LiquidGlassButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .background(glassBackground(isPressed: configuration.isPressed))
-            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-    }
-
-    @ViewBuilder
-    private func glassBackground(isPressed: Bool) -> some View {
-        if #available(iOS 26, *) {
-            // iOS 26+ uses native glass effect for selected state
-            if isSelected {
+            .background(
                 Capsule()
-                    .fill(selectedColor.opacity(0.15))
-                    .glassBackgroundEffect(in: Capsule())
-            } else {
-                Color.clear
-            }
-        } else {
-            // Fallback for older iOS
-            Capsule()
-                .fill(isSelected ? selectedColor.opacity(0.12) : Color.clear)
-        }
+                    .fill(isSelected ? selectedColor.opacity(0.12) : Color.clear)
+            )
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
 // MARK: - View Extensions
 
 extension View {
-    /// Applies liquid glass background effect - native on iOS 26+, custom fallback on older versions
+    /// Applies liquid glass background effect - enhanced on iOS 26+, standard on older versions
     /// - Parameters:
     ///   - cornerRadius: Corner radius for rounded rectangle shape (ignored if isCapsule is true)
     ///   - isCapsule: Use capsule shape instead of rounded rectangle
@@ -134,33 +122,35 @@ extension View {
     }
 
     /// Applies liquid glass button styling
-    func liquidGlassButtonStyle(isSelected: Bool = false, selectedColor: Color = AppColors.coral) -> some View {
+    func liquidGlassButtonStyle(isSelected: Bool = false, selectedColor: Color = .accentColor) -> some View {
         self.buttonStyle(LiquidGlassButtonStyle(isSelected: isSelected, selectedColor: selectedColor))
     }
 }
 
 // MARK: - Liquid Glass Tab Icon
 
-/// Tab icon that uses iOS 26 liquid glass styling when available
+/// Tab icon that uses enhanced styling on iOS 26+
 struct LiquidGlassTabIcon: View {
     let systemName: String
     let label: String
     let isSelected: Bool
-    var selectedColor: Color = AppColors.coral
+    var selectedColor: Color = .accentColor
 
     var body: some View {
         VStack(spacing: 4) {
-            if #available(iOS 26, *) {
-                // iOS 26+ - use symbol effect and glass styling
-                Image(systemName: isSelected ? systemName + ".fill" : systemName)
-                    .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
-                    .symbolRenderingMode(.hierarchical)
-                    .symbolEffect(.bounce, value: isSelected)
-            } else {
-                // Fallback - standard icon
-                Image(systemName: isSelected ? systemName + ".fill" : systemName)
-                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
-                    .symbolRenderingMode(.hierarchical)
+            Group {
+                if #available(iOS 18, *) {
+                    // iOS 18+ - use symbol effect for bounce
+                    Image(systemName: isSelected ? systemName + ".fill" : systemName)
+                        .font(.system(size: 22, weight: isSelected ? .semibold : .regular))
+                        .symbolRenderingMode(.hierarchical)
+                        .symbolEffect(.bounce, value: isSelected)
+                } else {
+                    // Fallback - standard icon
+                    Image(systemName: isSelected ? systemName + ".fill" : systemName)
+                        .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                        .symbolRenderingMode(.hierarchical)
+                }
             }
 
             Text(label)
@@ -176,7 +166,7 @@ struct LiquidGlassTabIcon: View {
         Text("iOS Version: \(iOSVersion.is26OrLater ? "26+" : "< 26")")
 
         HStack(spacing: 20) {
-            LiquidGlassTabIcon(systemName: "person.3", label: "People", isSelected: true)
+            LiquidGlassTabIcon(systemName: "person.3", label: "People", isSelected: true, selectedColor: .orange)
             LiquidGlassTabIcon(systemName: "brain.head.profile", label: "Practice", isSelected: false)
         }
         .padding()
@@ -189,5 +179,5 @@ struct LiquidGlassTabIcon: View {
             .padding(.horizontal)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color(.systemGroupedBackground))
+    .background(Color(UIColor.systemGroupedBackground))
 }

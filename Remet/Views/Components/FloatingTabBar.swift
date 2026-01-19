@@ -40,12 +40,16 @@ struct FloatingTabBar: View {
                 selectedTab = item.id
             }
         } label: {
-            LiquidGlassTabIcon(
-                systemName: item.icon,
-                label: item.label,
-                isSelected: isSelected,
-                selectedColor: AppColors.coral
-            )
+            VStack(spacing: 4) {
+                Image(systemName: isSelected ? item.icon + ".fill" : item.icon)
+                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                    .symbolRenderingMode(.hierarchical)
+
+                Text(item.label)
+                    .font(.caption2)
+                    .fontWeight(isSelected ? .semibold : .regular)
+            }
+            .foregroundStyle(isSelected ? AppColors.coral : .secondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
             .background(
