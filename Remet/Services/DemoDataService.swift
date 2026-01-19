@@ -314,6 +314,7 @@ final class DemoDataService {
         let photoAssets: [String]
         let peopleNames: [String]
         let daysAgo: Int
+        let tags: [String]
     }
 
     static let encounters: [EncounterData] = [
@@ -323,7 +324,8 @@ final class DemoDataService {
             location: "San Francisco, CA",
             photoAssets: ["demo_encounter_Photo1A", "demo_encounter_Photo1B", "demo_encounter_Photo1C"],
             peopleNames: ["Alex Chen", "Daniel Wu", "Jason Lee", "Omar Hassan"],
-            daysAgo: 14
+            daysAgo: 14,
+            tags: ["Tech", "Startup", "AI"]
         ),
         // Encounter 2: Friend's Wedding
         EncounterData(
@@ -331,7 +333,8 @@ final class DemoDataService {
             location: "Napa Valley, CA",
             photoAssets: ["demo_encounter_Photo2A", "demo_encounter_Photo2B", "demo_encounter_Photo2C"],
             peopleNames: ["Maya Rodriguez", "Michael Johnson", "Sofia Alvarez"],
-            daysAgo: 30
+            daysAgo: 30,
+            tags: ["Friends", "Wedding", "Celebration"]
         ),
         // Encounter 3: Conference / Business Trip
         EncounterData(
@@ -339,7 +342,8 @@ final class DemoDataService {
             location: "Tokyo, Japan",
             photoAssets: ["demo_encounter_Photo3A", "demo_encounter_Photo3B", "demo_encounter_Photo3C"],
             peopleNames: ["Kenji Sato", "Priya Nair", "Victor Nguyen", "Thomas Becker"],
-            daysAgo: 45
+            daysAgo: 45,
+            tags: ["Japan", "Consulting", "Enterprise"]
         ),
         // Encounter 4: Local & Everyday Life
         EncounterData(
@@ -347,7 +351,8 @@ final class DemoDataService {
             location: "Local Cafe",
             photoAssets: ["demo_encounter_Photo4A", "demo_encounter_Photo4B", "demo_encounter_Photo4C"],
             peopleNames: ["Emily Parker", "Rachel Kim", "Mei Lin"],
-            daysAgo: 7
+            daysAgo: 7,
+            tags: ["Local", "Cafe", "Friends"]
         ),
         // Encounter 5: Travel & Serendipity
         EncounterData(
@@ -355,13 +360,15 @@ final class DemoDataService {
             location: "Prague, Czech Republic",
             photoAssets: ["demo_encounter_Photo5A", "demo_encounter_Photo5B", "demo_encounter_Photo5C"],
             peopleNames: ["Lina Müller", "Carlos Mendes", "Anna Kowalska", "Yuki Tanaka"],
-            daysAgo: 60
+            daysAgo: 60,
+            tags: ["Travel", "Europe", "Art"]
         )
     ]
 
     // MARK: - Tag Colors
 
     static let tagColors: [String: String] = [
+        // Profile tags
         "Tech": TagColor.blue.hex,
         "Startup": TagColor.indigo.hex,
         "Designer": TagColor.purple.hex,
@@ -399,7 +406,11 @@ final class DemoDataService {
         "Frequent Flyer": TagColor.cyan.hex,
         "Cafe": TagColor.brown.hex,
         "Me": TagColor.red.hex,
-        "Owner": TagColor.blue.hex
+        "Owner": TagColor.blue.hex,
+        // Encounter tags
+        "Friends": TagColor.pink.hex,
+        "Wedding": TagColor.purple.hex,
+        "Celebration": TagColor.yellow.hex
     ]
 
     // MARK: - Seed Methods
@@ -409,9 +420,11 @@ final class DemoDataService {
         let faceDetectionService = FaceDetectionService()
         let embeddingService = FaceEmbeddingService()
 
-        // First, create all tags
+        // First, create all tags (from profiles and encounters)
         var tagMap: [String: Tag] = [:]
-        let allTagNames = Set(profiles.flatMap { $0.tags })
+        let profileTags = Set(profiles.flatMap { $0.tags })
+        let encounterTags = Set(encounters.flatMap { $0.tags })
+        let allTagNames = profileTags.union(encounterTags)
 
         for tagName in allTagNames {
             let colorHex = tagColors[tagName] ?? TagColor.blue.hex
@@ -534,6 +547,13 @@ final class DemoDataService {
                 if let person = personMap[personName] {
                     encounter.people.append(person)
                     person.encounters.append(encounter)
+                }
+            }
+
+            // Assign tags to encounter
+            for tagName in encounterData.tags {
+                if let tag = tagMap[tagName] {
+                    encounter.tags.append(tag)
                 }
             }
 
