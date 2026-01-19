@@ -4,18 +4,21 @@ import StoreKit
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var subscriptionManager = SubscriptionManager.shared
-    @State private var referralManager = ReferralManager.shared
     @State private var selectedProduct: Product?
     @State private var isPurchasing = false
     @State private var showError = false
-    @State private var showSuccessWithCredit = false
-    @State private var creditRedeemed: Decimal = 0
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     premiumHero
+
+                    // Show free premium status if active
+                    if subscriptionManager.hasActiveGiftedPremium {
+                        freePremiumBanner
+                    }
+
                     featuresSection
                     productOptions
                     legalSection
@@ -39,19 +42,7 @@ struct PaywallView: View {
             } message: {
                 Text(subscriptionManager.purchaseError ?? "An error occurred.")
             }
-            .alert("Welcome to Premium!", isPresented: $showSuccessWithCredit) {
-                Button("Continue") { dismiss() }
-            } message: {
-                Text("You saved \(formatCurrency(creditRedeemed)) with referral credits!")
-            }
         }
-    }
-
-    private func formatCurrency(_ amount: Decimal) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
-        return formatter.string(from: amount as NSDecimalNumber) ?? "$\(amount)"
     }
 
     // MARK: - Hero Section
@@ -95,6 +86,33 @@ struct PaywallView: View {
         .padding(.top, 8)
     }
 
+    // MARK: - Free Premium Banner
+
+    @ViewBuilder
+    private var freePremiumBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "gift.fill")
+                .font(.title3)
+                .foregroundStyle(AppColors.coral)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Free Premium Active")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Text("\(subscriptionManager.giftedPremiumDaysRemaining) days remaining from referral")
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(AppColors.coral.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     // MARK: - Features Section
 
     @ViewBuilder
@@ -116,12 +134,6 @@ struct PaywallView: View {
                 icon: "tag",
                 title: "Unlimited Tags",
                 description: "Organize without restrictions"
-            )
-
-            PaywallFeatureRow(
-                icon: "chart.bar",
-                title: "Advanced Analytics",
-                description: "Track your memory improvement over time"
             )
         }
         .padding()
@@ -165,11 +177,6 @@ struct PaywallView: View {
                         badge: nil,
                         onSelect: { selectedProduct = monthly }
                     )
-                }
-
-                // Credit balance banner
-                if referralManager.hasCredit {
-                    creditBanner
                 }
 
                 // Subscribe button
@@ -222,46 +229,23 @@ struct PaywallView: View {
 
             HStack(spacing: 16) {
                 Button("Terms of Service") {
-                    // TODO: Open terms URL
+                    if let url = URL(string: "https://remet-app.com/terms") {
+                        UIApplication.shared.open(url)
+                    }
                 }
                 .font(.caption)
                 .foregroundStyle(AppColors.teal)
 
                 Button("Privacy Policy") {
-                    // TODO: Open privacy URL
+                    if let url = URL(string: "https://remet-app.com/privacy") {
+                        UIApplication.shared.open(url)
+                    }
                 }
                 .font(.caption)
                 .foregroundStyle(AppColors.teal)
             }
         }
         .padding(.top, 8)
-    }
-
-    // MARK: - Credit Banner
-
-    @ViewBuilder
-    private var creditBanner: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "dollarsign.circle.fill")
-                .font(.title3)
-                .foregroundStyle(AppColors.success)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("You have \(referralManager.formattedBalance) credit")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(AppColors.textPrimary)
-
-                Text("Applied as savings when you subscribe")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-
-            Spacer()
-        }
-        .padding()
-        .background(AppColors.success.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Actions
@@ -275,19 +259,7 @@ struct PaywallView: View {
         do {
             let success = try await subscriptionManager.purchase(product)
             if success {
-                // Redeem any referral credits
-                if referralManager.hasCredit {
-                    creditRedeemed = referralManager.redeemCredits(for: product.id)
-                }
-
-                // Notify CloudKit if this user was referred
-                await referralManager.onReferredUserSubscribed()
-
-                if creditRedeemed > 0 {
-                    showSuccessWithCredit = true
-                } else {
-                    dismiss()
-                }
+                dismiss()
             }
         } catch {
             showError = true

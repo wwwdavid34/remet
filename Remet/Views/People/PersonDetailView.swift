@@ -575,6 +575,10 @@ struct PersonDetailView: View {
             )
         ) {
             VStack(alignment: .leading, spacing: 10) {
+                // Contact linking (Premium feature)
+                ContactLinkSection(person: person)
+                    .padding(.bottom, 4)
+
                 if let email = person.email {
                     DetailInfoRow(icon: "envelope", label: String(localized: "Email"), value: email)
                 }
@@ -1642,6 +1646,9 @@ struct EditPersonSheet: View {
 
                 // Contact Section
                 Section {
+                    // Link to iOS Contacts (Premium)
+                    ContactLinkSection(person: person)
+
                     HStack(spacing: 12) {
                         Image(systemName: "envelope.fill")
                             .foregroundStyle(AppColors.teal)

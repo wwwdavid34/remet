@@ -51,15 +51,8 @@ targets:
           - CFBundleURLName: "com.remet.app"
             CFBundleURLSchemes:
               - "remet"
-    # Share Extension disabled for now - will configure app groups later
-    # entitlements:
-    #   path: Remet/Remet.entitlements
-    #   properties:
-    #     com.apple.security.application-groups:
-    #       - group.com.remet.shared
-    # dependencies:
-    #   - target: ShareExtension
-    #     embed: true
+    entitlements:
+      path: Remet/Remet.entitlements
 
   # ShareExtension:
   #   type: app-extension

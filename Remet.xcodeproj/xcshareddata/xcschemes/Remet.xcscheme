@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2620"
+   LastUpgradeVersion = "1500"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
-      buildArchitectures = "Automatic">
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -15,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
+               BlueprintIdentifier = "27217AC6BEC03FBFB0FE8516"
                BuildableName = "Remet.app"
                BlueprintName = "Remet"
                ReferencedContainer = "container:Remet.xcodeproj">
@@ -44,7 +43,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
+            BlueprintIdentifier = "27217AC6BEC03FBFB0FE8516"
             BuildableName = "Remet.app"
             BlueprintName = "Remet"
             ReferencedContainer = "container:Remet.xcodeproj">
@@ -64,7 +63,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
+            BlueprintIdentifier = "27217AC6BEC03FBFB0FE8516"
             BuildableName = "Remet.app"
             BlueprintName = "Remet"
             ReferencedContainer = "container:Remet.xcodeproj">

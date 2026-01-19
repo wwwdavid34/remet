@@ -51,6 +51,9 @@
         }
       }
     },
+    "%@ days remaining from referral" : {
+
+    },
     "%@ due" : {
 
     },
@@ -2247,6 +2250,7 @@
       }
     },
     "Applied as savings when you subscribe" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -5635,6 +5639,9 @@
           }
         }
       }
+    },
+    "Free Premium Active" : {
+
     },
     "Free Trial" : {
       "extractionState" : "stale",
@@ -15859,6 +15866,7 @@
       }
     },
     "You have %@ credit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -15926,6 +15934,7 @@
       }
     },
     "You saved %@ with referral credits!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

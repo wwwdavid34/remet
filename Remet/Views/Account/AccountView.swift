@@ -10,13 +10,12 @@ struct AccountView: View {
     private var settings = AppSettings.shared
     @State private var isLoadingDemoData = false
     @State private var subscriptionManager = SubscriptionManager.shared
-    @State private var referralManager = ReferralManager.shared
+    @State private var promoManager = PromoCodeManager.shared
     @State private var cloudSyncManager = CloudSyncManager.shared
 
     @State private var showPaywall = false
     @State private var isRestoringPurchases = false
-    @State private var showInviteFriends = false
-    @State private var showEnterCode = false
+    @State private var showEnterPromoCode = false
     @State private var showDeleteConfirmation = false
     @State private var deleteConfirmationPIN = ""
     @State private var enteredPIN = ""
@@ -29,7 +28,7 @@ struct AccountView: View {
                 if subscriptionManager.isPremium {
                     syncSection
                 }
-                referralSection
+                promoCodeSection
                 displaySection
                 photoStorageSection
                 faceMatchingSection
@@ -44,11 +43,8 @@ struct AccountView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }
-            .sheet(isPresented: $showInviteFriends) {
-                InviteFriendsView()
-            }
-            .sheet(isPresented: $showEnterCode) {
-                EnterReferralCodeView()
+            .sheet(isPresented: $showEnterPromoCode) {
+                EnterPromoCodeView()
             }
             .sheet(isPresented: $showDeleteConfirmation) {
                 DeleteConfirmationView(
@@ -73,9 +69,6 @@ struct AccountView: View {
                 } message: {
                     Text("The PIN you entered doesn't match. Please try again.")
                 }
-            }
-            .task {
-                await referralManager.syncCredits()
             }
         }
     }
@@ -179,7 +172,7 @@ struct AccountView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         PremiumFeatureRow(icon: "infinity", text: String(localized: "Unlimited people & encounters"))
                         PremiumFeatureRow(icon: "icloud", text: String(localized: "Cloud sync across devices"))
-                        PremiumFeatureRow(icon: "chart.bar", text: String(localized: "Advanced analytics"))
+                        PremiumFeatureRow(icon: "tag", text: String(localized: "Unlimited tags"))
                     }
 
                     Button {
@@ -226,61 +219,26 @@ struct AccountView: View {
         }
     }
 
-    // MARK: - Referral Section
+    // MARK: - Promo Code Section
 
     @ViewBuilder
-    private var referralSection: some View {
+    private var promoCodeSection: some View {
         Section {
-            // Invite Friends button
-            Button {
-                showInviteFriends = true
-            } label: {
-                HStack {
-                    Image(systemName: "gift.fill")
-                        .foregroundStyle(AppColors.coral)
-                        .frame(width: 28)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(String(localized: "Invite Friends"))
-                            .fontWeight(.medium)
-                            .foregroundStyle(.primary)
-                        Text(String(localized: "Get $0.50 credit for each referral"))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    // Show credit balance if any
-                    if referralManager.hasCredit {
-                        Text(referralManager.formattedBalance)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.green)
-                    }
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-            }
-            .buttonStyle(.plain)
-
-            // Enter code option (if user hasn't used a referral code yet)
-            if referralManager.credit.referredBy == nil {
+            // Enter promo code (if user hasn't redeemed one yet)
+            if !promoManager.hasRedeemedCode {
                 Button {
-                    showEnterCode = true
+                    showEnterPromoCode = true
                 } label: {
                     HStack {
-                        Image(systemName: "ticket")
-                            .foregroundStyle(AppColors.teal)
+                        Image(systemName: "ticket.fill")
+                            .foregroundStyle(AppColors.coral)
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(String(localized: "Enter Code"))
+                            Text(String(localized: "Enter Promo Code"))
                                 .fontWeight(.medium)
                                 .foregroundStyle(.primary)
-                            Text(String(localized: "Have a referral or promo code?"))
+                            Text(String(localized: "Have a code? Get free Premium!"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -293,9 +251,26 @@ struct AccountView: View {
                     }
                 }
                 .buttonStyle(.plain)
+            } else {
+                // Show redeemed code
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(AppColors.success)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(String(localized: "Promo Code Redeemed"))
+                            .fontWeight(.medium)
+                        if let code = promoManager.redeemedCode {
+                            Text(code)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
         } header: {
-            Text(String(localized: "Referrals & Promos"))
+            Text(String(localized: "Promo Code"))
         }
     }
 
