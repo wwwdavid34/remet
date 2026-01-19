@@ -542,11 +542,16 @@ final class DemoDataService {
                 }
             }
 
-            // Link people
+            // Link people and update their embedding's encounterId
             for personName in encounterData.peopleNames {
                 if let person = personMap[personName] {
                     encounter.people.append(person)
                     person.encounters.append(encounter)
+
+                    // Link the person's first embedding to this encounter (for "View Source Photo")
+                    if let embedding = person.embeddings.first, embedding.encounterId == nil {
+                        embedding.encounterId = encounter.id
+                    }
                 }
             }
 
