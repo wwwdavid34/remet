@@ -143,6 +143,7 @@ struct PeopleHomeView: View {
                 scrollOffset = value
             }
             .background(Color(.systemGroupedBackground))
+            .statusBarFade()
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: Person.self) { person in
                 PersonDetailView(person: person)

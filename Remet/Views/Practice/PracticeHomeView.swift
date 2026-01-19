@@ -338,6 +338,7 @@ struct PracticeHomeView: View {
                 .padding(.vertical)
             }
             .background(Color(.systemGroupedBackground))
+            .statusBarFade()
             .navigationTitle("Practice")
             .fullScreenCover(isPresented: $showingQuiz) {
                 FaceQuizView(

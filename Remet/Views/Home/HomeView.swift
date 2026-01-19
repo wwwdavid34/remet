@@ -196,6 +196,7 @@ struct HomeView: View {
                 .padding(.vertical)
             }
             .background(Color(.systemGroupedBackground))
+            .statusBarFade()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
