@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -90,7 +90,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
+		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
 		06694C451E6DDB1A90961B56 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
 		08D42FE113F8837656ABC3BA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0B4D145FE5DAFAAE416DCADC /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 		715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingService.swift; sourceTree = "<group>"; };
 		73B1C5AC0126ABEFC13CD0F1 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
 		750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
-		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F8576CD80F811E34E5C08FA /* Encounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encounter.swift; sourceTree = "<group>"; };
 		81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetectionService.swift; sourceTree = "<group>"; };
 		823AE1562193907DB7155DA8 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -480,7 +480,6 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					27217AC6BEC03FBFB0FE8516 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -498,7 +497,6 @@
 			);
 			mainGroup = 20042DC4FE02B0C15373FA0E;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -616,7 +614,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
@@ -772,7 +770,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
