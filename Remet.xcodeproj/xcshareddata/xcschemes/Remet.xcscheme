@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
-               BuildableName = "FaceRecall.app"
-               BlueprintName = "FaceRecall"
-               ReferencedContainer = "container:FaceRecall.xcodeproj">
+               BuildableName = "Remet.app"
+               BlueprintName = "Remet"
+               ReferencedContainer = "container:Remet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
-            BuildableName = "FaceRecall.app"
-            BlueprintName = "FaceRecall"
-            ReferencedContainer = "container:FaceRecall.xcodeproj">
+            BuildableName = "Remet.app"
+            BlueprintName = "Remet"
+            ReferencedContainer = "container:Remet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
@@ -65,9 +65,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CC15D6D8AC1449DA2B052FF3"
-            BuildableName = "FaceRecall.app"
-            BlueprintName = "FaceRecall"
-            ReferencedContainer = "container:FaceRecall.xcodeproj">
+            BuildableName = "Remet.app"
+            BlueprintName = "Remet"
+            ReferencedContainer = "container:Remet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

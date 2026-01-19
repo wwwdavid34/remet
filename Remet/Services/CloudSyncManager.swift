@@ -9,7 +9,7 @@ final class CloudSyncManager {
 
     // MARK: - Container ID
 
-    static let containerIdentifier = "iCloud.com.remet.FaceRecall"
+    static let containerIdentifier = "iCloud.com.remet.Remet"
 
     // MARK: - Sync Status
 

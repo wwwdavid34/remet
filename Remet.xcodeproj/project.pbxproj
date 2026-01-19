@@ -18,7 +18,7 @@
 		2B3F40404949E448D027EF57 /* EncounterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */; };
 		2EB835459DF73FA979B09C53 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7009BB5788005DCA09E9BFD7 /* ContentView.swift */; };
 		436C2A7CA5EAE9C218C0BD41 /* FaceReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3288E08FA232E739309636BC /* FaceReviewViewModel.swift */; };
-		485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */; };
+		485AD01CEEFF2E65ECF5FC30 /* RemetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6ECD34F5B5BBF50C1793DA /* RemetApp.swift */; };
 		5499EB343AD57FB38A005CF0 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */; };
 		5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */; };
 		I18N0000000000000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = I18N0000000000000002 /* Localizable.xcstrings */; };
@@ -104,14 +104,14 @@
 		4F498C5B062EEACD22EE97AB /* EncounterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterDetailView.swift; sourceTree = "<group>"; };
 		5C6BEE42CD12C0D0ADD45306 /* FaceThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceThumbnailView.swift; sourceTree = "<group>"; };
 		5EB0B5CEB3DEDE4544E11EEF /* EncounterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterListView.swift; sourceTree = "<group>"; };
-		6BAB90AEB170530790EE0A22 /* FaceRecall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceRecall.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BAB90AEB170530790EE0A22 /* Remet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7009BB5788005DCA09E9BFD7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7D3ED702FD11BFDD7E180682 /* FaceEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbedding.swift; sourceTree = "<group>"; };
 		84E5847FC983C046C83926E8 /* PhotoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportView.swift; sourceTree = "<group>"; };
 		8BB195FC695B0732BBC46031 /* EncounterReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterReviewView.swift; sourceTree = "<group>"; };
 		97598B0F79F458D52747CC36 /* FaceMatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingService.swift; sourceTree = "<group>"; };
-		9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceRecallApp.swift; sourceTree = "<group>"; };
-		A5DD6B7A59F959F26C22F51C /* FaceRecall.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FaceRecall.entitlements; sourceTree = "<group>"; };
+		9A6ECD34F5B5BBF50C1793DA /* RemetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemetApp.swift; sourceTree = "<group>"; };
+		A5DD6B7A59F959F26C22F51C /* Remet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Remet.entitlements; sourceTree = "<group>"; };
 		A771AF98B2B838C9EA6BCEBC /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
 		A786CD902F1A368700B00E0D /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AF9D258640F00908E2437B8C /* EncounterGroupReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterGroupReviewView.swift; sourceTree = "<group>"; };
@@ -179,7 +179,7 @@
 		067AFB102C3A64EBE04F62C1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6BAB90AEB170530790EE0A22 /* FaceRecall.app */,
+				6BAB90AEB170530790EE0A22 /* Remet.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -245,12 +245,12 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		5876ADEB366D7A960A28735F /* FaceRecall */ = {
+		5876ADEB366D7A960A28735F /* Remet */ = {
 			isa = PBXGroup;
 			children = (
 				E6F1EBEAF4C9F95D8CBA24C1 /* Assets.xcassets */,
-				A5DD6B7A59F959F26C22F51C /* FaceRecall.entitlements */,
-				9A6ECD34F5B5BBF50C1793DA /* FaceRecallApp.swift */,
+				A5DD6B7A59F959F26C22F51C /* Remet.entitlements */,
+				9A6ECD34F5B5BBF50C1793DA /* RemetApp.swift */,
 				02112CCAA67194FC17030246 /* Info.plist */,
 				I18N0000000000000002 /* Localizable.xcstrings */,
 				17304AF23F62CBD871866F08 /* Models */,
@@ -260,14 +260,14 @@
 				425E550BA668DAE1A5FF9976 /* ViewModels */,
 				EA6737EBEF54C006EF984C8B /* Views */,
 			);
-			path = FaceRecall;
+			path = Remet;
 			sourceTree = "<group>";
 		};
 		631360D3EC3915C65DE557EA = {
 			isa = PBXGroup;
 			children = (
 				A786CD902F1A368700B00E0D /* Products.storekit */,
-				5876ADEB366D7A960A28735F /* FaceRecall */,
+				5876ADEB366D7A960A28735F /* Remet */,
 				067AFB102C3A64EBE04F62C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -452,9 +452,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CC15D6D8AC1449DA2B052FF3 /* FaceRecall */ = {
+		CC15D6D8AC1449DA2B052FF3 /* Remet */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "FaceRecall" */;
+			buildConfigurationList = C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "Remet" */;
 			buildPhases = (
 				8884B2D9F3595E7E39008512 /* Sources */,
 				D7871B3E1A233CAE58A5F574 /* Resources */,
@@ -463,11 +463,11 @@
 			);
 			dependencies = (
 			);
-			name = FaceRecall;
+			name = Remet;
 			packageProductDependencies = (
 			);
-			productName = FaceRecall;
-			productReference = 6BAB90AEB170530790EE0A22 /* FaceRecall.app */;
+			productName = Remet;
+			productReference = 6BAB90AEB170530790EE0A22 /* Remet.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -484,7 +484,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "FaceRecall" */;
+			buildConfigurationList = 9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "Remet" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -499,7 +499,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CC15D6D8AC1449DA2B052FF3 /* FaceRecall */,
+				CC15D6D8AC1449DA2B052FF3 /* Remet */,
 			);
 		};
 /* End PBXProject section */
@@ -544,7 +544,7 @@
 				18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */,
 				CC6F33998C45CA17EA49C884 /* FaceMatchingService.swift in Sources */,
 				C30250918A319C48A67A62F4 /* FaceNet512.mlpackage in Sources */,
-				485AD01CEEFF2E65ECF5FC30 /* FaceRecallApp.swift in Sources */,
+				485AD01CEEFF2E65ECF5FC30 /* RemetApp.swift in Sources */,
 				A7173A1AA579DC624C2AC503 /* FaceReviewView.swift in Sources */,
 				436C2A7CA5EAE9C218C0BD41 /* FaceReviewViewModel.swift in Sources */,
 				CC12345678901234ABCD6666 /* FaceQuizView.swift in Sources */,
@@ -610,12 +610,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = FaceRecall/FaceRecall.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = FaceRecall/Info.plist;
+				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Remet can save processed photos to your library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Remet needs access to your photos to identify people.";
@@ -635,12 +635,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = FaceRecall/FaceRecall.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = FaceRecall/Info.plist;
+				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Remet can save processed photos to your library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Remet needs access to your photos to identify people.";
@@ -789,7 +789,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "FaceRecall" */ = {
+		9F187DAE06A8A9A800005918 /* Build configuration list for PBXProject "Remet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9ED51E5535ACA930980A2960 /* Debug */,
@@ -798,7 +798,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "FaceRecall" */ = {
+		C285FE548F9220AC29F35AED /* Build configuration list for PBXNativeTarget "Remet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1E90B84062FD60E1AD71BD0D /* Debug */,
