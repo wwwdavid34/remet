@@ -16,6 +16,10 @@ final class DemoDataService {
         let relationship: String?
         let contextTag: String?
         let isMe: Bool
+        let email: String?
+        let phone: String?
+        let company: String?
+        let jobTitle: String?
 
         init(
             assetName: String,
@@ -25,7 +29,11 @@ final class DemoDataService {
             talkingPoints: [String],
             relationship: String? = nil,
             contextTag: String? = nil,
-            isMe: Bool = false
+            isMe: Bool = false,
+            email: String? = nil,
+            phone: String? = nil,
+            company: String? = nil,
+            jobTitle: String? = nil
         ) {
             self.assetName = assetName
             self.name = name
@@ -35,6 +43,10 @@ final class DemoDataService {
             self.relationship = relationship
             self.contextTag = contextTag
             self.isMe = isMe
+            self.email = email
+            self.phone = phone
+            self.company = company
+            self.jobTitle = jobTitle
         }
     }
 
@@ -56,7 +68,11 @@ final class DemoDataService {
             tags: ["Tech", "Startup"],
             talkingPoints: ["AI founder", "Soft voice"],
             relationship: "Acquaintance",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "alex.chen@neuralworks.ai",
+            phone: "+1 (415) 555-0142",
+            company: "NeuralWorks AI",
+            jobTitle: "Founder & CEO"
         ),
         // 2. Maya Rodriguez
         ProfileData(
@@ -66,7 +82,9 @@ final class DemoDataService {
             tags: ["Designer"],
             talkingPoints: ["Curly hair", "Bold laugh", "Graphic design"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "maya.r@creativestudio.co",
+            phone: "+1 (323) 555-0198"
         ),
         // 3. Kenji Sato
         ProfileData(
@@ -76,7 +94,10 @@ final class DemoDataService {
             tags: ["Japan", "Consulting"],
             talkingPoints: ["Minimalist style", "Precise English"],
             relationship: "Coworker",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "k.sato@mckinsey.com",
+            company: "McKinsey & Company",
+            jobTitle: "Senior Consultant"
         ),
         // 4. Emily Parker
         ProfileData(
@@ -86,7 +107,8 @@ final class DemoDataService {
             tags: ["Outdoors"],
             talkingPoints: ["Freckles", "Trail maps", "Golden retriever"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            phone: "+1 (503) 555-0167"
         ),
         // 5. Daniel Wu
         ProfileData(
@@ -96,7 +118,11 @@ final class DemoDataService {
             tags: ["Investor", "Fintech"],
             talkingPoints: ["Firm handshake", "Talks fast"],
             relationship: "Acquaintance",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "daniel@sequoia.com",
+            phone: "+1 (650) 555-0123",
+            company: "Sequoia Capital",
+            jobTitle: "Partner"
         ),
         // 6. Sarah Thompson
         ProfileData(
@@ -106,7 +132,8 @@ final class DemoDataService {
             tags: ["Wellness", "Yoga"],
             talkingPoints: ["Calm tone", "Sunrise classes"],
             relationship: "Acquaintance",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "sarah@zenflow.yoga"
         ),
         // 7. Omar Hassan
         ProfileData(
@@ -116,7 +143,11 @@ final class DemoDataService {
             tags: ["Remote", "Product"],
             talkingPoints: ["Beard", "Notion power user"],
             relationship: "Coworker",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "omar.hassan@notion.so",
+            phone: "+1 (415) 555-0189",
+            company: "Notion",
+            jobTitle: "Product Manager"
         ),
         // 8. Lina Muller
         ProfileData(
@@ -126,7 +157,8 @@ final class DemoDataService {
             tags: ["Art", "Europe"],
             talkingPoints: ["Minimal makeup", "Abstract art"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "lina.m@berlinart.de"
         ),
         // 9. Carlos Mendes
         ProfileData(
@@ -136,7 +168,8 @@ final class DemoDataService {
             tags: ["Sports", "Brazil"],
             talkingPoints: ["Loud laugh", "Topspin serve"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            phone: "+55 11 98765-4321"
         ),
         // 10. Priya Nair
         ProfileData(
@@ -146,7 +179,11 @@ final class DemoDataService {
             tags: ["Data", "Enterprise"],
             talkingPoints: ["Soft-spoken", "Python jokes"],
             relationship: "Client",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "priya.nair@databricks.com",
+            phone: "+1 (408) 555-0156",
+            company: "Databricks",
+            jobTitle: "Data Scientist"
         ),
         // 11. Michael Johnson
         ProfileData(
@@ -156,7 +193,8 @@ final class DemoDataService {
             tags: ["Dad", "Local"],
             talkingPoints: ["Smoker grill", "Craft beer"],
             relationship: "Acquaintance",
-            contextTag: "Neighborhood"
+            contextTag: "Neighborhood",
+            phone: "+1 (510) 555-0134"
         ),
         // 12. Yuki Tanaka
         ProfileData(
@@ -166,7 +204,8 @@ final class DemoDataService {
             tags: ["Japanese", "Language"],
             talkingPoints: ["Cute stationery", "Shy smile"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "yuki.tanaka@gmail.com"
         ),
         // 13. Robert Klein
         ProfileData(
@@ -176,7 +215,10 @@ final class DemoDataService {
             tags: ["Research", "Professor"],
             talkingPoints: ["Slow speech", "Philosophy quotes"],
             relationship: "Mentor",
-            contextTag: "School"
+            contextTag: "School",
+            email: "r.klein@stanford.edu",
+            company: "Stanford University",
+            jobTitle: "Professor of Philosophy"
         ),
         // 14. Sofia Alvarez
         ProfileData(
@@ -186,7 +228,11 @@ final class DemoDataService {
             tags: ["Marketing", "LATAM"],
             talkingPoints: ["Strong perfume", "Keynote speaker"],
             relationship: "Acquaintance",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "sofia@hubspot.com",
+            phone: "+52 55 1234 5678",
+            company: "HubSpot",
+            jobTitle: "VP of Marketing, LATAM"
         ),
         // 15. Jason Lee
         ProfileData(
@@ -196,7 +242,8 @@ final class DemoDataService {
             tags: ["Student", "AI"],
             talkingPoints: ["Energy drink", "Night coder"],
             relationship: "Acquaintance",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "jason.lee@berkeley.edu"
         ),
         // 16. Anna Kowalska
         ProfileData(
@@ -206,7 +253,8 @@ final class DemoDataService {
             tags: ["Travel", "Europe"],
             talkingPoints: ["Vintage camera", "Quiet voice"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            email: "anna.k@outlook.com"
         ),
         // 17. Victor Nguyen
         ProfileData(
@@ -216,7 +264,11 @@ final class DemoDataService {
             tags: ["Sales", "B2B"],
             talkingPoints: ["Polite laugh", "Follow-up emails"],
             relationship: "Acquaintance",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "victor.nguyen@salesforce.com",
+            phone: "+1 (628) 555-0145",
+            company: "Salesforce",
+            jobTitle: "Account Executive"
         ),
         // 18. Rachel Kim
         ProfileData(
@@ -226,7 +278,8 @@ final class DemoDataService {
             tags: ["Reading", "Nonfiction"],
             talkingPoints: ["Highlights books", "Deep questions"],
             relationship: "Friend",
-            contextTag: "Event"
+            contextTag: "Event",
+            phone: "+1 (206) 555-0172"
         ),
         // 19. Thomas Becker
         ProfileData(
@@ -236,7 +289,10 @@ final class DemoDataService {
             tags: ["Consultant", "Frequent Flyer"],
             talkingPoints: ["Early boarding", "Espresso"],
             relationship: "Acquaintance",
-            contextTag: "Work"
+            contextTag: "Work",
+            email: "t.becker@bcg.com",
+            company: "Boston Consulting Group",
+            jobTitle: "Managing Director"
         ),
         // 20. Mei Lin
         ProfileData(
@@ -376,6 +432,10 @@ final class DemoDataService {
             person.isMe = profile.isMe
             person.howWeMet = profile.howWeMet
             person.talkingPoints = profile.talkingPoints
+            person.email = profile.email
+            person.phone = profile.phone
+            person.company = profile.company
+            person.jobTitle = profile.jobTitle
 
             // Load profile photo, detect face, and generate embedding
             if let image = UIImage(named: profile.assetName) {
