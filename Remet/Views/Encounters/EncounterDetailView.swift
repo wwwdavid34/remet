@@ -67,49 +67,42 @@ struct EncounterDetailView: View {
         .navigationTitle(encounter.occasion ?? "Encounter")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            // Re-detect faces button (only in edit mode)
-            if isEditing {
-                ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        showEditView = true
+                    } label: {
+                        Label(String(localized: "Edit Details"), systemImage: "pencil")
+                    }
+
+                    Button {
+                        locateFaceMode.toggle()
+                        if !locateFaceMode {
+                            locateFaceError = nil
+                        }
+                    } label: {
+                        Label(
+                            locateFaceMode ? String(localized: "Cancel Locate Face") : String(localized: "Locate Missing Face"),
+                            systemImage: locateFaceMode ? "xmark.circle" : "face.viewfinder"
+                        )
+                    }
+                    .disabled(isLocatingFace)
+
                     Button {
                         Task {
                             await redetectFaces()
                         }
                     } label: {
-                        if isRedetecting {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-                        }
+                        Label(String(localized: "Re-detect Faces"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
                     .disabled(isRedetecting)
-                }
-            }
-
-            // Missing faces button
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    locateFaceMode.toggle()
-                    if !locateFaceMode {
-                        locateFaceError = nil
-                    }
                 } label: {
-                    if isLocatingFace {
+                    if isRedetecting || isLocatingFace {
                         ProgressView()
                             .scaleEffect(0.8)
                     } else {
-                        Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                        Image(systemName: "ellipsis.circle")
                     }
-                }
-                .disabled(isLocatingFace)
-            }
-
-            // Edit button - opens unified edit view
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showEditView = true
-                } label: {
-                    Image(systemName: "pencil.circle")
                 }
             }
         }
