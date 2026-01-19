@@ -24,26 +24,7 @@ struct FloatingTabBar: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 8)
-        .background(
-            Capsule()
-                .fill(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
-        )
-        .overlay(
-            Capsule()
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.3),
-                            Color.white.opacity(0.1),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 0.5
-                )
-        )
+        .liquidGlassBackground(isCapsule: true)
         .padding(.leading, 16)
         .padding(.trailing, 108) // Leave room for FAB
         .padding(.bottom, 8)
@@ -59,16 +40,12 @@ struct FloatingTabBar: View {
                 selectedTab = item.id
             }
         } label: {
-            VStack(spacing: 4) {
-                Image(systemName: isSelected ? item.icon + ".fill" : item.icon)
-                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
-                    .symbolRenderingMode(.hierarchical)
-
-                Text(item.label)
-                    .font(.caption2)
-                    .fontWeight(isSelected ? .semibold : .regular)
-            }
-            .foregroundStyle(isSelected ? AppColors.coral : .secondary)
+            LiquidGlassTabIcon(
+                systemName: item.icon,
+                label: item.label,
+                isSelected: isSelected,
+                selectedColor: AppColors.coral
+            )
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
             .background(

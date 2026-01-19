@@ -90,26 +90,7 @@ struct FloatingActionButton: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
-            .background(
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                    .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
-            )
-            .overlay(
-                Capsule()
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.3),
-                                Color.white.opacity(0.1),
-                                Color.clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 0.5
-                    )
-            )
+            .liquidGlassBackground(isCapsule: true)
             .scaleEffect(isPressed ? 0.95 : 1.0)
         }
         .simultaneousGesture(
