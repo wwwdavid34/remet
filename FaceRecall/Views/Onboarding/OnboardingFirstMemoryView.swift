@@ -172,6 +172,12 @@ struct OnboardingFaceReviewView: View {
     @State private var isProcessing = false
     @State private var occasion = ""
     @State private var location = ""
+    @State private var isMatching = false
+
+    /// People with embeddings that can be matched (including "Me")
+    private var matchablePeople: [Person] {
+        existingPeople.filter { !$0.embeddings.isEmpty }
+    }
 
     var body: some View {
         NavigationStack {
@@ -220,17 +226,22 @@ struct OnboardingFaceReviewView: View {
 
                 // Face assignment list
                 List {
-                    if detectedFaces.isEmpty {
+                    if detectedFaces.isEmpty || isMatching {
                         HStack {
                             ProgressView()
                                 .padding(.trailing, 8)
-                            Text(String(localized: "Detecting faces..."))
+                            Text(isMatching ? String(localized: "Matching faces...") : String(localized: "Detecting faces..."))
                                 .foregroundStyle(.secondary)
                         }
                     } else {
                         Section {
                             TextField(String(localized: "Occasion (e.g., Team lunch)"), text: $occasion)
+                                .submitLabel(.next)
                             TextField(String(localized: "Location (optional)"), text: $location)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    hideKeyboard()
+                                }
                         } header: {
                             Text(String(localized: "Details"))
                         }
@@ -244,7 +255,7 @@ struct OnboardingFaceReviewView: View {
                                         get: { faceAssignments[index] },
                                         set: { faceAssignments[index] = $0 }
                                     ),
-                                    existingPeople: existingPeople.filter { !$0.isMe }
+                                    existingPeople: existingPeople.filter { !$0.embeddings.isEmpty }
                                 )
                             }
                         } header: {
@@ -252,6 +263,7 @@ struct OnboardingFaceReviewView: View {
                         }
                     }
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .navigationTitle(String(localized: "Tag Faces"))
             .navigationBarTitleDisplayMode(.inline)
@@ -293,11 +305,58 @@ struct OnboardingFaceReviewView: View {
                 let faces = try await faceDetectionService.detectFaces(in: image)
                 await MainActor.run {
                     detectedFaces = faces
+                    isMatching = true
+                }
+
+                // Auto-match faces against existing people (including "Me")
+                await matchFacesAutomatically(faces: faces)
+
+                await MainActor.run {
+                    isMatching = false
                 }
             } catch {
                 await MainActor.run {
                     detectedFaces = []
+                    isMatching = false
                 }
+            }
+        }
+    }
+
+    private func matchFacesAutomatically(faces: [DetectedFace]) async {
+        guard !matchablePeople.isEmpty else { return }
+
+        let embeddingService = FaceEmbeddingService()
+        let matchingService = FaceMatchingService()
+        let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
+
+        for (index, face) in faces.enumerated() {
+            do {
+                // Generate embedding for this face
+                let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
+
+                // Find best match among all people (including "Me")
+                let matches = matchingService.findMatches(
+                    for: embedding,
+                    in: matchablePeople,
+                    topK: 1,
+                    threshold: Float(autoAcceptThreshold)
+                )
+
+                if let bestMatch = matches.first {
+                    await MainActor.run {
+                        // Auto-assign this face to the matched person
+                        faceAssignments[index] = FaceAssignment(
+                            name: bestMatch.person.name,
+                            existingPerson: bestMatch.person,
+                            isAutoMatched: true,
+                            confidence: bestMatch.similarity
+                        )
+                    }
+                }
+            } catch {
+                // Skip this face if embedding fails
+                continue
             }
         }
     }
@@ -405,6 +464,10 @@ struct OnboardingFaceReviewView: View {
         }
     }
 
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
         let size = image.size
         let widthRatio = targetSize.width / size.width
@@ -426,6 +489,8 @@ struct OnboardingFaceReviewView: View {
 struct FaceAssignment {
     var name: String
     var existingPerson: Person?
+    var isAutoMatched: Bool = false
+    var confidence: Float? = nil
 }
 
 // MARK: - Face Assignment Row
@@ -438,6 +503,15 @@ struct FaceAssignmentRow: View {
 
     @State private var name = ""
     @State private var showPeoplePicker = false
+
+    /// Sort "Me" at the top, then alphabetically
+    private var sortedPeople: [Person] {
+        existingPeople.sorted { p1, p2 in
+            if p1.isMe { return true }
+            if p2.isMe { return false }
+            return p1.name.localizedCaseInsensitiveCompare(p2.name) == .orderedAscending
+        }
+    }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -453,18 +527,55 @@ struct FaceAssignmentRow: View {
                 )
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(String(localized: "Face \(index + 1)"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 4) {
+                    Text(String(localized: "Face \(index + 1)"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if let assigned = assignment, assigned.isAutoMatched {
+                        Text(String(localized: "Auto"))
+                            .font(.caption2)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(AppColors.teal)
+                            .clipShape(Capsule())
+                    }
+                }
 
                 if let assigned = assignment {
-                    Text(assigned.name)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                    HStack(spacing: 6) {
+                        Text(assigned.name)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+
+                        // Show "Me" badge if it's the user's profile
+                        if assigned.existingPerson?.isMe == true {
+                            Text(String(localized: "You"))
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(AppColors.softPurple)
+                                .clipShape(Capsule())
+                        }
+
+                        // Show confidence if auto-matched
+                        if let confidence = assigned.confidence {
+                            Text("\(Int(confidence * 100))%")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 } else {
                     TextField(String(localized: "Enter name"), text: $name)
                         .textFieldStyle(.roundedBorder)
                         .font(.subheadline)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        }
                         .onChange(of: name) { _, newValue in
                             if !newValue.isEmpty {
                                 assignment = FaceAssignment(name: newValue, existingPerson: nil)
@@ -496,7 +607,7 @@ struct FaceAssignmentRow: View {
         }
         .sheet(isPresented: $showPeoplePicker) {
             NavigationStack {
-                List(existingPeople) { person in
+                List(sortedPeople) { person in
                     Button {
                         assignment = FaceAssignment(name: person.name, existingPerson: person)
                         name = person.name
@@ -522,6 +633,17 @@ struct FaceAssignmentRow: View {
 
                             Text(person.name)
                                 .foregroundStyle(.primary)
+
+                            if person.isMe {
+                                Text(String(localized: "You"))
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(AppColors.softPurple)
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
                 }

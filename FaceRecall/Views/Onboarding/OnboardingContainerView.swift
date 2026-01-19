@@ -32,6 +32,7 @@ struct OnboardingContainerView: View {
         .tabViewStyle(.page(indexDisplayMode: .never))
         .animation(.easeInOut, value: currentStep)
         .interactiveDismissDisabled()
+        .gesture(DragGesture()) // Disable swipe navigation
     }
 
     private func completeOnboarding() {
