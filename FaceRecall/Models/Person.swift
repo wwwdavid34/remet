@@ -10,6 +10,9 @@ final class Person {
     var createdAt: Date = Date()
     var lastSeenAt: Date?
 
+    /// Whether this is the user's own profile (excluded from practice)
+    var isMe: Bool = false
+
     // Personal details
     var company: String?
     var jobTitle: String?

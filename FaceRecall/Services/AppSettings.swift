@@ -69,6 +69,8 @@ final class AppSettings {
         static let hasShownCameraRollHint = "hasShownCameraRollHint"
         static let firstLaunchDate = "firstLaunchDate"
         static let subscriptionLimitsVersion = "subscriptionLimitsVersion"
+        static let hasCompletedOnboarding = "hasCompletedOnboarding"
+        static let showMeInPeopleList = "showMeInPeopleList"
     }
 
     // MARK: - Stored Properties (for @Observable tracking)
@@ -79,6 +81,8 @@ final class AppSettings {
     private var _showBoundingBoxes: Bool = true
     private var _savePhotosToCameraRoll: Bool = false
     private var _hasShownCameraRollHint: Bool = false
+    private var _hasCompletedOnboarding: Bool = false
+    private var _showMeInPeopleList: Bool = true
 
     var photoStorageQuality: PhotoStorageQuality {
         get { _photoStorageQuality }
@@ -125,6 +129,22 @@ final class AppSettings {
         set {
             _hasShownCameraRollHint = newValue
             defaults.set(newValue, forKey: Keys.hasShownCameraRollHint)
+        }
+    }
+
+    var hasCompletedOnboarding: Bool {
+        get { _hasCompletedOnboarding }
+        set {
+            _hasCompletedOnboarding = newValue
+            defaults.set(newValue, forKey: Keys.hasCompletedOnboarding)
+        }
+    }
+
+    var showMeInPeopleList: Bool {
+        get { _showMeInPeopleList }
+        set {
+            _showMeInPeopleList = newValue
+            defaults.set(newValue, forKey: Keys.showMeInPeopleList)
         }
     }
 
@@ -232,5 +252,11 @@ final class AppSettings {
 
         _savePhotosToCameraRoll = defaults.bool(forKey: Keys.savePhotosToCameraRoll)
         _hasShownCameraRollHint = defaults.bool(forKey: Keys.hasShownCameraRollHint)
+        _hasCompletedOnboarding = defaults.bool(forKey: Keys.hasCompletedOnboarding)
+
+        // Default to true if not set
+        if defaults.object(forKey: Keys.showMeInPeopleList) != nil {
+            _showMeInPeopleList = defaults.bool(forKey: Keys.showMeInPeopleList)
+        }
     }
 }

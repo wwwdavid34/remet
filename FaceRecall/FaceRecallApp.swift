@@ -69,6 +69,8 @@ struct RemetApp: App {
             Group {
                 if showSplash {
                     SplashView()
+                } else if !AppSettings.shared.hasCompletedOnboarding {
+                    OnboardingContainerView()
                 } else {
                     ContentView()
                         .environment(appState)

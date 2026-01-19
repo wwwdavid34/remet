@@ -24,10 +24,14 @@ struct AccountView: View {
                     syncSection
                 }
                 referralSection
+                displaySection
                 photoStorageSection
                 faceMatchingSection
                 storageInfoSection
                 aboutSection
+                #if DEBUG
+                developerSection
+                #endif
             }
             .navigationTitle("Account")
             .sheet(isPresented: $showPaywall) {
@@ -394,6 +398,50 @@ struct AccountView: View {
             }
         }
     }
+
+    // MARK: - Display Section
+
+    @ViewBuilder
+    private var displaySection: some View {
+        Section {
+            Toggle(String(localized: "Show \"Me\" in People List"), isOn: Binding(
+                get: { settings.showMeInPeopleList },
+                set: { settings.showMeInPeopleList = $0 }
+            ))
+        } header: {
+            Text(String(localized: "Display"))
+        } footer: {
+            Text(String(localized: "When disabled, your profile won't appear in the People list but will still be used to exclude your face from practice quizzes."))
+        }
+    }
+
+    // MARK: - Developer Section (Debug Only)
+
+    #if DEBUG
+    @ViewBuilder
+    private var developerSection: some View {
+        Section {
+            Button {
+                settings.hasCompletedOnboarding = false
+            } label: {
+                HStack {
+                    Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
+                    Spacer()
+                    if !settings.hasCompletedOnboarding {
+                        Text("Will show on next launch")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .foregroundStyle(AppColors.coral)
+        } header: {
+            Text("Developer")
+        } footer: {
+            Text("Debug options. Reset onboarding to test the first-run wizard without losing data.")
+        }
+    }
+    #endif
 
     // MARK: - Helpers
 

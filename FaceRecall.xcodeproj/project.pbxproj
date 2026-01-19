@@ -75,6 +75,16 @@
 		MSCAN01234567890123005 /* EphemeralMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MSCAN11234567890123005 /* EphemeralMatchView.swift */; };
 		SYNC001234567890123001 /* CloudSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SYNC111234567890123001 /* CloudSyncManager.swift */; };
 		SYNC001234567890123002 /* SyncSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SYNC111234567890123002 /* SyncSettingsView.swift */; };
+		ONBOARD0123456789012301 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012301 /* OnboardingContainerView.swift */; };
+		ONBOARD0123456789012302 /* OnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012302 /* OnboardingWelcomeView.swift */; };
+		ONBOARD0123456789012303 /* OnboardingProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012303 /* OnboardingProfileView.swift */; };
+		ONBOARD0123456789012304 /* OnboardingFirstMemoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012304 /* OnboardingFirstMemoryView.swift */; };
+		ONBOARD0123456789012305 /* OnboardingCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012305 /* OnboardingCompleteView.swift */; };
+		ONBOARD0123456789012306 /* OnboardingLiveScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012306 /* OnboardingLiveScanView.swift */; };
+		FAB0001234567890123001 /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB1001234567890123001 /* FloatingActionButton.swift */; };
+		PHOME01234567890123001 /* PeopleHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHOME11234567890123001 /* PeopleHomeView.swift */; };
+		SCANTAB0123456789001 /* ScanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SCANTAB1123456789001 /* ScanTabView.swift */; };
+		FTBAR00123456789001 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTBAR10123456789001 /* FloatingTabBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,6 +159,16 @@
 		MSCAN11234567890123005 /* EphemeralMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralMatchView.swift; sourceTree = "<group>"; };
 		SYNC111234567890123001 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
 		SYNC111234567890123002 /* SyncSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012301 /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012302 /* OnboardingWelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWelcomeView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012303 /* OnboardingProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012304 /* OnboardingFirstMemoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFirstMemoryView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012305 /* OnboardingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompleteView.swift; sourceTree = "<group>"; };
+		ONBOARD1123456789012306 /* OnboardingLiveScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingLiveScanView.swift; sourceTree = "<group>"; };
+		FAB1001234567890123001 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
+		PHOME11234567890123001 /* PeopleHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleHomeView.swift; sourceTree = "<group>"; };
+		SCANTAB1123456789001 /* ScanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanTabView.swift; sourceTree = "<group>"; };
+		FTBAR10123456789001 /* FloatingTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTabBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -158,6 +178,19 @@
 				6BAB90AEB170530790EE0A22 /* FaceRecall.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		ONBOARD2123456789012301 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				ONBOARD1123456789012301 /* OnboardingContainerView.swift */,
+				ONBOARD1123456789012302 /* OnboardingWelcomeView.swift */,
+				ONBOARD1123456789012303 /* OnboardingProfileView.swift */,
+				ONBOARD1123456789012304 /* OnboardingFirstMemoryView.swift */,
+				ONBOARD1123456789012305 /* OnboardingCompleteView.swift */,
+				ONBOARD1123456789012306 /* OnboardingLiveScanView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		0FFB4409C3A484BFB6CCCDC5 /* Shared */ = {
@@ -300,6 +333,7 @@
 				1696A6D6EB005A9CCA04D3C3 /* Encounters */,
 				EE12345678901234ABCD9999 /* Home */,
 				MSCAN21234567890123001 /* MemoryScan */,
+				ONBOARD2123456789012301 /* Onboarding */,
 				F59944A0F4855F8DCD9AFD81 /* People */,
 				6F88FCBCD71F83940BAEFC55 /* PhotoImport */,
 				EE12345678901234ABCDAAAA /* Practice */,
@@ -343,6 +377,7 @@
 			children = (
 				D1936AE11B96771B5BA23123 /* AddPersonView.swift */,
 				CONTACT11234567890123002 /* ContactLinkSection.swift */,
+				PHOME11234567890123001 /* PeopleHomeView.swift */,
 				1D72EB0E3E569F7446794DCB /* PeopleListView.swift */,
 				B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */,
 			);
@@ -353,6 +388,8 @@
 			isa = PBXGroup;
 			children = (
 				LOTTIE11234567890123403 /* AppLogoView.swift */,
+				FAB1001234567890123001 /* FloatingActionButton.swift */,
+				FTBAR10123456789001 /* FloatingTabBar.swift */,
 				LOTTIE11234567890123402 /* ScanningAnimationView.swift */,
 				SPLASH11234567890123001 /* SplashView.swift */,
 			);
@@ -372,6 +409,7 @@
 			isa = PBXGroup;
 			children = (
 				SEARCH11234567890123001 /* GlobalSearchView.swift */,
+				SCANTAB1123456789001 /* ScanTabView.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -543,6 +581,16 @@
 				MSCAN01234567890123005 /* EphemeralMatchView.swift in Sources */,
 				SYNC001234567890123001 /* CloudSyncManager.swift in Sources */,
 				SYNC001234567890123002 /* SyncSettingsView.swift in Sources */,
+				ONBOARD0123456789012301 /* OnboardingContainerView.swift in Sources */,
+				ONBOARD0123456789012302 /* OnboardingWelcomeView.swift in Sources */,
+				ONBOARD0123456789012303 /* OnboardingProfileView.swift in Sources */,
+				ONBOARD0123456789012304 /* OnboardingFirstMemoryView.swift in Sources */,
+				ONBOARD0123456789012305 /* OnboardingCompleteView.swift in Sources */,
+				ONBOARD0123456789012306 /* OnboardingLiveScanView.swift in Sources */,
+				FAB0001234567890123001 /* FloatingActionButton.swift in Sources */,
+				PHOME01234567890123001 /* PeopleHomeView.swift in Sources */,
+				SCANTAB0123456789001 /* ScanTabView.swift in Sources */,
+				FTBAR00123456789001 /* FloatingTabBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
