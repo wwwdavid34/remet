@@ -173,6 +173,7 @@ struct OnboardingFaceReviewView: View {
     @State private var occasion = ""
     @State private var location = ""
     @State private var isMatching = false
+    @FocusState private var isTextFieldFocused: Bool
 
     /// People with embeddings that can be matched (including "Me")
     private var matchablePeople: [Person] {
@@ -236,11 +237,13 @@ struct OnboardingFaceReviewView: View {
                     } else {
                         Section {
                             TextField(String(localized: "Occasion (e.g., Team lunch)"), text: $occasion)
+                                .focused($isTextFieldFocused)
                                 .submitLabel(.next)
                             TextField(String(localized: "Location (optional)"), text: $location)
+                                .focused($isTextFieldFocused)
                                 .submitLabel(.done)
                                 .onSubmit {
-                                    hideKeyboard()
+                                    isTextFieldFocused = false
                                 }
                         } header: {
                             Text(String(localized: "Details"))
@@ -270,16 +273,25 @@ struct OnboardingFaceReviewView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "Cancel")) {
+                        isTextFieldFocused = false
                         onCancel()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(String(localized: "Save")) {
+                        isTextFieldFocused = false
                         saveEncounter()
                     }
                     .fontWeight(.semibold)
                     .disabled(faceAssignments.isEmpty || occasion.isEmpty)
+                }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button(String(localized: "Done")) {
+                        isTextFieldFocused = false
+                    }
                 }
             }
             .overlay {

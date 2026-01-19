@@ -113,6 +113,9 @@ struct OnboardingProfileView: View {
             .padding(.bottom, 40)
         }
         .background(AppColors.background)
+        .onTapGesture {
+            nameFieldFocused = false
+        }
         .onAppear {
             checkCameraPermission()
         }
@@ -224,6 +227,10 @@ struct OnboardingProfileView: View {
                 .textFieldStyle(.roundedBorder)
                 .font(.headline)
                 .focused($nameFieldFocused)
+                .submitLabel(.done)
+                .onSubmit {
+                    nameFieldFocused = false
+                }
 
             if let error = errorMessage {
                 Text(error)
@@ -233,6 +240,7 @@ struct OnboardingProfileView: View {
 
             HStack(spacing: 16) {
                 Button {
+                    nameFieldFocused = false
                     showNamePrompt = false
                     name = ""
                 } label: {
@@ -246,6 +254,7 @@ struct OnboardingProfileView: View {
                 }
 
                 Button {
+                    nameFieldFocused = false
                     saveProfile()
                 } label: {
                     Text(String(localized: "Save"))
@@ -260,7 +269,9 @@ struct OnboardingProfileView: View {
             }
         }
         .onAppear {
-            nameFieldFocused = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                nameFieldFocused = true
+            }
         }
     }
 
