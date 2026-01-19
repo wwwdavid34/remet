@@ -67,47 +67,49 @@ struct EncounterDetailView: View {
         .navigationTitle(encounter.occasion ?? "Encounter")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 16) {
-                    // Re-detect faces button (only in edit mode)
-                    if isEditing {
-                        Button {
-                            Task {
-                                await redetectFaces()
-                            }
-                        } label: {
-                            if isRedetecting {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                            } else {
-                                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-                            }
-                        }
-                        .disabled(isRedetecting)
-                    }
-
-                    // Missing faces button
+            // Re-detect faces button (only in edit mode)
+            if isEditing {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
-                        locateFaceMode.toggle()
-                        if !locateFaceMode {
-                            locateFaceError = nil
+                        Task {
+                            await redetectFaces()
                         }
                     } label: {
-                        if isLocatingFace {
+                        if isRedetecting {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
                         }
                     }
-                    .disabled(isLocatingFace)
+                    .disabled(isRedetecting)
+                }
+            }
 
-                    // Edit button - opens unified edit view
-                    Button {
-                        showEditView = true
-                    } label: {
-                        Image(systemName: "pencil.circle")
+            // Missing faces button
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    locateFaceMode.toggle()
+                    if !locateFaceMode {
+                        locateFaceError = nil
                     }
+                } label: {
+                    if isLocatingFace {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                    }
+                }
+                .disabled(isLocatingFace)
+            }
+
+            // Edit button - opens unified edit view
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showEditView = true
+                } label: {
+                    Image(systemName: "pencil.circle")
                 }
             }
         }
