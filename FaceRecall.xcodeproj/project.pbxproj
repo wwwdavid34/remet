@@ -80,6 +80,10 @@
 		ONBOARD0123456789012303 /* OnboardingProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012303 /* OnboardingProfileView.swift */; };
 		ONBOARD0123456789012304 /* OnboardingFirstMemoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012304 /* OnboardingFirstMemoryView.swift */; };
 		ONBOARD0123456789012305 /* OnboardingCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ONBOARD1123456789012305 /* OnboardingCompleteView.swift */; };
+		FAB0001234567890123001 /* FloatingActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB1001234567890123001 /* FloatingActionButton.swift */; };
+		PHOME01234567890123001 /* PeopleHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHOME11234567890123001 /* PeopleHomeView.swift */; };
+		SCANTAB0123456789001 /* ScanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SCANTAB1123456789001 /* ScanTabView.swift */; };
+		FTBAR00123456789001 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTBAR10123456789001 /* FloatingTabBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -159,6 +163,10 @@
 		ONBOARD1123456789012303 /* OnboardingProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileView.swift; sourceTree = "<group>"; };
 		ONBOARD1123456789012304 /* OnboardingFirstMemoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFirstMemoryView.swift; sourceTree = "<group>"; };
 		ONBOARD1123456789012305 /* OnboardingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompleteView.swift; sourceTree = "<group>"; };
+		FAB1001234567890123001 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
+		PHOME11234567890123001 /* PeopleHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleHomeView.swift; sourceTree = "<group>"; };
+		SCANTAB1123456789001 /* ScanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanTabView.swift; sourceTree = "<group>"; };
+		FTBAR10123456789001 /* FloatingTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTabBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -366,6 +374,7 @@
 			children = (
 				D1936AE11B96771B5BA23123 /* AddPersonView.swift */,
 				CONTACT11234567890123002 /* ContactLinkSection.swift */,
+				PHOME11234567890123001 /* PeopleHomeView.swift */,
 				1D72EB0E3E569F7446794DCB /* PeopleListView.swift */,
 				B739A6195D7AAD3C821096D7 /* PersonDetailView.swift */,
 			);
@@ -376,6 +385,8 @@
 			isa = PBXGroup;
 			children = (
 				LOTTIE11234567890123403 /* AppLogoView.swift */,
+				FAB1001234567890123001 /* FloatingActionButton.swift */,
+				FTBAR10123456789001 /* FloatingTabBar.swift */,
 				LOTTIE11234567890123402 /* ScanningAnimationView.swift */,
 				SPLASH11234567890123001 /* SplashView.swift */,
 			);
@@ -395,6 +406,7 @@
 			isa = PBXGroup;
 			children = (
 				SEARCH11234567890123001 /* GlobalSearchView.swift */,
+				SCANTAB1123456789001 /* ScanTabView.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -571,6 +583,10 @@
 				ONBOARD0123456789012303 /* OnboardingProfileView.swift in Sources */,
 				ONBOARD0123456789012304 /* OnboardingFirstMemoryView.swift in Sources */,
 				ONBOARD0123456789012305 /* OnboardingCompleteView.swift in Sources */,
+				FAB0001234567890123001 /* FloatingActionButton.swift in Sources */,
+				PHOME01234567890123001 /* PeopleHomeView.swift in Sources */,
+				SCANTAB0123456789001 /* ScanTabView.swift in Sources */,
+				FTBAR00123456789001 /* FloatingTabBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

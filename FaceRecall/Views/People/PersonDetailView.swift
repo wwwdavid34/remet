@@ -20,6 +20,11 @@ struct PersonDetailView: View {
         GridItem(.adaptive(minimum: 100), spacing: 12)
     ]
 
+    /// Whether the person has key context info to show
+    private var hasKeyContext: Bool {
+        person.company != nil || person.contextTag != nil || person.howWeMet != nil || person.jobTitle != nil
+    }
+
     private func findEncounter(for embedding: FaceEmbedding) -> Encounter? {
         guard let encounterId = embedding.encounterId else { return nil }
         return allEncounters.first { $0.id == encounterId }
@@ -27,20 +32,41 @@ struct PersonDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                headerSection
-                quickActionsSection
-                ContactLinkSection(person: person)
-                tagsSection
-                talkingPointsSection
-                interestsSection
-                howWeMetSection
-                interactionTimelineSection
-                personalDetailsSection
-                encountersSection
-                facesSection
+            VStack(spacing: 16) {
+                // Hero section with photo, name, and quick actions
+                heroSection
+
+                // Key context card (company, context, how we met)
+                if hasKeyContext {
+                    keyContextCard
+                }
+
+                // Talking points - prominent when has content
+                if !person.talkingPoints.isEmpty {
+                    talkingPointsCard
+                }
+
+                // Tags & Interests combined
+                if !person.tags.isEmpty || !person.interests.isEmpty {
+                    tagsAndInterestsSection
+                }
+
+                // Activity section (encounters + notes)
+                if !person.encounters.isEmpty || !person.interactionNotes.isEmpty {
+                    activitySection
+                }
+
+                // Expandable details section
+                moreDetailsSection
+
+                // Face samples at the bottom
+                if !person.embeddings.isEmpty {
+                    facesSection
+                }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 20)
             .onAppear {
                 selectedTags = person.tags
             }
@@ -106,280 +132,7 @@ struct PersonDetailView: View {
         }
     }
 
-    @ViewBuilder
-    private var quickActionsSection: some View {
-        let hasPhone = person.phone != nil && !person.phone!.isEmpty
-        let hasEmail = person.email != nil && !person.email!.isEmpty
-
-        if hasPhone || hasEmail {
-            HStack(spacing: 8) {
-                if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
-                    Link(destination: url) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "phone.fill")
-                                .font(.body)
-                            Text("Call")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(AppColors.success.opacity(0.1))
-                        .foregroundStyle(AppColors.success)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-
-                    if let smsUrl = URL(string: "sms:\(phone)") {
-                        Link(destination: smsUrl) {
-                            VStack(spacing: 4) {
-                                Image(systemName: "message.fill")
-                                    .font(.body)
-                                Text("Message")
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .background(AppColors.coral.opacity(0.1))
-                            .foregroundStyle(AppColors.coral)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        }
-                    }
-                }
-
-                if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
-                    Link(destination: emailUrl) {
-                        VStack(spacing: 4) {
-                            Image(systemName: "envelope.fill")
-                                .font(.body)
-                            Text("Email")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(AppColors.teal.opacity(0.1))
-                        .foregroundStyle(AppColors.teal)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var tagsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "tag.fill")
-                    .foregroundStyle(AppColors.coral)
-                Text("Tags")
-                    .font(.headline)
-            }
-
-            InlineTagEditor(
-                tags: person.tags,
-                onAddTag: {
-                    selectedTags = person.tags
-                    showTagPicker = true
-                },
-                onRemoveTag: { tag in
-                    person.tags.removeAll { $0.id == tag.id }
-                }
-            )
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    @ViewBuilder
-    private var talkingPointsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "lightbulb.fill")
-                        .foregroundStyle(AppColors.warmYellow)
-                    Text("Talking Points")
-                        .font(.headline)
-                }
-                Spacer()
-                Button {
-                    addTalkingPoint()
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundStyle(AppColors.coral)
-                }
-            }
-
-            if person.talkingPoints.isEmpty {
-                Text("Add talking points to remember for your next conversation")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .padding(.vertical, 8)
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(person.talkingPoints.enumerated()), id: \.offset) { index, point in
-                        HStack(alignment: .top, spacing: 10) {
-                            Circle()
-                                .fill(AppColors.warmYellow)
-                                .frame(width: 6, height: 6)
-                                .padding(.top, 6)
-                            Text(point)
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.textPrimary)
-                            Spacer()
-                            Button {
-                                removeTalkingPoint(at: index)
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(AppColors.textMuted)
-                                    .font(.caption)
-                            }
-                        }
-                    }
-                }
-                .padding()
-                .background(AppColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var interestsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "heart.fill")
-                        .foregroundStyle(AppColors.coral)
-                    Text("Interests")
-                        .font(.headline)
-                }
-                Spacer()
-                Button {
-                    addInterest()
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundStyle(AppColors.coral)
-                }
-            }
-
-            if person.interests.isEmpty {
-                Text("Add interests to find common ground")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            } else {
-                FlowLayout(spacing: 8) {
-                    ForEach(Array(person.interests.enumerated()), id: \.offset) { index, interest in
-                        HStack(spacing: 4) {
-                            Text(interest)
-                                .font(.caption)
-                                .fontWeight(.medium)
-                            Button {
-                                removeInterest(at: index)
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .font(.caption2)
-                            }
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(AppColors.teal.opacity(0.15))
-                        .foregroundStyle(AppColors.teal)
-                        .clipShape(Capsule())
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var howWeMetSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "person.2.fill")
-                        .foregroundStyle(AppColors.teal)
-                    Text("How We Met")
-                        .font(.headline)
-                }
-                Spacer()
-                if person.howWeMet == nil || person.howWeMet?.isEmpty == true {
-                    Button {
-                        editHowWeMet()
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(AppColors.coral)
-                    }
-                }
-            }
-
-            if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "mappin.circle.fill")
-                        .foregroundStyle(AppColors.teal)
-                        .padding(.top, 2)
-                    Text(howWeMet)
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.textPrimary)
-                    Spacer()
-                    Button {
-                        editHowWeMet()
-                    } label: {
-                        Image(systemName: "pencil.circle.fill")
-                            .foregroundStyle(AppColors.textMuted)
-                            .font(.caption)
-                    }
-                }
-                .padding()
-                .background(AppColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
-            } else {
-                Text("Add where or how you first met")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .padding(.vertical, 4)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var interactionTimelineSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: "clock.arrow.circlepath")
-                    .foregroundStyle(AppColors.softPurple)
-                Text("Interaction Timeline")
-                    .font(.headline)
-            }
-
-            if person.interactionNotes.isEmpty && person.encounters.isEmpty {
-                Text("No interactions recorded yet")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .padding(.vertical, 4)
-            } else {
-                VStack(spacing: 10) {
-                    // Show recent notes
-                    ForEach(person.recentNotes) { note in
-                        InteractionNoteRow(note: note, onDelete: {
-                            deleteNote(note)
-                        })
-                    }
-
-                    // Show encounters in timeline
-                    ForEach(person.encounters.prefix(3)) { encounter in
-                        EncounterTimelineRow(encounter: encounter) {
-                            selectedEncounter = encounter
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Helper methods for editing
+    // MARK: - Helper Methods
     private func addTalkingPoint() {
         let alert = UIAlertController(title: "Add Talking Point", message: nil, preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "Something to discuss next time" }
@@ -449,142 +202,420 @@ struct PersonDetailView: View {
         modelContext.delete(note)
     }
 
+    // MARK: - Hero Section
+
     @ViewBuilder
-    private var headerSection: some View {
-        VStack(spacing: 12) {
-            if let profileEmbedding = person.profileEmbedding,
-               let image = UIImage(data: profileEmbedding.faceCropData) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 120, height: 120)
-                    .clipShape(Circle())
-                    .shadow(radius: 4)
-            } else {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+    private var heroSection: some View {
+        VStack(spacing: 16) {
+            // Photo and name row
+            HStack(spacing: 16) {
+                // Profile photo
+                if let profileEmbedding = person.profileEmbedding,
+                   let image = UIImage(data: profileEmbedding.faceCropData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .frame(width: 120, height: 120)
-                    .overlay {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 50))
-                            .foregroundStyle(.white)
+                        .frame(width: 80, height: 80)
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 32))
+                                .foregroundStyle(.white)
+                        }
+                }
+
+                // Name and subtitle
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(person.name)
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    if let relationship = person.relationship {
+                        Text(relationship)
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.teal)
                     }
-                    .shadow(radius: 4)
-            }
 
-            Text(person.name)
-                .font(.title)
-                .fontWeight(.bold)
-
-            if let company = person.company {
-                Text(company)
-                    .font(.subheadline)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-
-            if let relationship = person.relationship {
-                Text(relationship)
-                    .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(AppColors.teal.opacity(0.15))
-                    .foregroundStyle(AppColors.teal)
-                    .clipShape(Capsule())
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var personalDetailsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "person.text.rectangle")
-                        .foregroundStyle(AppColors.coral)
-                    Text("Personal Details")
-                        .font(.headline)
+                    // Met date
+                    Text(String(localized: "Added \(person.createdAt.formatted(date: .abbreviated, time: .omitted))"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
+
                 Spacer()
-                Button {
-                    showEditSheet = true
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                        .foregroundStyle(AppColors.coral)
-                }
             }
 
-            readOnlyDetails
+            // Quick action buttons
+            quickActionButtons
         }
+        .padding()
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     @ViewBuilder
-    private var readOnlyDetails: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let relationship = person.relationship {
-                InfoRow(icon: "person.2", title: "Relationship", value: relationship)
-            }
+    private var quickActionButtons: some View {
+        let hasPhone = person.phone != nil && !person.phone!.isEmpty
+        let hasEmail = person.email != nil && !person.email!.isEmpty
 
+        if hasPhone || hasEmail {
+            HStack(spacing: 12) {
+                if let phone = person.phone, let url = URL(string: "tel:\(phone)") {
+                    Link(destination: url) {
+                        Label("Call", systemImage: "phone.fill")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(AppColors.success.opacity(0.12))
+                            .foregroundStyle(AppColors.success)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+
+                if let phone = person.phone, let smsUrl = URL(string: "sms:\(phone)") {
+                    Link(destination: smsUrl) {
+                        Label("Text", systemImage: "message.fill")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(AppColors.coral.opacity(0.12))
+                            .foregroundStyle(AppColors.coral)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+
+                if let email = person.email, let emailUrl = URL(string: "mailto:\(email)") {
+                    Link(destination: emailUrl) {
+                        Label("Email", systemImage: "envelope.fill")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(AppColors.teal.opacity(0.12))
+                            .foregroundStyle(AppColors.teal)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Key Context Card
+
+    @ViewBuilder
+    private var keyContextCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
             if let company = person.company {
-                InfoRow(icon: "building.2", title: "Company", value: company)
-            }
-
-            if let jobTitle = person.jobTitle {
-                InfoRow(icon: "briefcase", title: "Title", value: jobTitle)
-            }
-
-            if let email = person.email {
-                InfoRow(icon: "envelope", title: "Email", value: email)
-            }
-
-            if let phone = person.phone {
-                InfoRow(icon: "phone", title: "Phone", value: phone)
+                HStack(spacing: 10) {
+                    Image(systemName: "building.2")
+                        .foregroundStyle(AppColors.teal)
+                        .frame(width: 20)
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let jobTitle = person.jobTitle {
+                            Text(jobTitle)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        Text(company)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
 
             if let context = person.contextTag {
-                InfoRow(icon: "tag", title: String(localized: "Context"), value: context)
-            }
-
-            InfoRow(
-                icon: "calendar",
-                title: String(localized: "Added"),
-                value: person.createdAt.formatted(date: .abbreviated, time: .omitted)
-            )
-
-            if let lastSeen = person.lastSeenAt {
-                InfoRow(
-                    icon: "eye",
-                    title: String(localized: "Last Viewed"),
-                    value: lastSeen.formatted(.relative(presentation: .named))
-                )
-            }
-
-            InfoRow(
-                icon: "person.2.crop.square.stack",
-                title: String(localized: "Encounters"),
-                value: "\(person.encounterCount)"
-            )
-
-            if let notes = person.notes, !notes.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Label("Notes", systemImage: "note.text")
+                HStack(spacing: 10) {
+                    Image(systemName: "mappin.circle.fill")
+                        .foregroundStyle(AppColors.softPurple)
+                        .frame(width: 20)
+                    Text(context)
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
-                    Text(notes)
-                        .foregroundStyle(AppColors.textPrimary)
                 }
-                .padding(.top, 8)
+            }
+
+            if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(AppColors.coral)
+                        .frame(width: 20)
+                    Text(howWeMet)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - Talking Points Card
+
+    @ViewBuilder
+    private var talkingPointsCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label(String(localized: "Talking Points"), systemImage: "lightbulb.fill")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.warmYellow)
+                Spacer()
+                Button {
+                    addTalkingPoint()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.warmYellow)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(Array(person.talkingPoints.enumerated()), id: \.offset) { index, point in
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("•")
+                            .foregroundStyle(AppColors.warmYellow)
+                        Text(point)
+                            .font(.subheadline)
+                        Spacer()
+                        Button {
+                            removeTalkingPoint(at: index)
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(AppColors.warmYellow.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - Tags & Interests Section
+
+    @ViewBuilder
+    private var tagsAndInterestsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Tags
+            if !person.tags.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(String(localized: "Tags"))
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button {
+                            selectedTags = person.tags
+                            showTagPicker = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    FlowLayout(spacing: 6) {
+                        ForEach(person.tags) { tag in
+                            Text(tag.name)
+                                .font(.caption)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(tag.color.opacity(0.15))
+                                .foregroundStyle(tag.color)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
+
+            // Interests
+            if !person.interests.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(String(localized: "Interests"))
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button {
+                            addInterest()
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    FlowLayout(spacing: 6) {
+                        ForEach(Array(person.interests.enumerated()), id: \.offset) { index, interest in
+                            HStack(spacing: 4) {
+                                Text(interest)
+                                    .font(.caption)
+                                Button {
+                                    removeInterest(at: index)
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 8, weight: .bold))
+                                }
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(AppColors.teal.opacity(0.12))
+                            .foregroundStyle(AppColors.teal)
+                            .clipShape(Capsule())
+                        }
+                    }
+                }
             }
         }
         .padding()
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+    }
+
+    // MARK: - Activity Section
+
+    @ViewBuilder
+    private var activitySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            activityHeader
+            activityContent
+        }
+        .padding()
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    @ViewBuilder
+    private var activityHeader: some View {
+        HStack {
+            Label(String(localized: "Activity"), systemImage: "clock")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+            Spacer()
+            if !person.encounters.isEmpty {
+                Button {
+                    showEncountersTimeline = true
+                } label: {
+                    Text(String(localized: "See All"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.teal)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var activityContent: some View {
+        VStack(spacing: 8) {
+            encountersList
+            notesList
+        }
+    }
+
+    @ViewBuilder
+    private var encountersList: some View {
+        ForEach(Array(person.encounters.prefix(3))) { encounter in
+            ActivityEncounterRow(encounter: encounter) {
+                selectedEncounter = encounter
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var notesList: some View {
+        ForEach(Array(person.recentNotes.prefix(2))) { note in
+            ActivityNoteRow(note: note)
+        }
+    }
+
+    // MARK: - More Details Section
+
+    @ViewBuilder
+    private var moreDetailsSection: some View {
+        DisclosureGroup(
+            isExpanded: Binding(
+                get: { expandedSections.contains("details") },
+                set: { if $0 { expandedSections.insert("details") } else { expandedSections.remove("details") } }
+            )
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                if let email = person.email {
+                    DetailInfoRow(icon: "envelope", label: String(localized: "Email"), value: email)
+                }
+                if let phone = person.phone {
+                    DetailInfoRow(icon: "phone", label: String(localized: "Phone"), value: phone)
+                }
+                if let notes = person.notes, !notes.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(String(localized: "Notes"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(notes)
+                            .font(.subheadline)
+                    }
+                    .padding(.top, 4)
+                }
+
+                // Add talking point if empty
+                if person.talkingPoints.isEmpty {
+                    Button {
+                        addTalkingPoint()
+                    } label: {
+                        Label(String(localized: "Add Talking Point"), systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.coral)
+                    }
+                    .padding(.top, 4)
+                }
+
+                // Add interest if empty
+                if person.interests.isEmpty {
+                    Button {
+                        addInterest()
+                    } label: {
+                        Label(String(localized: "Add Interest"), systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.teal)
+                    }
+                }
+
+                // Edit how we met
+                Button {
+                    editHowWeMet()
+                } label: {
+                    Label(person.howWeMet == nil ? String(localized: "Add How We Met") : String(localized: "Edit How We Met"), systemImage: "pencil.circle")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.softPurple)
+                }
+            }
+            .padding(.top, 8)
+        } label: {
+            Label(String(localized: "More Details"), systemImage: "ellipsis.circle")
+                .font(.subheadline)
+                .fontWeight(.medium)
+        }
+        .tint(.primary)
+        .padding()
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
@@ -775,6 +806,111 @@ struct InfoRow: View {
                 .fontWeight(.medium)
                 .foregroundStyle(AppColors.textPrimary)
         }
+    }
+}
+
+/// Compact detail row for collapsible details section
+struct DetailInfoRow: View {
+    let icon: String
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundStyle(AppColors.teal)
+                .frame(width: 20)
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .font(.subheadline)
+        }
+    }
+}
+
+/// Activity section encounter row
+struct ActivityEncounterRow: View {
+    let encounter: Encounter
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                encounterThumbnail
+                encounterInfo
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(10)
+            .background(Color(.tertiarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var encounterThumbnail: some View {
+        if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
+           let uiImage = UIImage(data: imageData) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 44, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        } else {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(AppColors.teal.opacity(0.1))
+                .frame(width: 44, height: 44)
+                .overlay {
+                    Image(systemName: "person.2")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.teal)
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var encounterInfo: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(encounter.occasion ?? String(localized: "Encounter"))
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+            Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// Activity section note row
+struct ActivityNoteRow: View {
+    let note: InteractionNote
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "note.text")
+                .font(.caption)
+                .foregroundStyle(AppColors.softPurple)
+                .frame(width: 20)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(note.content)
+                    .font(.caption)
+                    .lineLimit(2)
+                Text(note.createdAt.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+
+            Spacer()
+        }
+        .padding(10)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

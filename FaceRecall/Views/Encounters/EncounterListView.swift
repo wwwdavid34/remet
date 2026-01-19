@@ -179,29 +179,21 @@ struct EncounterListView: View {
         .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 12) {
-                    Button {
-                        showFilters.toggle()
-                    } label: {
-                        ZStack(alignment: .topTrailing) {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
-                                .foregroundStyle(hasActiveFilters ? AppColors.coral : AppColors.teal)
-                            if activeFilterCount > 0 {
-                                Text("\(activeFilterCount)")
-                                    .font(.caption2)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                                    .padding(4)
-                                    .background(Circle().fill(AppColors.coral))
-                                    .offset(x: 8, y: -8)
-                            }
+                Button {
+                    showFilters.toggle()
+                } label: {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .foregroundStyle(hasActiveFilters ? AppColors.coral : AppColors.teal)
+                        if activeFilterCount > 0 {
+                            Text("\(activeFilterCount)")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .padding(4)
+                                .background(Circle().fill(AppColors.coral))
+                                .offset(x: 8, y: -8)
                         }
-                    }
-
-                    Button {
-                        showScanner = true
-                    } label: {
-                        Image(systemName: "plus")
                     }
                 }
             }
