@@ -3900,6 +3900,9 @@
         }
       }
     },
+    "Debug options. Reset onboarding to test the first-run wizard without losing data." : {
+
+    },
     "Delete" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4013,6 +4016,9 @@
           }
         }
       }
+    },
+    "Developer" : {
+
     },
     "Didn't know" : {
       "extractionState" : "stale",
@@ -15047,6 +15053,9 @@
           }
         }
       }
+    },
+    "Will show on next launch" : {
+
     },
     "Work" : {
       "extractionState" : "stale",

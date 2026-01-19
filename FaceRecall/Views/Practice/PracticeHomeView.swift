@@ -48,7 +48,7 @@ struct PracticeHomeView: View {
     @State private var selectedMode: QuizMode = .spaced
 
     private var peopleWithFaces: [Person] {
-        people.filter { !$0.embeddings.isEmpty }
+        people.filter { !$0.embeddings.isEmpty && !$0.isMe }
     }
 
     private var peopleNeedingReview: [Person] {

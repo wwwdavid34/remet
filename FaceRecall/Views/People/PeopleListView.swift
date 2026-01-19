@@ -25,8 +25,18 @@ struct PeopleListView: View {
         return result.sorted { $0.name < $1.name }
     }
 
+    /// The user's own profile (if exists)
+    var meProfile: Person? {
+        people.first { $0.isMe }
+    }
+
     var filteredPeople: [Person] {
         var result = people
+
+        // Hide "Me" if setting is disabled
+        if !AppSettings.shared.showMeInPeopleList {
+            result = result.filter { !$0.isMe }
+        }
 
         // Filter by search text
         if !searchText.isEmpty {
@@ -39,6 +49,13 @@ struct PeopleListView: View {
                 let personTagIds = Set(person.tags.map { $0.id })
                 return !selectedTagFilters.isDisjoint(with: personTagIds)
             }
+        }
+
+        // Sort: "Me" first (if visible), then alphabetically
+        result.sort { p1, p2 in
+            if p1.isMe { return true }
+            if p2.isMe { return false }
+            return p1.name.localizedCaseInsensitiveCompare(p2.name) == .orderedAscending
         }
 
         return result
@@ -146,15 +163,32 @@ struct PersonRow: View {
             personThumbnail
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(person.name)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
+                HStack(spacing: 6) {
+                    Text(person.name)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
 
-                if let relationship = person.relationship {
+                    if person.isMe {
+                        Text(String(localized: "You"))
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(AppColors.softPurple)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                if let relationship = person.relationship, !person.isMe {
                     Text(relationship)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                } else if person.isMe {
+                    Text(String(localized: "Your profile"))
+                        .font(.caption)
+                        .foregroundStyle(AppColors.softPurple)
                 }
 
                 // Show tags
