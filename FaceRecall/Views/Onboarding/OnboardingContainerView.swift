@@ -7,32 +7,56 @@ struct OnboardingContainerView: View {
     @State private var createdMeProfile: Person?
 
     var body: some View {
-        TabView(selection: $currentStep) {
-            OnboardingWelcomeView(onContinue: { currentStep = 1 })
-                .tag(0)
+        ZStack {
+            switch currentStep {
+            case 0:
+                OnboardingWelcomeView(onContinue: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        currentStep = 1
+                    }
+                })
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
-            OnboardingProfileView(
-                onComplete: { person in
-                    createdMeProfile = person
-                    currentStep = 2
-                },
-                onSkip: { currentStep = 2 }
-            )
-            .tag(1)
+            case 1:
+                OnboardingProfileView(
+                    onComplete: { person in
+                        createdMeProfile = person
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 2
+                        }
+                    },
+                    onSkip: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 2
+                        }
+                    }
+                )
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
-            OnboardingFirstMemoryView(
-                onComplete: { currentStep = 3 },
-                onSkip: { currentStep = 3 }
-            )
-            .tag(2)
+            case 2:
+                OnboardingFirstMemoryView(
+                    onComplete: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 3
+                        }
+                    },
+                    onSkip: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 3
+                        }
+                    }
+                )
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
-            OnboardingCompleteView(onFinish: completeOnboarding)
-                .tag(3)
+            case 3:
+                OnboardingCompleteView(onFinish: completeOnboarding)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+            default:
+                EmptyView()
+            }
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .animation(.easeInOut, value: currentStep)
         .interactiveDismissDisabled()
-        .gesture(DragGesture()) // Disable swipe navigation
     }
 
     private func completeOnboarding() {
