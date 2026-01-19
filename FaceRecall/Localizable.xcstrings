@@ -929,9 +929,6 @@
         }
       }
     },
-    "•" : {
-
-    },
     "• %@" : {
       "localizations" : {
         "ja" : {
@@ -5156,6 +5153,7 @@
       }
     },
     "Face Samples" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

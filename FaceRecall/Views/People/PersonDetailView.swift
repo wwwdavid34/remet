@@ -320,7 +320,7 @@ struct PersonDetailView: View {
             if let company = person.company {
                 HStack(spacing: 10) {
                     Image(systemName: "building.2")
-                        .foregroundStyle(AppColors.teal)
+                        .foregroundStyle(.secondary)
                         .frame(width: 20)
                     VStack(alignment: .leading, spacing: 2) {
                         if let jobTitle = person.jobTitle {
@@ -337,8 +337,8 @@ struct PersonDetailView: View {
 
             if let context = person.contextTag {
                 HStack(spacing: 10) {
-                    Image(systemName: "mappin.circle.fill")
-                        .foregroundStyle(AppColors.softPurple)
+                    Image(systemName: "mappin.circle")
+                        .foregroundStyle(.secondary)
                         .frame(width: 20)
                     Text(context)
                         .font(.subheadline)
@@ -347,8 +347,8 @@ struct PersonDetailView: View {
 
             if let howWeMet = person.howWeMet, !howWeMet.isEmpty {
                 HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "person.2.fill")
-                        .foregroundStyle(AppColors.coral)
+                    Image(systemName: "person.2")
+                        .foregroundStyle(.secondary)
                         .frame(width: 20)
                     Text(howWeMet)
                         .font(.subheadline)
@@ -368,25 +368,31 @@ struct PersonDetailView: View {
     private var talkingPointsCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label(String(localized: "Talking Points"), systemImage: "lightbulb.fill")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.warmYellow)
+                HStack(spacing: 6) {
+                    Image(systemName: "text.bubble")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(String(localized: "Talking Points"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
                 Spacer()
                 Button {
                     addTalkingPoint()
                 } label: {
                     Image(systemName: "plus")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.warmYellow)
+                        .foregroundStyle(.secondary)
                 }
             }
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(person.talkingPoints.enumerated()), id: \.offset) { index, point in
                     HStack(alignment: .top, spacing: 8) {
-                        Text("•")
-                            .foregroundStyle(AppColors.warmYellow)
+                        Circle()
+                            .fill(.secondary)
+                            .frame(width: 5, height: 5)
+                            .padding(.top, 6)
                         Text(point)
                             .font(.subheadline)
                         Spacer()
@@ -402,7 +408,7 @@ struct PersonDetailView: View {
             }
         }
         .padding()
-        .background(AppColors.warmYellow.opacity(0.08))
+        .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -410,22 +416,26 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var tagsAndInterestsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             // Tags
             if !person.tags.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text(String(localized: "Tags"))
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Image(systemName: "tag")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(String(localized: "Tags"))
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
                         Spacer()
                         Button {
                             selectedTags = person.tags
                             showTagPicker = true
                         } label: {
                             Image(systemName: "plus")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -448,16 +458,20 @@ struct PersonDetailView: View {
             if !person.interests.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text(String(localized: "Interests"))
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Image(systemName: "heart")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(String(localized: "Interests"))
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
                         Spacer()
                         Button {
                             addInterest()
                         } label: {
                             Image(systemName: "plus")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -476,8 +490,8 @@ struct PersonDetailView: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
-                            .background(AppColors.teal.opacity(0.12))
-                            .foregroundStyle(AppColors.teal)
+                            .background(Color(.tertiarySystemFill))
+                            .foregroundStyle(.primary)
                             .clipShape(Capsule())
                         }
                     }
@@ -505,10 +519,14 @@ struct PersonDetailView: View {
     @ViewBuilder
     private var activityHeader: some View {
         HStack {
-            Label(String(localized: "Activity"), systemImage: "clock")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
+            HStack(spacing: 6) {
+                Image(systemName: "clock")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(String(localized: "Activity"))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
             Spacer()
             if !person.encounters.isEmpty {
                 Button {
@@ -516,7 +534,7 @@ struct PersonDetailView: View {
                 } label: {
                     Text(String(localized: "See All"))
                         .font(.caption)
-                        .foregroundStyle(AppColors.teal)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -581,7 +599,7 @@ struct PersonDetailView: View {
                     } label: {
                         Label(String(localized: "Add Talking Point"), systemImage: "plus.circle")
                             .font(.subheadline)
-                            .foregroundStyle(AppColors.coral)
+                            .foregroundStyle(AppColors.teal)
                     }
                     .padding(.top, 4)
                 }
@@ -603,14 +621,19 @@ struct PersonDetailView: View {
                 } label: {
                     Label(person.howWeMet == nil ? String(localized: "Add How We Met") : String(localized: "Edit How We Met"), systemImage: "pencil.circle")
                         .font(.subheadline)
-                        .foregroundStyle(AppColors.softPurple)
+                        .foregroundStyle(AppColors.teal)
                 }
             }
             .padding(.top, 8)
         } label: {
-            Label(String(localized: "More Details"), systemImage: "ellipsis.circle")
-                .font(.subheadline)
-                .fontWeight(.medium)
+            HStack(spacing: 6) {
+                Image(systemName: "ellipsis.circle")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(String(localized: "More Details"))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
         }
         .tint(.primary)
         .padding()
@@ -672,16 +695,18 @@ struct PersonDetailView: View {
             HStack {
                 HStack(spacing: 6) {
                     Image(systemName: "face.smiling")
-                        .foregroundStyle(AppColors.coral)
-                    Text("Face Samples")
-                        .font(.headline)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(String(localized: "Face Samples"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
                 }
 
                 Spacer()
 
                 Text("\(person.embeddings.count)")
                     .font(.subheadline)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(.secondary)
             }
 
             if person.embeddings.isEmpty {
@@ -1105,23 +1130,23 @@ struct FaceSourcePhotoView: View {
         VStack(alignment: .leading, spacing: 8) {
             if let occasion = encounter.occasion {
                 Label(occasion, systemImage: "star")
-                    .foregroundStyle(AppColors.warmYellow)
+                    .foregroundStyle(.primary)
             }
             if let location = encounter.location {
                 Label(location, systemImage: "mappin")
-                    .foregroundStyle(AppColors.teal)
+                    .foregroundStyle(.secondary)
             }
             Label(encounter.date.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(.secondary)
 
             if encounter.photos.count > 1 {
                 Label("\(encounter.photos.count) photos in this encounter", systemImage: "photo.stack")
-                    .foregroundStyle(AppColors.softPurple)
+                    .foregroundStyle(.secondary)
             }
 
             if encounter.people.count > 1 {
                 Label("\(encounter.people.count) people tagged", systemImage: "person.2")
-                    .foregroundStyle(AppColors.coral)
+                    .foregroundStyle(.secondary)
             }
         }
         .font(.subheadline)
