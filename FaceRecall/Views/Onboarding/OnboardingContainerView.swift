@@ -22,19 +22,22 @@ struct OnboardingContainerView: View {
                     onComplete: { person in
                         createdMeProfile = person
                         withAnimation(.easeInOut(duration: 0.3)) {
+                            // Go to live scan if profile was created
                             currentStep = 2
                         }
                     },
                     onSkip: {
                         withAnimation(.easeInOut(duration: 0.3)) {
-                            currentStep = 2
+                            // Skip live scan if no profile created
+                            currentStep = 3
                         }
                     }
                 )
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 2:
-                OnboardingFirstMemoryView(
+                // Live Scan demo - only shown if profile was created
+                OnboardingLiveScanView(
                     onComplete: {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep = 3
@@ -49,6 +52,21 @@ struct OnboardingContainerView: View {
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 3:
+                OnboardingFirstMemoryView(
+                    onComplete: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 4
+                        }
+                    },
+                    onSkip: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 4
+                        }
+                    }
+                )
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+
+            case 4:
                 OnboardingCompleteView(onFinish: completeOnboarding)
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 

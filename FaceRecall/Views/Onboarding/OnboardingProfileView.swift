@@ -16,8 +16,6 @@ struct OnboardingProfileView: View {
     @State private var name = ""
     @State private var showNamePrompt = false
     @State private var errorMessage: String?
-    @State private var showHideProfileTip = false
-    @State private var createdPerson: Person?
     @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
@@ -128,15 +126,6 @@ struct OnboardingProfileView: View {
                     .background(.regularMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-        }
-        .alert(String(localized: "Profile Created!"), isPresented: $showHideProfileTip) {
-            Button(String(localized: "Got It")) {
-                if let person = createdPerson {
-                    onComplete(person)
-                }
-            }
-        } message: {
-            Text(String(localized: "Try the Memory Scan feature to instantly identify people you've added - just point your camera at them!\n\nTip: You can hide your profile from the People list in Settings."))
         }
     }
 
@@ -345,8 +334,7 @@ struct OnboardingProfileView: View {
                     modelContext.insert(person)
                     try? modelContext.save()
                     isProcessing = false
-                    createdPerson = person
-                    showHideProfileTip = true
+                    onComplete(person)
                 }
             } catch {
                 await MainActor.run {
