@@ -460,6 +460,15 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
+            // Show tag filter bar in search results too
+            if !cachedTagsInUse.isEmpty {
+                TagFilterView(
+                    availableTags: cachedTagsInUse,
+                    selectedTags: $selectedTagFilters,
+                    onClear: { selectedTagFilters.removeAll() }
+                )
+            }
+
             HStack {
                 Text("Results")
                     .font(.subheadline)

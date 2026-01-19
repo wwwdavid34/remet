@@ -2,11 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct AccountView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query private var encounters: [Encounter]
     @Query private var people: [Person]
     @Query private var embeddings: [FaceEmbedding]
 
     private var settings = AppSettings.shared
+    @State private var isLoadingDemoData = false
     @State private var subscriptionManager = SubscriptionManager.shared
     @State private var referralManager = ReferralManager.shared
     @State private var cloudSyncManager = CloudSyncManager.shared
@@ -15,6 +17,10 @@ struct AccountView: View {
     @State private var isRestoringPurchases = false
     @State private var showInviteFriends = false
     @State private var showEnterCode = false
+    @State private var showDeleteConfirmation = false
+    @State private var deleteConfirmationPIN = ""
+    @State private var enteredPIN = ""
+    @State private var showDeleteError = false
 
     var body: some View {
         NavigationStack {
@@ -29,6 +35,7 @@ struct AccountView: View {
                 faceMatchingSection
                 storageInfoSection
                 aboutSection
+                dataManagementSection
                 #if DEBUG
                 developerSection
                 #endif
@@ -42,6 +49,30 @@ struct AccountView: View {
             }
             .sheet(isPresented: $showEnterCode) {
                 EnterReferralCodeView()
+            }
+            .sheet(isPresented: $showDeleteConfirmation) {
+                DeleteConfirmationView(
+                    pin: deleteConfirmationPIN,
+                    enteredPIN: $enteredPIN,
+                    onConfirm: {
+                        if enteredPIN == deleteConfirmationPIN {
+                            DemoDataService.clearAllData(modelContext: modelContext)
+                            showDeleteConfirmation = false
+                            enteredPIN = ""
+                        } else {
+                            showDeleteError = true
+                        }
+                    },
+                    onCancel: {
+                        showDeleteConfirmation = false
+                        enteredPIN = ""
+                    }
+                )
+                .alert("Incorrect PIN", isPresented: $showDeleteError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text("The PIN you entered doesn't match. Please try again.")
+                }
             }
             .task {
                 await referralManager.syncCredits()
@@ -399,6 +430,26 @@ struct AccountView: View {
         }
     }
 
+    // MARK: - Data Management Section
+
+    @ViewBuilder
+    private var dataManagementSection: some View {
+        Section {
+            Button(role: .destructive) {
+                // Generate random 4-digit PIN
+                deleteConfirmationPIN = String(format: "%04d", Int.random(in: 0...9999))
+                enteredPIN = ""
+                showDeleteConfirmation = true
+            } label: {
+                Label(String(localized: "Delete All My Data"), systemImage: "trash")
+            }
+        } header: {
+            Text(String(localized: "Data Management"))
+        } footer: {
+            Text(String(localized: "This will permanently delete all your people, encounters, and photos. This action cannot be undone."))
+        }
+    }
+
     // MARK: - Display Section
 
     @ViewBuilder
@@ -435,10 +486,36 @@ struct AccountView: View {
                 }
             }
             .foregroundStyle(AppColors.coral)
+
+            Button {
+                Task {
+                    isLoadingDemoData = true
+                    DemoDataService.clearAllData(modelContext: modelContext)
+                    await DemoDataService.seedDemoData(modelContext: modelContext)
+                    isLoadingDemoData = false
+                }
+            } label: {
+                HStack {
+                    Label("Load Demo Data", systemImage: "square.and.arrow.down")
+                    Spacer()
+                    if isLoadingDemoData {
+                        ProgressView()
+                    }
+                }
+            }
+            .foregroundStyle(AppColors.teal)
+            .disabled(isLoadingDemoData)
+
+            Button {
+                DemoDataService.clearAllData(modelContext: modelContext)
+            } label: {
+                Label("Clear All Data", systemImage: "trash")
+            }
+            .foregroundStyle(AppColors.error)
         } header: {
             Text("Developer")
         } footer: {
-            Text("Debug options. Reset onboarding to test the first-run wizard without losing data.")
+            Text("Debug options for testing. Load Demo Data will clear existing data and add sample profiles and encounters for App Store screenshots.")
         }
     }
     #endif
@@ -488,6 +565,104 @@ struct AccountView: View {
         } else {
             return String(format: "%.2f GB", Double(totalKB) / (1024.0 * 1024.0))
         }
+    }
+}
+
+// MARK: - Delete Confirmation View
+
+struct DeleteConfirmationView: View {
+    let pin: String
+    @Binding var enteredPIN: String
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    @FocusState private var isPINFocused: Bool
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                // Warning icon
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 56))
+                    .foregroundStyle(AppColors.warning)
+                    .padding(.top, 32)
+
+                // Warning text
+                VStack(spacing: 12) {
+                    Text(String(localized: "Delete All Data?"))
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    Text(String(localized: "This will permanently delete all your people, encounters, photos, and practice history. This cannot be undone."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                }
+
+                // PIN display
+                VStack(spacing: 8) {
+                    Text(String(localized: "Enter this PIN to confirm:"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    Text(pin)
+                        .font(.system(size: 36, weight: .bold, design: .monospaced))
+                        .foregroundStyle(AppColors.coral)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(AppColors.coral.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .padding(.top, 8)
+
+                // PIN entry
+                TextField(String(localized: "Enter PIN"), text: $enteredPIN)
+                    .keyboardType(.numberPad)
+                    .font(.system(size: 24, weight: .medium, design: .monospaced))
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 48)
+                    .focused($isPINFocused)
+
+                Spacer()
+
+                // Buttons
+                VStack(spacing: 12) {
+                    Button {
+                        onConfirm()
+                    } label: {
+                        Text(String(localized: "Delete Everything"))
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(enteredPIN.count == 4 ? Color.red : Color.gray)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(enteredPIN.count != 4)
+
+                    Button {
+                        onCancel()
+                    } label: {
+                        Text(String(localized: "Cancel"))
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                isPINFocused = true
+            }
+        }
+        .interactiveDismissDisabled()
     }
 }
 

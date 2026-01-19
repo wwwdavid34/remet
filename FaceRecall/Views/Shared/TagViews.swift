@@ -417,21 +417,22 @@ struct TagFilterView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                // Clear filter button
+                // Clear filter button - more prominent when active
                 if !selectedTags.isEmpty {
                     Button {
                         onClear()
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "xmark")
-                                .font(.caption2)
-                            Text("Clear")
+                            Image(systemName: "xmark.circle.fill")
                                 .font(.caption)
+                            Text("Clear (\(selectedTags.count))")
+                                .font(.caption)
+                                .fontWeight(.medium)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.secondary.opacity(0.2))
-                        .foregroundStyle(.secondary)
+                        .background(AppColors.coral.opacity(0.15))
+                        .foregroundStyle(AppColors.coral)
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)

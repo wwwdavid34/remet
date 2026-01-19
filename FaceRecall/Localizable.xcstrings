@@ -3135,6 +3135,7 @@
       }
     },
     "Clear" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
@@ -3155,6 +3156,9 @@
           }
         }
       }
+    },
+    "Clear (%@)" : {
+
     },
     "Client" : {
       "localizations" : {
@@ -4024,6 +4028,9 @@
           }
         }
       }
+    },
+    "Debug options for testing. Load Demo Data will clear existing data and add sample profiles and encounters for App Store screenshots." : {
+
     },
     "Debug options. Reset onboarding to test the first-run wizard without losing data." : {
 
@@ -14284,6 +14291,9 @@
           }
         }
       }
+    },
+    "The PIN you entered doesn't match. Please try again." : {
+
     },
     "These %@ faces need more attention — you've got this!" : {
       "localizations" : {

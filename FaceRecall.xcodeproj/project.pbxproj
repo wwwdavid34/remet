@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DEMO00000000000000000001 /* DemoDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEMO00000000000000000002 /* DemoDataService.swift */; };
+		DEMO00000000000000000003 /* DemoAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEMO00000000000000000004 /* DemoAssets.xcassets */; };
 		08A3E440C0E09F7790FF70A4 /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5847FC983C046C83926E8 /* PhotoImportView.swift */; };
 		151ADAADA3F246A1DEF5D89B /* PeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D72EB0E3E569F7446794DCB /* PeopleListView.swift */; };
 		18E40B965AFA792AA019FDD3 /* FaceEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */; };
@@ -88,6 +90,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DEMO00000000000000000002 /* DemoDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoDataService.swift; sourceTree = "<group>"; };
+		DEMO00000000000000000004 /* DemoAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = DemoAssets.xcassets; sourceTree = "<group>"; };
 		02112CCAA67194FC17030246 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		I18N0000000000000002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		08901234567890123456789A /* TagViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViews.swift; sourceTree = "<group>"; };
@@ -272,6 +276,7 @@
 			isa = PBXGroup;
 			children = (
 				B2C3D4E5F67890123456789A /* AppSettings.swift */,
+				DEMO00000000000000000002 /* DemoDataService.swift */,
 				CONTACT11234567890123001 /* ContactsManager.swift */,
 				C7721CC6021EBA1BD7660260 /* FaceDetectionService.swift */,
 				F87DBE04B373DADBF7BB08A4 /* FaceEmbeddingService.swift */,
@@ -309,6 +314,7 @@
 		AC72687B36ED8335762E4E5E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DEMO00000000000000000004 /* DemoAssets.xcassets */,
 				342685126FF08FC204A9FCD9 /* FaceNet512.mlpackage */,
 			);
 			path = Resources;
@@ -505,6 +511,7 @@
 			files = (
 				A786CD912F1A368700B00E0D /* Products.storekit in Resources */,
 				5847BDEA70291EE0CA920AFC /* Assets.xcassets in Resources */,
+				DEMO00000000000000000003 /* DemoAssets.xcassets in Resources */,
 				I18N0000000000000001 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -516,6 +523,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEMO00000000000000000001 /* DemoDataService.swift in Sources */,
 				9F00C55E349B36E9AA7CE6E9 /* AddPersonView.swift in Sources */,
 				CC12345678901234ABCD7777 /* AddView.swift in Sources */,
 				A1B2C3D4E5F6789012345678 /* AppSettings.swift in Sources */,
