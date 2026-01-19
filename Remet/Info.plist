@@ -35,33 +35,7 @@
 	<string>Remet can save processed photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Remet needs access to your photos to identify people.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Remet can link people to your contacts and optionally update contact photos.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Remet uses your location to record where you met people.</string>
-	<key>CFBundleDisplayName</key>
-	<string>Remet</string>
 	<key>UILaunchScreen</key>
 	<dict/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>zh-Hans</string>
-		<string>zh-Hant</string>
-		<string>ja</string>
-	</array>
 </dict>
 </plist>
