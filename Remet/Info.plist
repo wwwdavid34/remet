@@ -41,6 +41,8 @@
 	<string>Remet uses your location to record where you met people.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Remet</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>
