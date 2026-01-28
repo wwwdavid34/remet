@@ -21,31 +21,10 @@ final class SubscriptionManager {
     private(set) var isLoading = false
     private(set) var purchaseError: String?
 
-    // MARK: - Gifted Premium (Referrals)
-
-    private let giftedPremiumKey = "remet_gifted_premium_until"
-
-    /// Date until which the user has free premium from referrals
-    var giftedPremiumUntil: Date? {
-        get { UserDefaults.standard.object(forKey: giftedPremiumKey) as? Date }
-        set { UserDefaults.standard.set(newValue, forKey: giftedPremiumKey) }
-    }
-
-    /// Whether user currently has active gifted premium time
-    var hasActiveGiftedPremium: Bool {
-        guard let until = giftedPremiumUntil else { return false }
-        return until > Date()
-    }
-
     // MARK: - Computed Properties
 
-    /// Whether the user has an active premium subscription or gifted premium
+    /// Whether the user has an active premium subscription
     var isPremium: Bool {
-        // Check gifted premium first (from referrals)
-        if hasActiveGiftedPremium {
-            return true
-        }
-        // Then check subscription status
         switch subscriptionStatus {
         case .premium, .gracePeriod:
             return true
@@ -168,27 +147,6 @@ final class SubscriptionManager {
             purchaseError = "Unable to restore purchases. Please try again."
             print("Failed to restore purchases: \(error)")
         }
-    }
-
-    // MARK: - Gifted Premium
-
-    /// Grant free premium time (e.g., from referrals)
-    /// - Parameter months: Number of months to grant
-    func grantFreePremium(months: Int = 1) {
-        let calendar = Calendar.current
-        let currentEnd = giftedPremiumUntil ?? Date()
-        let startDate = currentEnd > Date() ? currentEnd : Date()
-
-        if let newEnd = calendar.date(byAdding: .month, value: months, to: startDate) {
-            giftedPremiumUntil = newEnd
-        }
-    }
-
-    /// Remaining days of gifted premium
-    var giftedPremiumDaysRemaining: Int {
-        guard let until = giftedPremiumUntil, until > Date() else { return 0 }
-        let days = Calendar.current.dateComponents([.day], from: Date(), to: until).day ?? 0
-        return max(0, days)
     }
 
     // MARK: - Refresh Status

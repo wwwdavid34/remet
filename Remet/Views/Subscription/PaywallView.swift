@@ -13,12 +13,6 @@ struct PaywallView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     premiumHero
-
-                    // Show free premium status if active
-                    if subscriptionManager.hasActiveGiftedPremium {
-                        freePremiumBanner
-                    }
-
                     featuresSection
                     productOptions
                     legalSection
@@ -84,33 +78,6 @@ struct PaywallView: View {
             }
         }
         .padding(.top, 8)
-    }
-
-    // MARK: - Free Premium Banner
-
-    @ViewBuilder
-    private var freePremiumBanner: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "gift.fill")
-                .font(.title3)
-                .foregroundStyle(AppColors.coral)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Free Premium Active")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(AppColors.textPrimary)
-
-                Text("\(subscriptionManager.giftedPremiumDaysRemaining) days remaining from referral")
-                    .font(.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-
-            Spacer()
-        }
-        .padding()
-        .background(AppColors.coral.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Features Section

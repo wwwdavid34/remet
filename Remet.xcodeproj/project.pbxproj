@@ -54,13 +54,10 @@
 		81AB8030C5DC0249205DCC6F /* CloudSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */; };
 		828E4087E1F24C0621CD8622 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B46C31F66EEF6265FC61C67 /* AppTheme.swift */; };
 		850080AEEE42F81F45F3862F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 08D42FE113F8837656ABC3BA /* Localizable.xcstrings */; };
-		88B3F9BD8658EDB7CD9BC9DE /* EnterPromoCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F49865555CA6EE267EF16CE /* EnterPromoCodeView.swift */; };
 		898810411417DD9F8C0B083C /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41544F52E67D4CB06C8D73 /* LiquidGlassStyle.swift */; };
 		9016682C25A644AA47C25B59 /* FaceThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F070BD72AC0EF46DC7A15 /* FaceThumbnailView.swift */; };
 		94EECE7C4AEB9D1BACA898DF /* OnboardingLiveScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A993EA76D2CB5F07559084 /* OnboardingLiveScanView.swift */; };
-		97E65BEB732DE7B48D39CAA9 /* PromoCodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4EA67D4EC8C2DEA29701A4 /* PromoCodeManager.swift */; };
 		98E1B40F8CB6DB617C143CE6 /* SpacedRepetitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8B109DE6A181FD8C19B88 /* SpacedRepetitionData.swift */; };
-		9A5FDAA4CD14C6F0A5CD5502 /* PromoCloudKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D522275CD2BCB05B77F1218 /* PromoCloudKitService.swift */; };
 		9CA2AD3D8EEFA24027A636DF /* FaceDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */; };
 		A2DB631ACFFE916BF7DA3A95 /* ImportedPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188EBF64EBB1BF37D37F181E /* ImportedPhoto.swift */; };
 		A4A2C3B109F65D52993277DF /* FaceMatchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */; };
@@ -128,9 +125,7 @@
 		58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarFadeOverlay.swift; sourceTree = "<group>"; };
 		5AEDCDD0CECC0EEF49EFB0D9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		62D9B65B81EAACA2C518D5A0 /* EncounterPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterPhoto.swift; sourceTree = "<group>"; };
-		6D522275CD2BCB05B77F1218 /* PromoCloudKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCloudKitService.swift; sourceTree = "<group>"; };
 		6D861C627201D8E3E06B3961 /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
-		6F49865555CA6EE267EF16CE /* EnterPromoCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPromoCodeView.swift; sourceTree = "<group>"; };
 		715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingService.swift; sourceTree = "<group>"; };
 		73B1C5AC0126ABEFC13CD0F1 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
 		750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
@@ -149,7 +144,7 @@
 		A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
 		A745EC47673F2071CB294230 /* Remet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Remet.entitlements; sourceTree = "<group>"; };
 		A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizAttempt.swift; sourceTree = "<group>"; };
-		A7C9AE432F1E85530077F473 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		A76418262F29D7CB00D6AD7B /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AED9DDEE8CB1F8D16356B40B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AF1C5BC4FFDE21726134D4BB /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
 		B0512CDA3964ECC764E2D568 /* EncounterScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterScannerView.swift; sourceTree = "<group>"; };
@@ -172,7 +167,6 @@
 		F48264597407375FD53C8B58 /* FaceReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReviewViewModel.swift; sourceTree = "<group>"; };
 		F91805FC28853BED76D5E325 /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
 		FB6505A4C614E769EDF977BC /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
-		FD4EA67D4EC8C2DEA29701A4 /* PromoCodeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCodeManager.swift; sourceTree = "<group>"; };
 		FD5D0231DA8A4A4C455EE11F /* MemoryScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -225,7 +219,7 @@
 		20042DC4FE02B0C15373FA0E = {
 			isa = PBXGroup;
 			children = (
-				A7C9AE432F1E85530077F473 /* Products.storekit */,
+				A76418262F29D7CB00D6AD7B /* Products.storekit */,
 				A187ED7E86D142910A8139CC /* Remet */,
 				0CD1A151BD54E43F033AFC06 /* Products */,
 			);
@@ -279,21 +273,12 @@
 				F29802D979C34A94827B5DE7 /* People */,
 				42AC060A7797D3D569579999 /* PhotoImport */,
 				AA98CAEB53A5F60ECEAF4B94 /* Practice */,
-				4BB0AC2C667FF6EF9C4684C8 /* Promo */,
 				13D128188F508E11689735CA /* Search */,
 				08064BCE561D2A78437A5456 /* Settings */,
 				1F21EB90D9A520FC533D10EB /* Shared */,
 				CF191B497F049A7CC7F237FE /* Subscription */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		4BB0AC2C667FF6EF9C4684C8 /* Promo */ = {
-			isa = PBXGroup;
-			children = (
-				6F49865555CA6EE267EF16CE /* EnterPromoCodeView.swift */,
-			);
-			path = Promo;
 			sourceTree = "<group>";
 		};
 		64732CB053735F7657D2E82B /* Onboarding */ = {
@@ -330,8 +315,6 @@
 				715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */,
 				06694C451E6DDB1A90961B56 /* LimitChecker.swift */,
 				F91805FC28853BED76D5E325 /* PhotoLibraryScannerService.swift */,
-				6D522275CD2BCB05B77F1218 /* PromoCloudKitService.swift */,
-				FD4EA67D4EC8C2DEA29701A4 /* PromoCodeManager.swift */,
 				21DC5026712FFB5F28A9702A /* SilentScanCameraManager.swift */,
 				B856B1DF9748538B71D376A8 /* SubscriptionLimits.swift */,
 				F0371D80B6C01257F13AA90F /* SubscriptionManager.swift */,
@@ -545,7 +528,6 @@
 				3FA1923B4B59DC9E25887975 /* EncounterPhoto.swift in Sources */,
 				7992B1B55425C654B5657E21 /* EncounterReviewView.swift in Sources */,
 				34610B0333056FF80044B18B /* EncounterScannerView.swift in Sources */,
-				88B3F9BD8658EDB7CD9BC9DE /* EnterPromoCodeView.swift in Sources */,
 				36D96658ABC7433A1D56F799 /* EphemeralMatchView.swift in Sources */,
 				EB41B6B1018B498CF1B4907E /* FAQView.swift in Sources */,
 				9CA2AD3D8EEFA24027A636DF /* FaceDetectionService.swift in Sources */,
@@ -585,8 +567,6 @@
 				09C25603D1D5B39E492CE4DD /* PhotoImportViewModel.swift in Sources */,
 				457C0CB01FC45D37EB6B5B59 /* PhotoLibraryScannerService.swift in Sources */,
 				ACB1B92D181B9AE1DB5987AB /* PracticeHomeView.swift in Sources */,
-				9A5FDAA4CD14C6F0A5CD5502 /* PromoCloudKitService.swift in Sources */,
-				97E65BEB732DE7B48D39CAA9 /* PromoCodeManager.swift in Sources */,
 				B6D5C079A3ADF3E5955C9DAC /* QuickCaptureView.swift in Sources */,
 				E9A063887364C98257DFE000 /* QuizAttempt.swift in Sources */,
 				B957D837F98F1A7AB5C7F01E /* RemetApp.swift in Sources */,

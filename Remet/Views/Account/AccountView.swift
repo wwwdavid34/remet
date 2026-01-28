@@ -10,12 +10,10 @@ struct AccountView: View {
     private var settings = AppSettings.shared
     @State private var isLoadingDemoData = false
     @State private var subscriptionManager = SubscriptionManager.shared
-    @State private var promoManager = PromoCodeManager.shared
     @State private var cloudSyncManager = CloudSyncManager.shared
 
     @State private var showPaywall = false
     @State private var isRestoringPurchases = false
-    @State private var showEnterPromoCode = false
     @State private var showDeleteConfirmation = false
     @State private var deleteConfirmationPIN = ""
     @State private var enteredPIN = ""
@@ -28,7 +26,6 @@ struct AccountView: View {
                 if subscriptionManager.isPremium {
                     syncSection
                 }
-                promoCodeSection
                 displaySection
                 photoStorageSection
                 faceMatchingSection
@@ -42,9 +39,6 @@ struct AccountView: View {
             .navigationTitle("Account")
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
-            }
-            .sheet(isPresented: $showEnterPromoCode) {
-                EnterPromoCodeView()
             }
             .sheet(isPresented: $showDeleteConfirmation) {
                 DeleteConfirmationView(
@@ -216,61 +210,6 @@ struct AccountView: View {
             .disabled(isRestoringPurchases)
         } header: {
             Text(String(localized: "Subscription"))
-        }
-    }
-
-    // MARK: - Promo Code Section
-
-    @ViewBuilder
-    private var promoCodeSection: some View {
-        Section {
-            // Enter promo code (if user hasn't redeemed one yet)
-            if !promoManager.hasRedeemedCode {
-                Button {
-                    showEnterPromoCode = true
-                } label: {
-                    HStack {
-                        Image(systemName: "ticket.fill")
-                            .foregroundStyle(AppColors.coral)
-                            .frame(width: 28)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(String(localized: "Enter Promo Code"))
-                                .fontWeight(.medium)
-                                .foregroundStyle(.primary)
-                            Text(String(localized: "Have a code? Get free Premium!"))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-            } else {
-                // Show redeemed code
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(AppColors.success)
-                        .frame(width: 28)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(String(localized: "Promo Code Redeemed"))
-                            .fontWeight(.medium)
-                        if let code = promoManager.redeemedCode {
-                            Text(code)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-            }
-        } header: {
-            Text(String(localized: "Promo Code"))
         }
     }
 

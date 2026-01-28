@@ -51,9 +51,6 @@
         }
       }
     },
-    "%@ days remaining from referral" : {
-
-    },
     "%@ due" : {
 
     },
@@ -245,7 +242,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ / %2$@ 張照片 • 觸按展開"
+            "value" : "%1$@ / %2$@ 張照片 • 輕點展開"
           }
         }
       }
@@ -273,7 +270,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%3$@ 出現的 %2$@ 張照片中有 %1$@ 張"
+            "value" : "%2$@ 張照片中有 %1$@ 張拍到%3$@"
           }
         }
       }
@@ -439,7 +436,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 個待處理"
+            "value" : "%@ 個等待中"
           }
         }
       }
@@ -627,7 +624,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "偵測到 %lld 張人臉"
+            "value" : "偵測到 %lld 張臉孔"
           }
         }
       }
@@ -1153,7 +1150,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可接受畫質，最小儲存（約40 KB/張）"
+            "value" : "可接受畫質，檔案最小（約40 KB/張）"
           }
         }
       }
@@ -1791,7 +1788,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加您的第一個人，見證奇蹟发生。未來的你会感謝自己的。"
+            "value" : "添加您的第一個人，見證奇蹟的時刻到了。未來的你会感謝自己的。"
           }
         }
       }
@@ -1973,7 +1970,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部完成！你是明星！"
+            "value" : "全部完成！你是大明星！"
           }
         }
       }
@@ -1996,7 +1993,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "所有資料已同步"
+            "value" : "已同步所有資料"
           }
         }
       }
@@ -2019,7 +2016,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "所有資料均為最新"
+            "value" : "資料無需更新"
           }
         }
       }
@@ -2153,7 +2150,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "差一点！下次一定能记住。"
+            "value" : "差一點點！下次一定能記住。"
           }
         }
       }
@@ -2335,7 +2332,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "確定要刪除 %@ 嗎？這將同時刪除所有面孔樣本。"
+            "value" : "確定要刪除 %@ 嗎？這將同時刪除所有臉孔樣本。"
           }
         }
       }
@@ -2514,7 +2511,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最佳畫質，最大儲存（約200 KB/張）"
+            "value" : "最佳畫質，檔案最大（約200 KB/張）"
           }
         }
       }
@@ -2537,7 +2534,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最高連續"
+            "value" : "最佳連續"
           }
         }
       }
@@ -2629,7 +2626,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在建立連接..."
+            "value" : "正在建立人際關係..."
           }
         }
       }
@@ -2836,7 +2833,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "拍攝新认识的人"
+            "value" : "拍攝新認識的人"
           }
         }
       }
@@ -2859,7 +2856,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在捕捉新的聯繫..."
+            "value" : "正在捕捉新的人際關係…"
           }
         }
       }
@@ -2950,7 +2947,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在檢查匹配..."
+            "value" : "正在檢查配對..."
           }
         }
       }
@@ -3296,7 +3293,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "代碼已複製！"
+            "value" : "已複製！"
           }
         }
       }
@@ -3478,7 +3475,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "聯繫支援"
+            "value" : "聯繫客服"
           }
         }
       }
@@ -4148,7 +4145,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檢測面孔中..."
+            "value" : "檢測臉孔中..."
           }
         }
       }
@@ -4252,7 +4249,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "難しいものを練習"
+            "value" : "難関のをもっと練習"
           }
         },
         "zh-Hans" : {
@@ -4264,7 +4261,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "練習困難的"
+            "value" : "專注練習易錯臉孔"
           }
         }
       }
@@ -4344,7 +4341,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例：NYの会議、友人のパーティー"
+            "value" : "例：東京の会議、友人宅のパーティー"
           }
         },
         "zh-Hans" : {
@@ -4356,7 +4353,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如：紐約會議、朋友的派對"
+            "value" : "例如：臺北會議、朋友的派對"
           }
         }
       }
@@ -4470,7 +4467,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "會面"
+            "value" : "偶遇"
           }
         }
       }
@@ -4493,7 +4490,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "會面已建立"
+            "value" : "偶遇已建立"
           }
         }
       }
@@ -4515,7 +4512,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "會面詳情"
+            "value" : "偶遇詳情"
           }
         }
       }
@@ -4538,7 +4535,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "相遇"
+            "value" : "偶遇"
           }
         }
       }
@@ -4583,7 +4580,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "結束測試"
+            "value" : "結束小考"
           }
         }
       }
@@ -4789,7 +4786,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預估儲存"
+            "value" : "預估總檔案大小"
           }
         }
       }
@@ -4835,7 +4832,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每個專家都曾是初學者！"
+            "value" : "每個專家都曾是新手！"
           }
         }
       }
@@ -4881,7 +4878,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每次失誤都讓你更強大！"
+            "value" : "愈挫愈勇！"
           }
         }
       }
@@ -5113,7 +5110,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人臉特徵和照片僅存储在您裝置上的應用私有存储中。"
+            "value" : "人臉特徵和照片只儲存在您裝置上的私人空間中。"
           }
         }
       }
@@ -5123,7 +5120,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顔照合"
+            "value" : "顔を照合"
           }
         },
         "zh-Hans" : {
@@ -5135,7 +5132,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人臉匹配"
+            "value" : "人臉配對"
           }
         }
       }
@@ -5431,7 +5428,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在整個收藏中查找人物、相遇和標籤"
+            "value" : "在整個收藏中查找人物、偶遇和標籤"
           }
         }
       }
@@ -5453,7 +5450,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尋找含有人臉的照片並將其歸入相遇"
+            "value" : "尋找含有人臉的照片並將其歸入偶遇"
           }
         }
       }
@@ -5640,9 +5637,6 @@
         }
       }
     },
-    "Free Premium Active" : {
-
-    },
     "Free Trial" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -5683,7 +5677,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "朋友"
+            "value" : "好友"
           }
         }
       }
@@ -6119,7 +6113,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "良好畫質，適中儲存（約80 KB/張）"
+            "value" : "良好畫質，檔案大小中等（約80 KB/張）"
           }
         }
       }
@@ -6415,7 +6409,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更高的限額可能需要更長的掃描時間"
+            "value" : "調高上限可能會需要更長的掃描時間"
           }
         }
       }
@@ -6973,7 +6967,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "John Doe"
+            "value" : "田中太郎"
           }
         },
         "zh-Hans" : {
@@ -6985,7 +6979,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "John Doe"
+            "value" : "阿明"
           }
         }
       }
@@ -6996,7 +6990,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "john@example.com"
+            "value" : "tarou.tanaka@example.com"
           }
         },
         "zh-Hans" : {
@@ -7042,7 +7036,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在の結果を保持"
+            "value" : "現在の結果を保存する"
           }
         },
         "zh-Hans" : {
@@ -7054,7 +7048,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保留當前結果"
+            "value" : "保留現有結果"
           }
         }
       }
@@ -7398,7 +7392,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "學習進行中..."
+            "value" : "學習中..."
           }
         }
       }
@@ -7444,7 +7438,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "讓我們看看你記得什麼..."
+            "value" : "看看你還記得些什麼..."
           }
         }
       }
@@ -7558,7 +7552,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "連結到聯絡人"
+            "value" : "連結聯絡人"
           }
         }
       }
@@ -7736,7 +7730,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载中..."
+            "value" : "载入中..."
           }
         }
       }
@@ -7759,7 +7753,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "本地存储"
+            "value" : "本機空間"
           }
         }
       }
@@ -7896,7 +7890,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "低置信度"
+            "value" : "相似度低"
           }
         }
       }
@@ -7918,7 +7912,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请确保人臉清晰可见，然后重试"
+            "value" : "請確定臉孔清晰並重試"
           }
         }
       }
@@ -8146,7 +8140,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記憶收件匣：空。干得好！"
+            "value" : "記憶收件匣：無。好樣的！"
           }
         }
       }
@@ -8169,7 +8163,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記憶大师稱號：已解鎖！"
+            "value" : "記憶大師稱號：已解鎖！"
           }
         }
       }
@@ -8215,7 +8209,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記憶正在建設中！"
+            "value" : "記憶正在施工中！"
           }
         }
       }
@@ -8238,7 +8232,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "精神擊掌！"
+            "value" : "擊掌慶助！"
           }
         }
       }
@@ -8306,7 +8300,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺失的人臉"
+            "value" : "臉孔遺失"
           }
         }
       }
@@ -8329,7 +8323,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少人臉？"
+            "value" : "臉孔遺失？"
           }
         }
       }
@@ -8444,7 +8438,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "多張照片可提高識別率"
+            "value" : "多張不同角度的照片可提高識別率"
           }
         }
       }
@@ -8592,7 +8586,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "神経回路が発火中！"
+            "value" : "神経回路が作動中！"
           }
         },
         "zh-Hans" : {
@@ -8627,7 +8621,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新面孔"
+            "value" : "新臉孔"
           }
         }
       }
@@ -8650,7 +8644,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新面孔 - 從未練習"
+            "value" : "新臉孔 - 從未練習"
           }
         }
       }
@@ -8764,7 +8758,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有可用人臉"
+            "value" : "沒有可用臉孔"
           }
         }
       }
@@ -8787,7 +8781,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无雲端同步"
+            "value" : "無雲端同步"
           }
         }
       }
@@ -8832,7 +8826,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未記錄任何相遇"
+            "value" : "尚未記錄任何偶遇"
           }
         }
       }
@@ -8876,7 +8870,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未指定人臉照片"
+            "value" : "尚未指定臉孔照片"
           }
         }
       }
@@ -8898,7 +8892,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚無人臉樣本"
+            "value" : "尚無臉孔樣本"
           }
         }
       }
@@ -8966,7 +8960,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未檢測到面孔"
+            "value" : "未檢測到臉孔"
           }
         }
       }
@@ -8988,7 +8982,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未識別到面孔。點擊面孔進行識別。"
+            "value" : "尚未識別到人臉。點擊人臉進行識別。"
           }
         }
       }
@@ -9125,7 +9119,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未關聯相遇"
+            "value" : "未關聯偶遇"
           }
         }
       }
@@ -9325,7 +9319,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无結果"
+            "value" : "無結果"
           }
         }
       }
@@ -9552,7 +9546,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有待辦——你走在前面！"
+            "value" : "已全部完成—你走在前面！"
           }
         }
       }
@@ -9575,7 +9569,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有可測試的內容..."
+            "value" : "還没有小考內容..."
           }
         }
       }
@@ -9805,7 +9799,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "哎呀！但現在你知道了！"
+            "value" : "哎呀！但現在你學會了！"
           }
         }
       }
@@ -10121,7 +10115,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "權限被拒絕"
+            "value" : "權限不足"
           }
         }
       }
@@ -10234,7 +10228,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "照片库"
+            "value" : "相簿"
           }
         }
       }
@@ -10257,7 +10251,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "照片库存取"
+            "value" : "存取相簿"
           }
         }
       }
@@ -10483,7 +10477,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将相機對準人臉"
+            "value" : "請將相機對準人臉"
           }
         }
       }
@@ -10528,7 +10522,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能配對 - 請確認"
+            "value" : "或許是這個人 - 請確認"
           }
         }
       }
@@ -10550,7 +10544,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能的匹配"
+            "value" : "可能的配對"
           }
         }
       }
@@ -10573,7 +10567,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能的匹配"
+            "value" : "可能的配對"
           }
         }
       }
@@ -10619,7 +10613,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "個潛在會面被發現"
+            "value" : "個潛在偶遇被發現"
           }
         }
       }
@@ -11071,7 +11065,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "快速拍攝刚认识的人"
+            "value" : "快速拍攝剛認識的人"
           }
         }
       }
@@ -11140,7 +11134,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "評價應用"
+            "value" : "評價App"
           }
         }
       }
@@ -11297,7 +11291,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記錄會面"
+            "value" : "記錄偶遇"
           }
         }
       }
@@ -11320,7 +11314,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重做"
+            "value" : "重來"
           }
         }
       }
@@ -11571,7 +11565,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要將 %@ 從此相遇中移除嗎？這會取消其所有人臉標籤與此相遇的連結。"
+            "value" : "要將 %@ 從此偶遇中移除嗎？這會取消其所有人臉標籤與此相遇的連結。"
           }
         }
       }
@@ -11594,7 +11588,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "續訂於 %@"
+            "value" : "於 %@ 後續訂"
           }
         }
       }
@@ -11776,7 +11770,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重试"
+            "value" : "重試"
           }
         }
       }
@@ -11845,7 +11839,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "羅馬不是一天建成的！"
+            "value" : "萬丈高樓平地起！"
           }
         }
       }
@@ -13201,7 +13195,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "微笑！这張照片会存入您的記憶銀行。"
+            "value" : "微笑！這張照片會存入您的記憶銀行。"
           }
         }
       }
@@ -13247,7 +13241,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一些友好的面孔需要关注"
+            "value" : "一些友好的面孔需要你的關注"
           }
         }
       }
@@ -13292,7 +13286,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "出了点問題"
+            "value" : "出了點問題"
           }
         }
       }
@@ -13359,7 +13353,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "間隔重复有助於将面孔牢记在長期記憶中"
+            "value" : "間隔練習有助於将臉孔固定在長期記憶中"
           }
         }
       }
@@ -13633,7 +13627,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切換前后攝像頭"
+            "value" : "切換前後鏡頭"
           }
         }
       }
@@ -14046,7 +14040,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點按打開相機，長按顯示更多選項"
+            "value" : "輕點打開相機，長按顯示更多選項"
           }
         }
       }
@@ -14069,7 +14063,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點擊掃描"
+            "value" : "輕點掃描"
           }
         }
       }
@@ -14091,7 +14085,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點按以選擇大頭照"
+            "value" : "輕點以選擇大頭照"
           }
         }
       }
@@ -14113,7 +14107,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在看到人臉的地方點按"
+            "value" : "在看到人臉的地方輕點"
           }
         }
       }
@@ -14135,7 +14129,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在照片中看到人臉的位置點按"
+            "value" : "在照片中看到人臉的位置輕點"
           }
         }
       }
@@ -14157,7 +14151,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "點擊上方照片中看到的面孔"
+            "value" : "輕點上方照片中看到的面孔"
           }
         }
       }
@@ -14226,7 +14220,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这就是練習的意义！"
+            "value" : "有練有差！"
           }
         }
       }
@@ -14248,7 +14242,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该應用僅为掃描人臉而請求存取您的照片库。照片会被複製到應用中以供離線存取。"
+            "value" : "本App僅為掃描人臉而需存取您的相簿。照片會被複製到App中以供離線存取。"
           }
         }
       }
@@ -14388,7 +14382,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此匹配未儲存"
+            "value" : "此配對未儲存"
           }
         }
       }
@@ -14433,7 +14427,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此人与您的聯繫人中的任何人都不匹配"
+            "value" : "此人無法與您的任何聯繫人配對"
           }
         }
       }
@@ -14635,7 +14629,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "是時候鍛鍊大腦肌肉了！"
+            "value" : "差不多該動動腦子了！"
           }
         }
       }
@@ -14886,7 +14880,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "嘗試使用增強影像處理重新偵測。"
+            "value" : "試著使用進階影像處理重新偵測。"
           }
         }
       }
@@ -14930,7 +14924,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "撤銷"
+            "value" : "回復上一動"
           }
         }
       }
@@ -14952,7 +14946,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "撤銷上次添加的面孔"
+            "value" : "取消上次添加的面孔"
           }
         }
       }
@@ -15564,7 +15558,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这是谁？"
+            "value" : "這是誰？"
           }
         }
       }
@@ -15656,7 +15650,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您希望這張照片也儲存到相簿嗎？將來的照片也會自動儲存。您可以隨時在設定中更改。"
+            "value" : "您希望將這張照片也儲存到相簿嗎？將來的照片也會自動儲存。您可以隨時在設定中更改。"
           }
         }
       }
@@ -15860,7 +15854,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你猜的是：%@"
+            "value" : "你猜的人是：%@"
           }
         }
       }
@@ -15905,7 +15899,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在識別之前，您需要先添加至少一個帶有人臉的人物。"
+            "value" : "在識別之前，您需要先添加至少一個帶有臉孔的人物。"
           }
         }
       }
@@ -15974,7 +15968,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你來了——这才是最重要的！"
+            "value" : "你出現了—這才是最重要的！"
           }
         }
       }
@@ -15997,7 +15991,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "狀態火热！"
+            "value" : "狀態超好！"
           }
         }
       }
@@ -16299,7 +16293,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您的記憶肌肉在跃跃欲试"
+            "value" : "您的記憶肌肉在躍躍欲試"
           }
         }
       }

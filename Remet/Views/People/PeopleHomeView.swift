@@ -384,6 +384,7 @@ struct PeopleHomeView: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.top, 4)
             }
         }
     }
