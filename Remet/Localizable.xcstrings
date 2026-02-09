@@ -14296,9 +14296,6 @@
         }
       }
     },
-    "The PIN you entered doesn't match. Please try again." : {
-
-    },
     "These %@ faces need more attention — you've got this!" : {
       "localizations" : {
         "ja" : {

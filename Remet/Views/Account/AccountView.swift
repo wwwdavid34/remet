@@ -16,9 +16,6 @@ struct AccountView: View {
     @State private var showPaywall = false
     @State private var isRestoringPurchases = false
     @State private var showDeleteConfirmation = false
-    @State private var deleteConfirmationPIN = ""
-    @State private var enteredPIN = ""
-    @State private var showDeleteError = false
 
     var body: some View {
         NavigationStack {
@@ -43,27 +40,14 @@ struct AccountView: View {
             }
             .sheet(isPresented: $showDeleteConfirmation) {
                 DeleteConfirmationView(
-                    pin: deleteConfirmationPIN,
-                    enteredPIN: $enteredPIN,
                     onConfirm: {
-                        if enteredPIN == deleteConfirmationPIN {
-                            DemoDataService.clearAllData(modelContext: modelContext)
-                            showDeleteConfirmation = false
-                            enteredPIN = ""
-                        } else {
-                            showDeleteError = true
-                        }
+                        DemoDataService.clearAllData(modelContext: modelContext)
+                        showDeleteConfirmation = false
                     },
                     onCancel: {
                         showDeleteConfirmation = false
-                        enteredPIN = ""
                     }
                 )
-                .alert("Incorrect PIN", isPresented: $showDeleteError) {
-                    Button("OK", role: .cancel) { }
-                } message: {
-                    Text("The PIN you entered doesn't match. Please try again.")
-                }
             }
         }
     }
@@ -368,13 +352,7 @@ struct AccountView: View {
     private var dataManagementSection: some View {
         Section {
             Button(role: .destructive) {
-                // Generate random 4-digit PIN
-                deleteConfirmationPIN = String(format: "%04d", Int.random(in: 0...9999))
-                enteredPIN = ""
-                // Delay to ensure PIN state propagates before sheet presents
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    showDeleteConfirmation = true
-                }
+                showDeleteConfirmation = true
             } label: {
                 Label(String(localized: "Delete All My Data"), systemImage: "trash")
             }
@@ -506,12 +484,8 @@ struct AccountView: View {
 // MARK: - Delete Confirmation View
 
 struct DeleteConfirmationView: View {
-    let pin: String
-    @Binding var enteredPIN: String
     let onConfirm: () -> Void
     let onCancel: () -> Void
-
-    @FocusState private var isPINFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -535,69 +509,117 @@ struct DeleteConfirmationView: View {
                         .padding(.horizontal, 24)
                 }
 
-                // PIN display
-                VStack(spacing: 8) {
-                    Text(String(localized: "Enter this PIN to confirm:"))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    Text(pin)
-                        .font(.system(size: 36, weight: .bold, design: .monospaced))
-                        .foregroundStyle(AppColors.coral)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(AppColors.coral.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .padding(.top, 8)
-
-                // PIN entry
-                TextField(String(localized: "Enter PIN"), text: $enteredPIN)
-                    .keyboardType(.numberPad)
-                    .font(.system(size: 24, weight: .medium, design: .monospaced))
-                    .multilineTextAlignment(.center)
-                    .padding()
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding(.horizontal, 48)
-                    .focused($isPINFocused)
-
                 Spacer()
 
-                // Buttons
-                VStack(spacing: 12) {
-                    Button {
-                        onConfirm()
-                    } label: {
-                        Text(String(localized: "Delete Everything"))
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(enteredPIN.count == 4 ? Color.red : Color.gray)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .disabled(enteredPIN.count != 4)
+                // Swipe to confirm
+                SwipeToConfirmBar {
+                    onConfirm()
+                }
+                .padding(.horizontal, 24)
 
-                    Button {
-                        onCancel()
-                    } label: {
-                        Text(String(localized: "Cancel"))
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                    }
+                // Cancel button
+                Button {
+                    onCancel()
+                } label: {
+                    Text(String(localized: "Cancel"))
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                isPINFocused = true
-            }
         }
         .interactiveDismissDisabled()
+    }
+}
+
+// MARK: - Swipe to Confirm Bar
+
+struct SwipeToConfirmBar: View {
+    let onConfirm: () -> Void
+
+    private let trackHeight: CGFloat = 60
+    private let thumbSize: CGFloat = 52
+    private let thumbPadding: CGFloat = 4
+
+    @State private var dragOffset: CGFloat = 0
+    @State private var confirmed = false
+
+    private let hapticLight = UIImpactFeedbackGenerator(style: .light)
+    private let hapticHeavy = UINotificationFeedbackGenerator()
+
+    var body: some View {
+        GeometryReader { geo in
+            let maxOffset = geo.size.width - thumbSize - thumbPadding * 2
+            let progress = min(max(dragOffset / maxOffset, 0), 1)
+
+            ZStack(alignment: .leading) {
+                // Track background
+                RoundedRectangle(cornerRadius: trackHeight / 2)
+                    .fill(Color.red.opacity(0.12 + 0.18 * progress))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: trackHeight / 2)
+                            .strokeBorder(Color.red.opacity(0.2), lineWidth: 1)
+                    }
+
+                // Label
+                Text(String(localized: "Slide to Delete"))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.red.opacity(Double(max(0, 1 - progress * 2.5))))
+                    .frame(maxWidth: .infinity)
+
+                // Draggable thumb
+                Circle()
+                    .fill(confirmed ? Color.red : Color.white)
+                    .frame(width: thumbSize, height: thumbSize)
+                    .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
+                    .overlay {
+                        Image(systemName: confirmed ? "checkmark" : "trash.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(confirmed ? .white : .red)
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .padding(.leading, thumbPadding)
+                    .offset(x: confirmed ? maxOffset : dragOffset)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                guard !confirmed else { return }
+                                dragOffset = min(max(value.translation.width, 0), maxOffset)
+                            }
+                            .onEnded { _ in
+                                guard !confirmed else { return }
+                                if progress > 0.85 {
+                                    confirmed = true
+                                    hapticHeavy.notificationOccurred(.success)
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        dragOffset = maxOffset
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                        onConfirm()
+                                    }
+                                } else {
+                                    hapticLight.impactOccurred()
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                        dragOffset = 0
+                                    }
+                                }
+                            }
+                    )
+            }
+        }
+        .frame(height: trackHeight)
+        .accessibilityElement()
+        .accessibilityLabel(String(localized: "Slide to delete all data"))
+        .accessibilityHint(String(localized: "Double-tap to confirm deletion"))
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            onConfirm()
+        }
     }
 }
 
