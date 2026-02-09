@@ -1,4 +1,16 @@
 import SwiftUI
+import UIKit
+
+/// UIKit view that blocks all touches from passing through to views below
+private struct TouchBlockingView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
 
 /// Tab item for the floating tab bar
 struct FloatingTabItem: Identifiable {
@@ -34,7 +46,14 @@ struct FloatingTabBar: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .glassEffect(.regular.interactive(), in: .capsule)
+            .background {
+                TouchBlockingView()
+                    .clipShape(Capsule())
+            }
+            .glassEffect(.regular, in: .capsule)
+            .contentShape(Capsule())
+            // Consume taps in empty bar space so they don't reach content beneath.
+            .onTapGesture { }
         } else {
             // Pre-iOS 26 fallback
             HStack(spacing: 0) {
@@ -64,6 +83,9 @@ struct FloatingTabBar: View {
                         lineWidth: 0.5
                     )
             }
+            .contentShape(Capsule())
+            // Consume taps in empty bar space so they don't reach content beneath.
+            .onTapGesture { }
         }
     }
 
@@ -81,6 +103,8 @@ struct FloatingTabBar: View {
                 Image(systemName: isSelected ? item.icon + ".fill" : item.icon)
                     .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
                     .symbolRenderingMode(.hierarchical)
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(.bounce, value: isSelected)
 
                 Text(item.label)
                     .font(.caption2)
@@ -89,6 +113,7 @@ struct FloatingTabBar: View {
             .foregroundStyle(isSelected ? AppColors.coral : .secondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
+            .contentShape(Rectangle())
             .background(
                 Capsule()
                     .fill(isSelected ? AppColors.coral.opacity(0.12) : Color.clear)

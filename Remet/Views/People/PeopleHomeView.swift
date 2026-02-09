@@ -136,7 +136,6 @@ struct PeopleHomeView: View {
                     }
                     .padding(.top, 16)
                 }
-                .padding(.bottom, 80) // Space for floating tab bar
             }
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
@@ -600,6 +599,7 @@ struct CompactPersonCard: View {
                 .lineLimit(1)
         }
         .frame(width: 72)
+        .contentShape(Rectangle())
     }
 }
 
@@ -646,6 +646,7 @@ struct CompactEncounterCard: View {
             }
         }
         .frame(width: 100)
+        .contentShape(Rectangle())
     }
 }
 

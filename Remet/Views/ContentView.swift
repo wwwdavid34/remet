@@ -1,51 +1,61 @@
 import SwiftUI
 import SwiftData
-import UIKit
 
-/// Main app container with floating pill tab bar + floating action button
-/// Core philosophy: Quick capture and review should be 1 tap away
+/// Main app container with native tab bar and add action tab.
 struct ContentView: View {
     @Query private var people: [Person]
 
     @State private var selectedTab = 0
+    @State private var previousTab = 0
     @State private var showQuickCapture = false
     @State private var showPhotoImport = false
-
-    private var tabItems: [FloatingTabItem] {
-        [
-            FloatingTabItem(id: 0, icon: "person.3", label: String(localized: "People")),
-            FloatingTabItem(id: 1, icon: "brain.head.profile", label: String(localized: "Practice")),
-            FloatingTabItem(id: 2, icon: "eye", label: String(localized: "Identify"))
-        ]
-    }
+    @State private var showAddMenu = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Tab content
-            Group {
-                switch selectedTab {
-                case 0:
-                    PeopleHomeView()
-                case 1:
-                    PracticeHomeView()
-                case 2:
-                    ScanTabView()
-                default:
-                    PeopleHomeView()
+        TabView(selection: $selectedTab) {
+            PeopleHomeView()
+                .tag(0)
+                .tabItem {
+                    Label(String(localized: "People"), systemImage: "person.3")
                 }
+
+            PracticeHomeView()
+                .tag(1)
+                .tabItem {
+                    Label(String(localized: "Practice"), systemImage: "brain.head.profile")
+                }
+
+            ScanTabView()
+                .tag(2)
+                .tabItem {
+                    Label(String(localized: "Identify"), systemImage: "eye")
+                }
+
+            Color.clear
+                .tag(3)
+                .tabItem {
+                    Label(String(localized: "Add"), systemImage: "plus")
+                }
+        }
+        .onChange(of: selectedTab) { _, newValue in
+            guard newValue == 3 else {
+                previousTab = newValue
+                return
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Floating pill tab bar
-            FloatingTabBar(selectedTab: $selectedTab, items: tabItems)
-
-            // Floating Action Button - tap shows menu for capture options
-            FloatingActionButton(
-                primaryAction: { },
-                quickActions: captureActions,
-                expandOnTap: true
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            selectedTab = previousTab
+            DispatchQueue.main.async {
+                showAddMenu = true
+            }
+        }
+        .confirmationDialog(String(localized: "Add"), isPresented: $showAddMenu, titleVisibility: .visible) {
+            Button(String(localized: "Take Photo")) {
+                showQuickCapture = true
+            }
+            Button(String(localized: "Import Photo")) {
+                showPhotoImport = true
+            }
+            Button(String(localized: "Cancel"), role: .cancel) {}
         }
         .ignoresSafeArea(.keyboard)
         .fullScreenCover(isPresented: $showQuickCapture) {
@@ -54,27 +64,6 @@ struct ContentView: View {
         .sheet(isPresented: $showPhotoImport) {
             PhotoImportView()
         }
-    }
-
-    // MARK: - Capture Actions (for FAB menu)
-
-    private var captureActions: [QuickAction] {
-        [
-            QuickAction(
-                icon: "camera.fill",
-                label: String(localized: "Take Photo"),
-                color: AppColors.coral
-            ) {
-                showQuickCapture = true
-            },
-            QuickAction(
-                icon: "photo.on.rectangle",
-                label: String(localized: "Import Photo"),
-                color: AppColors.teal
-            ) {
-                showPhotoImport = true
-            }
-        ]
     }
 }
 

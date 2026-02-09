@@ -279,6 +279,7 @@ struct PracticeHomeView: View {
                                             .foregroundStyle(AppColors.textMuted)
                                     }
                                     .padding(12)
+                                    .contentShape(Rectangle())
                                     .tintedGlassBackground(AppColors.coral, tintOpacity: 0.05, cornerRadius: 14)
                                 }
                                 .buttonStyle(.plain)
@@ -461,6 +462,7 @@ struct ReviewPersonRow: View {
                 .foregroundStyle(AppColors.textMuted)
         }
         .padding(12)
+        .contentShape(Rectangle())
         .glassCard(intensity: .thin, cornerRadius: 14)
     }
 }
@@ -522,6 +524,7 @@ struct QuizModeButton: View {
                     .foregroundStyle(AppColors.textMuted)
             }
             .padding(12)
+            .contentShape(Rectangle())
             .glassCard(intensity: .thin, cornerRadius: 14)
         }
         .buttonStyle(.plain)

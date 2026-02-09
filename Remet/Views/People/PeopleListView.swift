@@ -243,6 +243,7 @@ struct PersonRow: View {
             }
         }
         .padding(12)
+        .contentShape(Rectangle())
         .glassCard(intensity: .thin, cornerRadius: 14)
     }
 

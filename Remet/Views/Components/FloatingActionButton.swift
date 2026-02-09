@@ -1,5 +1,16 @@
 import SwiftUI
 
+/// UIKit view that blocks all touches from passing through to views below
+private struct TouchBlockingView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 /// Quick action for the floating action button menu
 struct QuickAction: Identifiable {
     let id = UUID()
@@ -103,6 +114,7 @@ struct FloatingActionButton: View {
             if isExpanded {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             isExpanded = false
@@ -125,8 +137,9 @@ struct FloatingActionButton: View {
                 // Main FAB
                 mainButton
             }
-            .padding(.trailing, 16)
-            .padding(.bottom, 8) // Aligned with tab bar
+            // Reduced padding to compensate for expanded button hit area (+8pt padding on button)
+            .padding(.trailing, 8)
+            .padding(.bottom, 0)
         }
     }
 
@@ -151,6 +164,14 @@ struct FloatingActionButton: View {
             }
         } label: {
             FABButtonLabel(isExpanded: isExpanded)
+                // Expand the tappable area with invisible padding
+                // This ensures taps near the button don't fall through to elements beneath
+                .padding(8)
+                .background {
+                    TouchBlockingView()
+                        .clipShape(Capsule())
+                }
+                .contentShape(Capsule())
         }
         .buttonStyle(FABButtonStyle())
         .simultaneousGesture(
