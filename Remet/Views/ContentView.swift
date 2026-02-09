@@ -50,7 +50,7 @@ struct ContentView: View {
             .onChange(of: selectedTab) { _, newValue in
                 if newValue == 3 {
                     selectedTab = previousTab
-                    withAnimation(.spring(duration: 0.5, bounce: 0.15)) {
+                    withAnimation(.bouncy) {
                         showAddActions = true
                     }
                 } else {
@@ -75,7 +75,7 @@ struct ContentView: View {
             .onChange(of: selectedTab) { _, newValue in
                 if newValue == 3 {
                     selectedTab = previousTab
-                    withAnimation(.spring(duration: 0.5, bounce: 0.15)) {
+                    withAnimation(.bouncy) {
                         showAddActions = true
                     }
                 } else {
@@ -98,20 +98,19 @@ struct ContentView: View {
             // Glass popup menu positioned above (+) button
             if showAddActions {
                 if #available(iOS 26, *) {
+                    // Let .glassEffectTransition(.materialize) handle the glass visual;
+                    // only fade the content overlay itself
                     glassMenu
                         .padding(.trailing, 16)
                         .padding(.bottom, 80)
-                        .transition(
-                            .blurReplace
-                            .combined(with: .scale(0.01, anchor: .bottomTrailing))
-                        )
+                        .transition(.opacity)
                 } else {
                     glassMenu
                         .padding(.trailing, 16)
                         .padding(.bottom, 80)
                         .transition(
-                            .scale(scale: 0.3, anchor: .bottomTrailing)
-                            .combined(with: .opacity)
+                            .blurReplace
+                            .combined(with: .scale(0.3, anchor: .bottomTrailing))
                         )
                 }
             }
@@ -126,6 +125,7 @@ struct ContentView: View {
             menuContent
                 .padding(.vertical, 6)
                 .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                .glassEffectTransition(.materialize)
         } else {
             menuContent
                 .padding(.vertical, 4)
@@ -180,7 +180,7 @@ struct ContentView: View {
     }
 
     private func dismissAddActions() {
-        withAnimation(.spring(duration: 0.25)) {
+        withAnimation(.smooth(duration: 0.25)) {
             showAddActions = false
         }
     }
