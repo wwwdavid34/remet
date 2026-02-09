@@ -5,6 +5,8 @@ import PhotosUI
 struct OnboardingFirstMemoryView: View {
     @Environment(\.modelContext) private var modelContext
 
+    let currentStep: Int
+    let totalSteps: Int
     let onComplete: () -> Void
     let onSkip: () -> Void
 
@@ -16,6 +18,10 @@ struct OnboardingFirstMemoryView: View {
 
     var body: some View {
         VStack(spacing: 24) {
+            // Progress indicator
+            OnboardingProgressIndicator(currentStep: currentStep, totalSteps: totalSteps)
+                .padding(.top, 16)
+
             // Header
             VStack(spacing: 8) {
                 Text(String(localized: "Add Your First Memory"))
@@ -173,57 +179,30 @@ struct OnboardingFaceReviewView: View {
     @State private var occasion = ""
     @State private var location = ""
     @State private var isMatching = false
-    @FocusState private var isTextFieldFocused: Bool
+    @State private var selectedFaceIndex: Int? = nil
+    @FocusState private var focusedFaceIndex: Int?
 
     /// People with embeddings that can be matched (including "Me")
     private var matchablePeople: [Person] {
         existingPeople.filter { !$0.embeddings.isEmpty }
     }
 
+    /// Count of unassigned faces
+    private var unassignedCount: Int {
+        detectedFaces.indices.filter { faceAssignments[$0] == nil }.count
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Image with face indicators
-                GeometryReader { geometry in
-                    let imageSize = image.size
-                    let viewSize = geometry.size
-                    let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
-                    let scaledWidth = imageSize.width * scale
-                    let scaledHeight = imageSize.height * scale
-                    let offsetX = (viewSize.width - scaledWidth) / 2
-                    let offsetY = (viewSize.height - scaledHeight) / 2
-
-                    ZStack {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                        ForEach(detectedFaces.indices, id: \.self) { index in
-                            let face = detectedFaces[index]
-                            let rect = face.normalizedBoundingBox
-                            let boxWidth = rect.width * scaledWidth
-                            let boxHeight = rect.height * scaledHeight
-                            let boxX = offsetX + rect.midX * scaledWidth
-                            let boxY = offsetY + (1 - rect.midY) * scaledHeight
-
-                            Rectangle()
-                                .stroke(faceAssignments[index] != nil ? AppColors.teal : AppColors.coral, lineWidth: 2)
-                                .frame(width: boxWidth, height: boxHeight)
-                                .position(x: boxX, y: boxY)
-
-                            // Face number badge
-                            Text("\(index + 1)")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
-                                .padding(6)
-                                .background(Circle().fill(faceAssignments[index] != nil ? AppColors.teal : AppColors.coral))
-                                .position(x: boxX - boxWidth/2 + 10, y: boxY - boxHeight/2 + 10)
-                        }
-                    }
+                // Instructional tip banner
+                if !detectedFaces.isEmpty && !isMatching {
+                    instructionBanner
                 }
-                .frame(maxHeight: 280)
+
+                // Image with face indicators
+                faceImageOverlay
+                    .frame(maxHeight: 260)
 
                 // Face assignment list
                 List {
@@ -236,15 +215,18 @@ struct OnboardingFaceReviewView: View {
                         }
                     } else {
                         Section {
-                            TextField(String(localized: "Occasion (e.g., Team lunch)"), text: $occasion)
-                                .focused($isTextFieldFocused)
+                            HStack {
+                                Text(String(localized: "Occasion"))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Text(String(localized: "Required"))
+                                    .font(.caption)
+                                    .foregroundStyle(occasion.isEmpty ? AppColors.coral : .clear)
+                            }
+                            TextField(String(localized: "e.g., Team lunch, Birthday party"), text: $occasion)
                                 .submitLabel(.next)
                             TextField(String(localized: "Location (optional)"), text: $location)
-                                .focused($isTextFieldFocused)
                                 .submitLabel(.done)
-                                .onSubmit {
-                                    isTextFieldFocused = false
-                                }
                         } header: {
                             Text(String(localized: "Details"))
                         }
@@ -258,11 +240,21 @@ struct OnboardingFaceReviewView: View {
                                         get: { faceAssignments[index] },
                                         set: { faceAssignments[index] = $0 }
                                     ),
-                                    existingPeople: existingPeople.filter { !$0.embeddings.isEmpty }
+                                    existingPeople: existingPeople.filter { !$0.embeddings.isEmpty },
+                                    isHighlighted: selectedFaceIndex == index || focusedFaceIndex == index,
+                                    focusBinding: $focusedFaceIndex,
+                                    faceIndex: index
                                 )
                             }
                         } header: {
-                            Text(String(localized: "Faces (\(detectedFaces.count))"))
+                            HStack {
+                                Text(String(localized: "Faces (\(detectedFaces.count))"))
+                                if unassignedCount > 0 {
+                                    Text("• \(unassignedCount) need names")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.coral)
+                                }
+                            }
                         }
                     }
                 }
@@ -273,14 +265,14 @@ struct OnboardingFaceReviewView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "Cancel")) {
-                        isTextFieldFocused = false
+                        focusedFaceIndex = nil
                         onCancel()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(String(localized: "Save")) {
-                        isTextFieldFocused = false
+                        focusedFaceIndex = nil
                         saveEncounter()
                     }
                     .fontWeight(.semibold)
@@ -290,7 +282,7 @@ struct OnboardingFaceReviewView: View {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button(String(localized: "Done")) {
-                        isTextFieldFocused = false
+                        focusedFaceIndex = nil
                     }
                 }
             }
@@ -307,6 +299,140 @@ struct OnboardingFaceReviewView: View {
         }
         .onAppear {
             detectFaces()
+        }
+        .onChange(of: focusedFaceIndex) { _, newValue in
+            // Sync selection when focus changes
+            selectedFaceIndex = newValue
+        }
+    }
+
+    // MARK: - Face Image Overlay
+
+    @ViewBuilder
+    private var faceImageOverlay: some View {
+        GeometryReader { geometry in
+            let imageSize = image.size
+            let viewSize = geometry.size
+            let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
+            let scaledWidth = imageSize.width * scale
+            let scaledHeight = imageSize.height * scale
+            let offsetX = (viewSize.width - scaledWidth) / 2
+            let offsetY = (viewSize.height - scaledHeight) / 2
+
+            ZStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                ForEach(detectedFaces.indices, id: \.self) { index in
+                    faceRectangleOverlay(
+                        index: index,
+                        scaledWidth: scaledWidth,
+                        scaledHeight: scaledHeight,
+                        offsetX: offsetX,
+                        offsetY: offsetY
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func faceRectangleOverlay(
+        index: Int,
+        scaledWidth: CGFloat,
+        scaledHeight: CGFloat,
+        offsetX: CGFloat,
+        offsetY: CGFloat
+    ) -> some View {
+        let face = detectedFaces[index]
+        let rect = face.normalizedBoundingBox
+        let boxWidth = rect.width * scaledWidth
+        let boxHeight = rect.height * scaledHeight
+        let boxX = offsetX + rect.midX * scaledWidth
+        let boxY = offsetY + (1 - rect.midY) * scaledHeight
+        let isSelected = selectedFaceIndex == index || focusedFaceIndex == index
+        let isAssigned = faceAssignments[index] != nil
+
+        // Tappable face rectangle
+        Rectangle()
+            .stroke(
+                isSelected ? AppColors.warmYellow : (isAssigned ? AppColors.teal : AppColors.coral),
+                lineWidth: isSelected ? 3 : 2
+            )
+            .background(
+                Rectangle()
+                    .fill(isSelected ? AppColors.warmYellow.opacity(0.15) : Color.clear)
+            )
+            .frame(width: boxWidth, height: boxHeight)
+            .position(x: boxX, y: boxY)
+            .onTapGesture {
+                selectFace(at: index)
+            }
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+
+        // Face number badge
+        Text("\(index + 1)")
+            .font(.caption2)
+            .fontWeight(.bold)
+            .foregroundStyle(.white)
+            .padding(6)
+            .background(
+                Circle().fill(
+                    isSelected ? AppColors.warmYellow : (isAssigned ? AppColors.teal : AppColors.coral)
+                )
+            )
+            .scaleEffect(isSelected ? 1.2 : 1.0)
+            .position(x: boxX - boxWidth/2 + 10, y: boxY - boxHeight/2 + 10)
+            .onTapGesture {
+                selectFace(at: index)
+            }
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+
+    // MARK: - Instruction Banner
+
+    @ViewBuilder
+    private var instructionBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "hand.tap.fill")
+                .foregroundStyle(AppColors.teal)
+
+            Text(String(localized: "Tap a face to add their name"))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            // Color legend
+            HStack(spacing: 12) {
+                HStack(spacing: 4) {
+                    Circle().fill(AppColors.teal).frame(width: 8, height: 8)
+                    Text(String(localized: "Named"))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                HStack(spacing: 4) {
+                    Circle().fill(AppColors.coral).frame(width: 8, height: 8)
+                    Text(String(localized: "Unnamed"))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color(.secondarySystemBackground))
+    }
+
+    // MARK: - Face Selection
+
+    private func selectFace(at index: Int) {
+        selectedFaceIndex = index
+        // Trigger focus on the corresponding input field
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            focusedFaceIndex = index
         }
     }
 
@@ -512,9 +638,14 @@ struct FaceAssignmentRow: View {
     let face: DetectedFace
     @Binding var assignment: FaceAssignment?
     let existingPeople: [Person]
+    var isHighlighted: Bool = false
+    var focusBinding: FocusState<Int?>.Binding?
+    var faceIndex: Int = 0
 
     @State private var name = ""
+    @State private var isEditing = false
     @State private var showPeoplePicker = false
+    @FocusState private var isNameFocused: Bool
 
     /// Sort "Me" at the top, then alphabetically
     private var sortedPeople: [Person] {
@@ -525,18 +656,67 @@ struct FaceAssignmentRow: View {
         }
     }
 
+    /// Whether to show the text field (no assignment, or editing a new person name)
+    private var showTextField: Bool {
+        assignment == nil || (assignment?.existingPerson == nil && isEditing)
+    }
+
+    /// Name text field with proper focus handling
+    @ViewBuilder
+    private var nameTextField: some View {
+        let baseField = TextField(String(localized: "Enter name"), text: $name)
+            .textFieldStyle(.roundedBorder)
+            .font(.subheadline)
+            .submitLabel(.done)
+            .onSubmit {
+                commitName()
+            }
+            .onChange(of: isNameFocused) { _, focused in
+                if focused {
+                    isEditing = true
+                } else {
+                    commitName()
+                }
+            }
+
+        if let binding = focusBinding {
+            baseField
+                .focused(binding, equals: faceIndex)
+                .onChange(of: binding.wrappedValue) { _, newValue in
+                    if newValue == faceIndex {
+                        isEditing = true
+                        isNameFocused = true
+                    }
+                }
+        } else {
+            baseField
+                .focused($isNameFocused)
+        }
+    }
+
     var body: some View {
         HStack(spacing: 12) {
-            // Face thumbnail
-            Image(uiImage: face.cropImage)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 50, height: 50)
-                .clipShape(Circle())
-                .overlay(
+            // Face thumbnail with highlight ring
+            ZStack {
+                if isHighlighted {
                     Circle()
-                        .stroke(assignment != nil ? AppColors.teal : AppColors.coral, lineWidth: 2)
-                )
+                        .fill(AppColors.warmYellow.opacity(0.3))
+                        .frame(width: 58, height: 58)
+                }
+
+                Image(uiImage: face.cropImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(
+                                isHighlighted ? AppColors.warmYellow : (assignment != nil ? AppColors.teal : AppColors.coral),
+                                lineWidth: isHighlighted ? 3 : 2
+                            )
+                    )
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {
@@ -545,17 +725,22 @@ struct FaceAssignmentRow: View {
                         .foregroundStyle(.secondary)
 
                     if let assigned = assignment, assigned.isAutoMatched {
-                        Text(String(localized: "Auto"))
+                        Text(String(localized: "Auto-matched"))
                             .font(.caption2)
                             .foregroundStyle(.white)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 1)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
                             .background(AppColors.teal)
                             .clipShape(Capsule())
+                            .help(String(localized: "Recognized from previous photos"))
                     }
                 }
 
-                if let assigned = assignment {
+                if showTextField {
+                    // Text field for entering new name
+                    nameTextField
+                } else if let assigned = assignment {
+                    // Show assigned name (for existing people or confirmed new names)
                     HStack(spacing: 6) {
                         Text(assigned.name)
                             .font(.subheadline)
@@ -573,28 +758,26 @@ struct FaceAssignmentRow: View {
                                 .clipShape(Capsule())
                         }
 
-                        // Show confidence if auto-matched
+                        // Show confidence if auto-matched with explanation
                         if let confidence = assigned.confidence {
-                            Text("\(Int(confidence * 100))%")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
+                            HStack(spacing: 2) {
+                                Text("\(Int(confidence * 100))%")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Image(systemName: "info.circle")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .help(String(localized: "Match confidence based on facial similarity"))
                         }
                     }
-                } else {
-                    TextField(String(localized: "Enter name"), text: $name)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.subheadline)
-                        .submitLabel(.done)
-                        .onSubmit {
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    .onTapGesture {
+                        // Allow editing of new person names (not existing people)
+                        if assigned.existingPerson == nil {
+                            isEditing = true
+                            isNameFocused = true
                         }
-                        .onChange(of: name) { _, newValue in
-                            if !newValue.isEmpty {
-                                assignment = FaceAssignment(name: newValue, existingPerson: nil)
-                            } else {
-                                assignment = nil
-                            }
-                        }
+                    }
                 }
             }
 
@@ -604,6 +787,7 @@ struct FaceAssignmentRow: View {
                 Button {
                     assignment = nil
                     name = ""
+                    isEditing = false
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
@@ -615,6 +799,12 @@ struct FaceAssignmentRow: View {
                     Image(systemName: "person.crop.circle.badge.plus")
                         .foregroundStyle(AppColors.teal)
                 }
+            }
+        }
+        .onAppear {
+            // Initialize name from existing assignment if any
+            if let assigned = assignment {
+                name = assigned.name
             }
         }
         .sheet(isPresented: $showPeoplePicker) {
@@ -671,9 +861,23 @@ struct FaceAssignmentRow: View {
             }
             .presentationDetents([.medium])
         }
+        .listRowBackground(
+            isHighlighted ? AppColors.warmYellow.opacity(0.1) : Color.clear
+        )
+        .animation(.easeInOut(duration: 0.2), value: isHighlighted)
+    }
+
+    private func commitName() {
+        isEditing = false
+        if !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            assignment = FaceAssignment(name: trimmedName, existingPerson: nil)
+        } else {
+            assignment = nil
+        }
     }
 }
 
 #Preview {
-    OnboardingFirstMemoryView(onComplete: {}, onSkip: {})
+    OnboardingFirstMemoryView(currentStep: 3, totalSteps: 5, onComplete: {}, onSkip: {})
 }

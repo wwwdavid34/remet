@@ -279,15 +279,7 @@ struct PracticeHomeView: View {
                                             .foregroundStyle(AppColors.textMuted)
                                     }
                                     .padding(12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 14)
-                                            .fill(AppColors.cardBackground)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 14)
-                                                    .stroke(AppColors.coral.opacity(0.3), lineWidth: 1)
-                                            )
-                                    )
-                                    .shadow(color: AppColors.coral.opacity(0.1), radius: 6, x: 0, y: 3)
+                                    .tintedGlassBackground(AppColors.coral, tintOpacity: 0.05, cornerRadius: 14)
                                 }
                                 .buttonStyle(.plain)
                                 .padding(.horizontal)
@@ -365,6 +357,7 @@ struct PracticeStatCard: View {
     let icon: String
     let color: Color
     var trend: Int? = nil
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 8) {
@@ -394,9 +387,7 @@ struct PracticeStatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: color.opacity(0.15), radius: 6, x: 0, y: 3)
+        .tintedGlassBackground(color, tintOpacity: 0.08, cornerRadius: 16)
     }
 }
 
@@ -470,9 +461,7 @@ struct ReviewPersonRow: View {
                 .foregroundStyle(AppColors.textMuted)
         }
         .padding(12)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .glassCard(intensity: .thin, cornerRadius: 14)
     }
 }
 
@@ -533,9 +522,7 @@ struct QuizModeButton: View {
                     .foregroundStyle(AppColors.textMuted)
             }
             .padding(12)
-            .background(AppColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+            .glassCard(intensity: .thin, cornerRadius: 14)
         }
         .buttonStyle(.plain)
         .disabled(isDisabled)

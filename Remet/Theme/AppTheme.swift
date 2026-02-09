@@ -237,13 +237,31 @@ enum WittyCopy {
 
 // MARK: - Custom View Modifiers
 
+/// Standard card style - uses liquid glass on iOS 26+, material on earlier versions
 struct CardStyle: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.thinMaterial)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.35),
+                                Color.white.opacity(colorScheme == .dark ? 0.04 : 0.1),
+                                Color.clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
+            }
             .shadow(
                 color: colorScheme == .dark ? .clear : Color.black.opacity(0.08),
                 radius: 8,
@@ -253,18 +271,41 @@ struct CardStyle: ViewModifier {
     }
 }
 
+/// Gradient card with glass overlay effect
 struct GradientCard: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
     let colors: [Color]
 
     func body(content: Content) -> some View {
         content
-            .background(
-                LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(
+                            LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
+                        )
+                    // Glass overlay for depth
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(.ultraThinMaterial.opacity(0.3))
+                }
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.4),
+                                Color.white.opacity(0.1),
+                                Color.clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
+            }
             .shadow(
-                color: colorScheme == .dark ? .clear : colors[0].opacity(0.3),
+                color: colorScheme == .dark ? colors[0].opacity(0.2) : colors[0].opacity(0.3),
                 radius: 8,
                 x: 0,
                 y: 4
@@ -272,20 +313,57 @@ struct GradientCard: ViewModifier {
     }
 }
 
-/// Elevated card style using system backgrounds
+/// Elevated card style - uses glass effect for elevation
 struct ElevatedCardStyle: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
-            .background(Color(UIColor.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.regularMaterial)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.15 : 0.4),
+                                Color.white.opacity(colorScheme == .dark ? 0.05 : 0.15),
+                                Color.clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
+            }
             .shadow(
-                color: colorScheme == .dark ? .clear : Color.black.opacity(0.06),
-                radius: 6,
+                color: colorScheme == .dark ? .clear : Color.black.opacity(0.1),
+                radius: 10,
                 x: 0,
-                y: 2
+                y: 5
             )
+    }
+}
+
+/// Subtle card for inline content - minimal glass effect
+struct SubtleCardStyle: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(
+                        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.2),
+                        lineWidth: 0.5
+                    )
+            }
     }
 }
 
@@ -300,6 +378,10 @@ extension View {
 
     func gradientCard(colors: [Color]) -> some View {
         modifier(GradientCard(colors: colors))
+    }
+
+    func subtleCard() -> some View {
+        modifier(SubtleCardStyle())
     }
 }
 
@@ -351,6 +433,7 @@ struct StatBadge: View {
     let value: String
     let label: String
     let color: Color
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 4) {
@@ -367,8 +450,30 @@ struct StatBadge: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(color.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(color.opacity(0.1))
+            }
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [
+                            color.opacity(0.3),
+                            Color.white.opacity(colorScheme == .dark ? 0.1 : 0.2),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 0.5
+                )
+        }
+        .shadow(color: color.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 

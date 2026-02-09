@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 struct AccountView: View {
     @Environment(\.modelContext) private var modelContext
@@ -208,6 +209,23 @@ struct AccountView: View {
                 }
             }
             .disabled(isRestoringPurchases)
+
+            // Redeem Promo Code
+            Button {
+                Task {
+                    if let windowScene = UIApplication.shared.connectedScenes
+                        .compactMap({ $0 as? UIWindowScene })
+                        .first {
+                        do {
+                            try await AppStore.presentOfferCodeRedeemSheet(in: windowScene)
+                        } catch {
+                            // User cancelled or error occurred - no action needed
+                        }
+                    }
+                }
+            } label: {
+                Label(String(localized: "Redeem Promo Code"), systemImage: "giftcard")
+            }
         } header: {
             Text(String(localized: "Subscription"))
         }
@@ -353,7 +371,10 @@ struct AccountView: View {
                 // Generate random 4-digit PIN
                 deleteConfirmationPIN = String(format: "%04d", Int.random(in: 0...9999))
                 enteredPIN = ""
-                showDeleteConfirmation = true
+                // Delay to ensure PIN state propagates before sheet presents
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    showDeleteConfirmation = true
+                }
             } label: {
                 Label(String(localized: "Delete All My Data"), systemImage: "trash")
             }

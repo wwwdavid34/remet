@@ -1,10 +1,16 @@
 import SwiftUI
 
 struct OnboardingWelcomeView: View {
+    let currentStep: Int
+    let totalSteps: Int
     let onContinue: () -> Void
 
     var body: some View {
         VStack(spacing: 40) {
+            // Progress indicator
+            OnboardingProgressIndicator(currentStep: currentStep, totalSteps: totalSteps)
+                .padding(.top, 16)
+
             Spacer()
 
             // App icon/logo area
@@ -55,5 +61,5 @@ struct OnboardingWelcomeView: View {
 }
 
 #Preview {
-    OnboardingWelcomeView(onContinue: {})
+    OnboardingWelcomeView(currentStep: 0, totalSteps: 5, onContinue: {})
 }

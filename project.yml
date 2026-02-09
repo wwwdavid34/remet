@@ -47,12 +47,36 @@ targets:
         NSPhotoLibraryUsageDescription: "Remet needs access to your photos to identify people."
         NSCameraUsageDescription: "Remet needs camera access to capture photos for face identification."
         NSPhotoLibraryAddUsageDescription: "Remet can save processed photos to your library."
+        NSContactsUsageDescription: "Remet can link people to your contacts and optionally update contact photos."
+        NSLocationWhenInUseUsageDescription: "Remet uses your location to record where you met people."
+        CFBundleDisplayName: "Remet"
+        ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: "com.remet.app"
             CFBundleURLSchemes:
               - "remet"
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleLocalizations:
+          - en
+          - zh-Hans
+          - zh-Hant
+          - ja
     entitlements:
       path: Remet/Remet.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.remet.Remet
+        com.apple.developer.icloud-services:
+          - CloudKit
 
   # ShareExtension:
   #   type: app-extension

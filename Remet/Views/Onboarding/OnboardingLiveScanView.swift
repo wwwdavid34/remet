@@ -8,6 +8,8 @@ struct OnboardingLiveScanView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var people: [Person]
 
+    let currentStep: Int
+    let totalSteps: Int
     let onComplete: () -> Void
     let onSkip: () -> Void
 
@@ -53,6 +55,10 @@ struct OnboardingLiveScanView: View {
     @ViewBuilder
     private var scanningContent: some View {
         VStack(spacing: 24) {
+            // Progress indicator
+            OnboardingProgressIndicator(currentStep: currentStep, totalSteps: totalSteps)
+                .padding(.top, 16)
+
             // Header
             VStack(spacing: 8) {
                 Text(String(localized: "Try Memory Scan"))
@@ -357,5 +363,5 @@ private class OnboardingScanDelegate: NSObject, SilentScanCameraManagerDelegate 
 }
 
 #Preview {
-    OnboardingLiveScanView(onComplete: {}, onSkip: {})
+    OnboardingLiveScanView(currentStep: 2, totalSteps: 5, onComplete: {}, onSkip: {})
 }

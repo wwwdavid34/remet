@@ -5,6 +5,8 @@ import AVFoundation
 struct OnboardingProfileView: View {
     @Environment(\.modelContext) private var modelContext
 
+    let currentStep: Int
+    let totalSteps: Int
     let onComplete: (Person) -> Void
     let onSkip: () -> Void
 
@@ -20,6 +22,10 @@ struct OnboardingProfileView: View {
 
     var body: some View {
         VStack(spacing: 24) {
+            // Progress indicator
+            OnboardingProgressIndicator(currentStep: currentStep, totalSteps: totalSteps)
+                .padding(.top, 16)
+
             // Header
             VStack(spacing: 8) {
                 Text(String(localized: "Create Your Profile"))
@@ -444,5 +450,5 @@ class OnboardingCameraManager: NSObject, ObservableObject, AVCapturePhotoCapture
 }
 
 #Preview {
-    OnboardingProfileView(onComplete: { _ in }, onSkip: {})
+    OnboardingProfileView(currentStep: 1, totalSteps: 5, onComplete: { _ in }, onSkip: {})
 }

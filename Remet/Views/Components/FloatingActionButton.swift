@@ -9,6 +9,81 @@ struct QuickAction: Identifiable {
     let action: () -> Void
 }
 
+// MARK: - FAB Button Style
+
+/// Button style that provides press animation for the FAB
+struct FABButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+// MARK: - FAB Button Label
+
+/// The visual label for the FAB button
+struct FABButtonLabel: View {
+    let isExpanded: Bool
+
+    var body: some View {
+        if #available(iOS 26, *) {
+            // iOS 26 - native liquid glass
+            VStack(spacing: 4) {
+                Image(systemName: isExpanded ? "xmark" : "camera.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(AppColors.coral)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+
+                Text(isExpanded ? String(localized: "Close") : String(localized: "Capture"))
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.coral)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .glassEffect(.regular.interactive(), in: .capsule)
+            .contentShape(Capsule())
+        } else {
+            // Pre-iOS 26 fallback
+            VStack(spacing: 4) {
+                Image(systemName: isExpanded ? "xmark" : "camera.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(AppColors.coral)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+
+                Text(isExpanded ? String(localized: "Close") : String(localized: "Capture"))
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.coral)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background {
+                Capsule()
+                    .fill(.ultraThinMaterial)
+                    .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 6)
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.4),
+                                Color.white.opacity(0.1),
+                                Color.clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
+            }
+            .contentShape(Capsule())
+        }
+    }
+}
+
 /// Floating Action Button with long-press quick action menu
 /// Provides always-accessible capture and scan functionality
 struct FloatingActionButton: View {
@@ -17,8 +92,6 @@ struct FloatingActionButton: View {
     var expandOnTap: Bool = false  // If true, tap expands menu instead of calling primaryAction
 
     @State private var isExpanded = false
-    @State private var isPressed = false
-    @State private var dragOffset: CGSize = .zero
 
     // Haptic feedback
     private let impactMed = UIImpactFeedbackGenerator(style: .medium)
@@ -77,43 +150,15 @@ struct FloatingActionButton: View {
                 primaryAction()
             }
         } label: {
-            VStack(spacing: 4) {
-                Image(systemName: isExpanded ? "xmark" : "camera.fill")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(AppColors.coral)
-                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
-
-                Text(isExpanded ? String(localized: "Close") : String(localized: "Capture"))
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.coral)
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .liquidGlassBackground(isCapsule: true)
-            .scaleEffect(isPressed ? 0.95 : 1.0)
+            FABButtonLabel(isExpanded: isExpanded)
         }
+        .buttonStyle(FABButtonStyle())
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.4)
                 .onEnded { _ in
                     impactHeavy.impactOccurred()
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         isExpanded = true
-                    }
-                }
-        )
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in
-                    if !isExpanded {
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            isPressed = true
-                        }
-                    }
-                }
-                .onEnded { _ in
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        isPressed = false
                     }
                 }
         )
@@ -136,14 +181,7 @@ struct FloatingActionButton: View {
             }
         } label: {
             HStack(spacing: 12) {
-                Text(action.label)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+                quickActionLabel(action.label)
 
                 ZStack {
                     Circle()
@@ -159,6 +197,46 @@ struct FloatingActionButton: View {
             }
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func quickActionLabel(_ label: String) -> some View {
+        if #available(iOS 26, *) {
+            // iOS 26 - native liquid glass
+            Text(label)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .glassEffect(.regular, in: .capsule)
+        } else {
+            // Pre-iOS 26 fallback
+            Text(label)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background {
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                }
+                .overlay {
+                    Capsule()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.3),
+                                    Color.white.opacity(0.1)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.5
+                        )
+                }
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct OnboardingCompleteView: View {
+    let currentStep: Int
+    let totalSteps: Int
     let onFinish: () -> Void
 
     @State private var showCheckmark = false
@@ -8,6 +10,10 @@ struct OnboardingCompleteView: View {
 
     var body: some View {
         VStack(spacing: 40) {
+            // Progress indicator (completed state)
+            OnboardingProgressIndicator(currentStep: currentStep, totalSteps: totalSteps)
+                .padding(.top, 16)
+
             Spacer()
 
             // Success animation
@@ -116,5 +122,5 @@ struct OnboardingCompleteView: View {
 }
 
 #Preview {
-    OnboardingCompleteView(onFinish: {})
+    OnboardingCompleteView(currentStep: 4, totalSteps: 5, onFinish: {})
 }

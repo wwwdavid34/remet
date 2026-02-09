@@ -6,19 +6,28 @@ struct OnboardingContainerView: View {
     @State private var currentStep = 0
     @State private var createdMeProfile: Person?
 
+    /// Total onboarding steps (Welcome, Profile, LiveScan, Memory, Complete)
+    private let totalSteps = 5
+
     var body: some View {
         ZStack {
             switch currentStep {
             case 0:
-                OnboardingWelcomeView(onContinue: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        currentStep = 1
+                OnboardingWelcomeView(
+                    currentStep: currentStep,
+                    totalSteps: totalSteps,
+                    onContinue: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            currentStep = 1
+                        }
                     }
-                })
+                )
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 1:
                 OnboardingProfileView(
+                    currentStep: currentStep,
+                    totalSteps: totalSteps,
                     onComplete: { person in
                         createdMeProfile = person
                         withAnimation(.easeInOut(duration: 0.3)) {
@@ -38,6 +47,8 @@ struct OnboardingContainerView: View {
             case 2:
                 // Live Scan demo - only shown if profile was created
                 OnboardingLiveScanView(
+                    currentStep: currentStep,
+                    totalSteps: totalSteps,
                     onComplete: {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep = 3
@@ -53,6 +64,8 @@ struct OnboardingContainerView: View {
 
             case 3:
                 OnboardingFirstMemoryView(
+                    currentStep: currentStep,
+                    totalSteps: totalSteps,
                     onComplete: {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep = 4
@@ -67,8 +80,12 @@ struct OnboardingContainerView: View {
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 4:
-                OnboardingCompleteView(onFinish: completeOnboarding)
-                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                OnboardingCompleteView(
+                    currentStep: currentStep,
+                    totalSteps: totalSteps,
+                    onFinish: completeOnboarding
+                )
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             default:
                 EmptyView()

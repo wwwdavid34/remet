@@ -265,8 +265,7 @@ struct PeopleHomeView: View {
             }
         }
         .padding(12)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .glassCard(intensity: .thin, cornerRadius: 12)
         .padding(.horizontal)
         .padding(.bottom, 8)
     }
@@ -343,8 +342,7 @@ struct PeopleHomeView: View {
             }
         }
         .padding()
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .glassCard(intensity: .thin, cornerRadius: 12)
     }
 
     // MARK: - Review Nudge Section

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -27,6 +27,7 @@
 		245C6DCA4C66F2AF624B8923 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AEDCDD0CECC0EEF49EFB0D9 /* ContentView.swift */; };
 		27AB7EA9C5D74656790EB028 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0371D80B6C01257F13AA90F /* SubscriptionManager.swift */; };
 		2ACFCCB4FD0BDC5436943CB5 /* LimitReachedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2907A35F3C58431802E23AFA /* LimitReachedView.swift */; };
+		2FCD950EA79234AEB68E4647 /* OnboardingProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1312149A710348153F055F78 /* OnboardingProgressIndicator.swift */; };
 		3391C66F32DEAE53B25A76EE /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E23F39895AF9B13A0FDC41D /* SplashView.swift */; };
 		33C1884D24DD37D46D479D03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9157C1E917CFF24ECFC278A1 /* Assets.xcassets */; };
 		34610B0333056FF80044B18B /* EncounterScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0512CDA3964ECC764E2D568 /* EncounterScannerView.swift */; };
@@ -87,11 +88,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
+		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
 		06694C451E6DDB1A90961B56 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
 		08D42FE113F8837656ABC3BA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0B4D145FE5DAFAAE416DCADC /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
 		0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbedding.swift; sourceTree = "<group>"; };
+		1312149A710348153F055F78 /* OnboardingProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProgressIndicator.swift; sourceTree = "<group>"; };
 		16C457B5688D299C31E516CC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		188EBF64EBB1BF37D37F181E /* ImportedPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedPhoto.swift; sourceTree = "<group>"; };
 		1EA9B9C64CE5FCCC38EE2FEC /* ContactLinkSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactLinkSection.swift; sourceTree = "<group>"; };
@@ -129,7 +131,7 @@
 		715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingService.swift; sourceTree = "<group>"; };
 		73B1C5AC0126ABEFC13CD0F1 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
 		750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
-		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F8576CD80F811E34E5C08FA /* Encounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encounter.swift; sourceTree = "<group>"; };
 		81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetectionService.swift; sourceTree = "<group>"; };
 		823AE1562193907DB7155DA8 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -144,7 +146,6 @@
 		A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
 		A745EC47673F2071CB294230 /* Remet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Remet.entitlements; sourceTree = "<group>"; };
 		A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizAttempt.swift; sourceTree = "<group>"; };
-		A76418262F29D7CB00D6AD7B /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AED9DDEE8CB1F8D16356B40B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AF1C5BC4FFDE21726134D4BB /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
 		B0512CDA3964ECC764E2D568 /* EncounterScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterScannerView.swift; sourceTree = "<group>"; };
@@ -219,7 +220,6 @@
 		20042DC4FE02B0C15373FA0E = {
 			isa = PBXGroup;
 			children = (
-				A76418262F29D7CB00D6AD7B /* Products.storekit */,
 				A187ED7E86D142910A8139CC /* Remet */,
 				0CD1A151BD54E43F033AFC06 /* Products */,
 			);
@@ -289,6 +289,7 @@
 				40FEB62039EC82A7637BA56A /* OnboardingFirstMemoryView.swift */,
 				36A993EA76D2CB5F07559084 /* OnboardingLiveScanView.swift */,
 				CC4125E85C7130E4F68A0627 /* OnboardingProfileView.swift */,
+				1312149A710348153F055F78 /* OnboardingProgressIndicator.swift */,
 				86F06F2E892DC609EE68FD1D /* OnboardingWelcomeView.swift */,
 			);
 			path = Onboarding;
@@ -465,6 +466,7 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					27217AC6BEC03FBFB0FE8516 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -482,6 +484,7 @@
 			);
 			mainGroup = 20042DC4FE02B0C15373FA0E;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -557,6 +560,7 @@
 				B652F1F91E5F7C56FE788B2C /* OnboardingFirstMemoryView.swift in Sources */,
 				94EECE7C4AEB9D1BACA898DF /* OnboardingLiveScanView.swift in Sources */,
 				536C2A1526D1FCD4EB08C153 /* OnboardingProfileView.swift in Sources */,
+				2FCD950EA79234AEB68E4647 /* OnboardingProgressIndicator.swift in Sources */,
 				1A9905532228A8478AE3C89F /* OnboardingWelcomeView.swift in Sources */,
 				43719527A751C48B739F9253 /* PaywallView.swift in Sources */,
 				4818C973C234B5DCB3A9C7A1 /* PeopleHomeView.swift in Sources */,
@@ -596,7 +600,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RX44K7NF89;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
@@ -752,7 +756,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RX44K7NF89;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";

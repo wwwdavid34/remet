@@ -243,14 +243,7 @@ struct PersonRow: View {
             }
         }
         .padding(12)
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(
-            color: colorScheme == .dark ? .clear : Color.black.opacity(0.04),
-            radius: 4,
-            x: 0,
-            y: 2
-        )
+        .glassCard(intensity: .thin, cornerRadius: 14)
     }
 
     @ViewBuilder

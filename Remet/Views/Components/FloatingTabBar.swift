@@ -17,17 +17,54 @@ struct FloatingTabBar: View {
     private let impact = UIImpactFeedbackGenerator(style: .light)
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(items) { item in
-                tabButton(for: item)
+        tabBarContent
+            .padding(.leading, 16)
+            .padding(.trailing, 108) // Leave room for FAB
+            .padding(.bottom, 8)
+    }
+
+    @ViewBuilder
+    private var tabBarContent: some View {
+        if #available(iOS 26, *) {
+            // iOS 26 - native liquid glass
+            HStack(spacing: 0) {
+                ForEach(items) { item in
+                    tabButton(for: item)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .glassEffect(.regular.interactive(), in: .capsule)
+        } else {
+            // Pre-iOS 26 fallback
+            HStack(spacing: 0) {
+                ForEach(items) { item in
+                    tabButton(for: item)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
+            .background {
+                Capsule()
+                    .fill(.ultraThinMaterial)
+                    .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.3),
+                                Color.white.opacity(0.1),
+                                Color.clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 8)
-        .liquidGlassBackground(isCapsule: true)
-        .padding(.leading, 16)
-        .padding(.trailing, 108) // Leave room for FAB
-        .padding(.bottom, 8)
     }
 
     @ViewBuilder

@@ -132,8 +132,7 @@ struct ScanTabView: View {
                         .foregroundStyle(.tertiary)
                 }
                 .padding()
-                .background(Color(UIColor.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .tintedGlassBackground(AppColors.teal, tintOpacity: 0.05, cornerRadius: 16)
             }
             .buttonStyle(.plain)
 
@@ -186,8 +185,11 @@ struct ScanTabView: View {
                         .foregroundStyle(.tertiary)
                 }
                 .padding()
-                .background(Color(UIColor.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .tintedGlassBackground(
+                    subscriptionManager.isPremium ? AppColors.softPurple : AppColors.textMuted,
+                    tintOpacity: 0.05,
+                    cornerRadius: 16
+                )
             }
             .buttonStyle(.plain)
         }
@@ -215,8 +217,7 @@ struct ScanTabView: View {
                 .foregroundStyle(AppColors.coral)
         }
         .padding()
-        .background(Color(UIColor.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .glassCard(intensity: .regular, cornerRadius: 16)
     }
 
     // MARK: - Tips
