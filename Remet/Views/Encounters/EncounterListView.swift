@@ -68,6 +68,11 @@ struct EncounterListView: View {
     @State private var showFilters = false
     @State private var filterRefreshId = UUID()
 
+    // Multi-select for merge
+    @State private var isSelectMode = false
+    @State private var selectedEncounterIds: Set<UUID> = []
+    @State private var showMergeSheet = false
+
     /// Tags that are currently assigned to at least one encounter
     var tagsInUse: [Tag] {
         var seenIds = Set<UUID>()
@@ -178,21 +183,38 @@ struct EncounterListView: View {
         .navigationTitle(String(localized: "Encounters"))
         .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if !encounters.isEmpty {
+                    Button {
+                        withAnimation {
+                            isSelectMode.toggle()
+                            if !isSelectMode {
+                                selectedEncounterIds.removeAll()
+                            }
+                        }
+                    } label: {
+                        Text(isSelectMode ? "Cancel" : "Select")
+                    }
+                }
+            }
+
             ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showFilters.toggle()
-                } label: {
-                    ZStack(alignment: .topTrailing) {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                            .foregroundStyle(hasActiveFilters ? AppColors.coral : AppColors.teal)
-                        if activeFilterCount > 0 {
-                            Text("\(activeFilterCount)")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
-                                .padding(4)
-                                .background(Circle().fill(AppColors.coral))
-                                .offset(x: 8, y: -8)
+                if !isSelectMode {
+                    Button {
+                        showFilters.toggle()
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .foregroundStyle(hasActiveFilters ? AppColors.coral : AppColors.teal)
+                            if activeFilterCount > 0 {
+                                Text("\(activeFilterCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.white)
+                                    .padding(4)
+                                    .background(Circle().fill(AppColors.coral))
+                                    .offset(x: 8, y: -8)
+                            }
                         }
                     }
                 }
@@ -214,6 +236,15 @@ struct EncounterListView: View {
         }
         .sheet(isPresented: $showScanner) {
             EncounterScannerView()
+        }
+        .sheet(isPresented: $showMergeSheet) {
+            let selected = encounters.filter { selectedEncounterIds.contains($0.id) }
+            EncounterMergeView(encounters: selected) {
+                withAnimation {
+                    isSelectMode = false
+                    selectedEncounterIds.removeAll()
+                }
+            }
         }
     }
 
@@ -244,14 +275,61 @@ struct EncounterListView: View {
 
             List {
                 ForEach(filteredEncounters) { encounter in
-                    NavigationLink {
-                        EncounterDetailView(encounter: encounter)
-                    } label: {
-                        EncounterRowView(encounter: encounter)
+                    if isSelectMode {
+                        Button {
+                            toggleSelection(encounter.id)
+                        } label: {
+                            HStack {
+                                Image(systemName: selectedEncounterIds.contains(encounter.id) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedEncounterIds.contains(encounter.id) ? AppColors.teal : .secondary)
+                                    .font(.title3)
+                                EncounterRowView(encounter: encounter)
+                            }
+                        }
+                        .foregroundStyle(.primary)
+                    } else {
+                        NavigationLink {
+                            EncounterDetailView(encounter: encounter)
+                        } label: {
+                            EncounterRowView(encounter: encounter)
+                        }
                     }
                 }
-                .onDelete(perform: deleteEncounters)
+                .onDelete(perform: isSelectMode ? nil : deleteEncounters)
             }
+            .safeAreaInset(edge: .bottom) {
+                if isSelectMode && selectedEncounterIds.count >= 2 {
+                    mergeBar
+                }
+            }
+        }
+    }
+
+    private func toggleSelection(_ id: UUID) {
+        if selectedEncounterIds.contains(id) {
+            selectedEncounterIds.remove(id)
+        } else {
+            selectedEncounterIds.insert(id)
+        }
+    }
+
+    @ViewBuilder
+    private var mergeBar: some View {
+        Button {
+            showMergeSheet = true
+        } label: {
+            HStack {
+                Image(systemName: "arrow.triangle.merge")
+                Text("Merge \(selectedEncounterIds.count) Encounters")
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(AppColors.teal)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+            .padding(.bottom, 4)
         }
     }
 

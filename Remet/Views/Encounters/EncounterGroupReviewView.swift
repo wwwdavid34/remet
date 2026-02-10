@@ -914,6 +914,10 @@ struct EncounterGroupReviewView: View {
     private func saveEncounter() {
         let settings = AppSettings.shared
 
+        // Dedup safety net: photos should already be filtered before review,
+        // but check again to prevent DB-level duplicates silently.
+        let existingAssetIds = fetchExistingAssetIds()
+
         let encounter = Encounter(
             occasion: occasion.isEmpty ? nil : occasion,
             notes: notes.isEmpty ? nil : notes,
@@ -925,6 +929,11 @@ struct EncounterGroupReviewView: View {
 
         // Create EncounterPhoto for each photo
         for photo in photoGroup.photos {
+            // Safety net: skip if somehow already in DB (should not happen after pre-filtering)
+            if existingAssetIds.contains(photo.id) {
+                continue
+            }
+
             guard let originalImage = photo.image else { continue }
             let resizedImage = resizeImage(originalImage, targetSize: settings.photoTargetSize)
             guard let imageData = resizedImage.jpegData(compressionQuality: settings.photoJpegQuality) else { continue }
@@ -963,6 +972,13 @@ struct EncounterGroupReviewView: View {
 
         onSave(encounter)
         dismiss()
+    }
+
+    /// Fetch all asset identifiers already stored in the database to prevent duplicate imports.
+    private func fetchExistingAssetIds() -> Set<String> {
+        let descriptor = FetchDescriptor<EncounterPhoto>()
+        guard let photos = try? modelContext.fetch(descriptor) else { return [] }
+        return Set(photos.compactMap { $0.assetIdentifier })
     }
 
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {

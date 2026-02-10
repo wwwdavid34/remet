@@ -2249,6 +2249,9 @@
         }
       }
     },
+    "Appends notes from all encounters into one." : {
+
+    },
     "Applied as savings when you subscribe" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3826,6 +3829,9 @@
           }
         }
       }
+    },
+    "Create New Encounter" : {
+
     },
     "Create new person instead" : {
       "localizations" : {
@@ -7056,6 +7062,9 @@
         }
       }
     },
+    "Keep metadata from" : {
+
+    },
     "Keep Practicing!" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8262,6 +8271,12 @@
         }
       }
     },
+    "Merge %@ Encounters" : {
+
+    },
+    "Merge %@ Groups" : {
+
+    },
     "Message" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8422,6 +8437,19 @@
           }
         }
       }
+    },
+    "Move %@ Photo%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Move %1$@ Photo%2$@"
+          }
+        }
+      }
+    },
+    "Moving all photos will delete this encounter" : {
+
     },
     "Multiple photos improve recognition" : {
       "extractionState" : "stale",
@@ -9852,6 +9880,9 @@
         }
       }
     },
+    "Options" : {
+
+    },
     "Or identify someone quickly" : {
       "localizations" : {
         "ja" : {
@@ -9941,6 +9972,9 @@
           }
         }
       }
+    },
+    "people" : {
+
     },
     "People" : {
       "localizations" : {
@@ -10394,6 +10428,9 @@
           }
         }
       }
+    },
+    "photos" : {
+
     },
     "Photos" : {
       "extractionState" : "stale",
@@ -12602,6 +12639,9 @@
         }
       }
     },
+    "Select photos to move" : {
+
+    },
     "Select Tags" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -13385,6 +13425,9 @@
         }
       }
     },
+    "Split selected photos into a new encounter" : {
+
+    },
     "Spot on!" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -13889,6 +13932,9 @@
         }
       }
     },
+    "tags" : {
+
+    },
     "Tags" : {
       "localizations" : {
         "ja" : {
@@ -14296,6 +14342,9 @@
           }
         }
       }
+    },
+    "The selected encounter's occasion, location, date, and coordinates will be used for the merged result." : {
+
     },
     "These %@ faces need more attention — you've got this!" : {
       "localizations" : {

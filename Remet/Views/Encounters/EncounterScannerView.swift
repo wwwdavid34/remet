@@ -29,6 +29,13 @@ struct EncounterScannerView: View {
     @State private var scannedAssetIds: Set<String> = []
     @State private var previouslyScannedCount = 0
 
+    // Group selection for merge
+    @State private var isGroupSelectMode = false
+    @State private var selectedGroupIds: Set<UUID> = []
+
+    // Alert for already-imported group
+    @State private var showAlreadyImportedAlert = false
+
     private let scannerService = PhotoLibraryScannerService()
 
     var body: some View {
@@ -45,28 +52,47 @@ struct EncounterScannerView: View {
             .navigationTitle("Scan Photos")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        dismiss()
+                ToolbarItem(placement: .confirmationAction) {
+                    if !isGroupSelectMode {
+                        Button("Done") {
+                            dismiss()
+                        }
                     }
                 }
 
                 if !isScanning && !photoGroups.isEmpty {
-                    ToolbarItem(placement: .primaryAction) {
-                        Menu {
+                    ToolbarItem(placement: .topBarLeading) {
+                        if photoGroups.count >= 2 {
                             Button {
-                                startScan()
+                                withAnimation {
+                                    isGroupSelectMode.toggle()
+                                    if !isGroupSelectMode {
+                                        selectedGroupIds.removeAll()
+                                    }
+                                }
                             } label: {
-                                Label("Rescan", systemImage: "arrow.clockwise")
+                                Text(isGroupSelectMode ? "Cancel" : "Select")
                             }
+                        }
+                    }
 
-                            Button {
-                                photoGroups = []
+                    ToolbarItem(placement: .primaryAction) {
+                        if !isGroupSelectMode {
+                            Menu {
+                                Button {
+                                    startScan()
+                                } label: {
+                                    Label("Rescan", systemImage: "arrow.clockwise")
+                                }
+
+                                Button {
+                                    photoGroups = []
+                                } label: {
+                                    Label("Change Settings", systemImage: "slider.horizontal.3")
+                                }
                             } label: {
-                                Label("Change Settings", systemImage: "slider.horizontal.3")
+                                Image(systemName: "ellipsis.circle")
                             }
-                        } label: {
-                            Image(systemName: "ellipsis.circle")
                         }
                     }
                 }
@@ -77,10 +103,16 @@ struct EncounterScannerView: View {
                     people: people
                 ) { encounter in
                     modelContext.insert(encounter)
-                    // Remove processed group
+                    // Remove processed group and strip saved photos from remaining groups
                     photoGroups.removeAll { $0.id == group.id }
+                    stripImportedPhotosFromGroups()
                     selectedGroup = nil
                 }
+            }
+            .alert("Already Imported", isPresented: $showAlreadyImportedAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("All photos in this group have already been imported.")
             }
             .alert("Photo Limit Reached", isPresented: $showLimitReachedAlert) {
                 let remainingPhotos = totalPhotosInRange - scannedPhotosCount
@@ -238,16 +270,36 @@ struct EncounterScannerView: View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(photoGroups) { group in
-                    GroupThumbnailCard(group: group)
-                        .onTapGesture {
-                            selectedGroup = group
+                    if isGroupSelectMode {
+                        Button {
+                            toggleGroupSelection(group.id)
+                        } label: {
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: selectedGroupIds.contains(group.id) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedGroupIds.contains(group.id) ? AppColors.teal : .secondary)
+                                    .font(.title3)
+                                    .padding(.top, 4)
+
+                                GroupThumbnailCard(group: group)
+                            }
                         }
+                        .buttonStyle(.plain)
+                    } else {
+                        GroupThumbnailCard(group: group)
+                            .onTapGesture {
+                                openGroupForReview(group)
+                            }
+                    }
                 }
             }
             .padding()
         }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom) {
             VStack(spacing: 4) {
+                if isGroupSelectMode && selectedGroupIds.count >= 2 {
+                    groupMergeBar
+                }
+
                 if scannedPhotosCount < totalPhotosInRange && scannedPhotosCount >= photoLimit {
                     HStack(spacing: 4) {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -260,13 +312,75 @@ struct EncounterScannerView: View {
                     .clipShape(Capsule())
                 }
 
-                Text("\(photoGroups.count) potential encounters found")
-                    .font(.caption)
-                    .padding(8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+                if !isGroupSelectMode {
+                    Text("\(photoGroups.count) potential encounters found")
+                        .font(.caption)
+                        .padding(8)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                }
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    private func toggleGroupSelection(_ id: UUID) {
+        if selectedGroupIds.contains(id) {
+            selectedGroupIds.remove(id)
+        } else {
+            selectedGroupIds.insert(id)
+        }
+    }
+
+    @ViewBuilder
+    private var groupMergeBar: some View {
+        Button {
+            mergeSelectedGroups()
+        } label: {
+            HStack {
+                Image(systemName: "arrow.triangle.merge")
+                Text("Merge \(selectedGroupIds.count) Groups")
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(AppColors.teal)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .padding(.horizontal)
+        }
+    }
+
+    private func mergeSelectedGroups() {
+        let groupsToMerge = photoGroups
+            .filter { selectedGroupIds.contains($0.id) }
+            .sorted { $0.date < $1.date }
+
+        guard groupsToMerge.count >= 2 else { return }
+
+        // Combine all photos, sorted by date
+        let combinedPhotos = groupsToMerge
+            .flatMap { $0.photos }
+            .sorted { $0.date < $1.date }
+
+        // Take location from earliest group that has one
+        let locationName = groupsToMerge.first(where: { $0.locationName != nil })?.locationName
+
+        let mergedGroup = PhotoGroup(
+            id: UUID(),
+            photos: combinedPhotos,
+            locationName: locationName
+        )
+
+        // Replace selected groups with merged group
+        photoGroups.removeAll { selectedGroupIds.contains($0.id) }
+        photoGroups.append(mergedGroup)
+        photoGroups.sort { $0.date > $1.date }
+
+        // Exit selection mode
+        withAnimation {
+            selectedGroupIds.removeAll()
+            isGroupSelectMode = false
         }
     }
 
@@ -275,6 +389,40 @@ struct EncounterScannerView: View {
         let descriptor = FetchDescriptor<EncounterPhoto>()
         guard let photos = try? modelContext.fetch(descriptor) else { return [] }
         return Set(photos.compactMap { $0.assetIdentifier })
+    }
+
+    /// Filter a group's photos against the DB before showing the review sheet.
+    /// If all photos are already imported, removes the group and shows an alert.
+    private func openGroupForReview(_ group: PhotoGroup) {
+        let importedIds = fetchImportedAssetIds()
+        let freshPhotos = group.photos.filter { !importedIds.contains($0.id) }
+
+        if freshPhotos.isEmpty {
+            // All photos already imported — remove stale group
+            photoGroups.removeAll { $0.id == group.id }
+            showAlreadyImportedAlert = true
+        } else if freshPhotos.count < group.photos.count {
+            // Some photos already imported — open with filtered group
+            var filtered = group
+            filtered.photos = freshPhotos
+            selectedGroup = filtered
+        } else {
+            selectedGroup = group
+        }
+    }
+
+    /// After saving a group, strip any now-imported photos from remaining groups
+    /// and remove groups that become empty.
+    private func stripImportedPhotosFromGroups() {
+        let importedIds = fetchImportedAssetIds()
+        photoGroups = photoGroups.compactMap { group in
+            let remaining = group.photos.filter { !importedIds.contains($0.id) }
+            if remaining.isEmpty { return nil }
+            if remaining.count == group.photos.count { return group }
+            var updated = group
+            updated.photos = remaining
+            return updated
+        }
     }
 
     private func startScan() {

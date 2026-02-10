@@ -39,6 +39,11 @@ struct EncounterDetailView: View {
     // Re-detect faces state
     @State private var isRedetecting = false
 
+    // Photo move/selection state
+    @State private var isPhotoSelectMode = false
+    @State private var selectedPhotoIds: Set<UUID> = []
+    @State private var showMoveDestination = false
+
     // Remove person confirmation state
     @State private var personToRemove: Person?
     @State private var showRemovePersonConfirmation = false
@@ -97,6 +102,19 @@ struct EncounterDetailView: View {
                         Label(String(localized: "Re-detect Faces"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
                     .disabled(isRedetecting)
+
+                    if hasMultiplePhotos {
+                        Divider()
+
+                        Button {
+                            withAnimation {
+                                isPhotoSelectMode = true
+                                selectedPhotoIds.removeAll()
+                            }
+                        } label: {
+                            Label(String(localized: "Move Photos"), systemImage: "photo.on.rectangle.angled")
+                        }
+                    }
                 } label: {
                     if isRedetecting || isLocatingFace {
                         ProgressView()
@@ -140,6 +158,15 @@ struct EncounterDetailView: View {
         }
         .sheet(isPresented: $showEditView) {
             EncounterEditView(encounter: encounter, people: allPeople)
+        }
+        .sheet(isPresented: $showMoveDestination) {
+            MovePhotosDestinationView(
+                sourceEncounter: encounter,
+                selectedPhotoIds: selectedPhotoIds
+            ) { sourceDeleted in
+                isPhotoSelectMode = false
+                selectedPhotoIds.removeAll()
+            }
         }
     }
 
@@ -734,7 +761,10 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private var photoSection: some View {
-        if hasMultiplePhotos {
+        if hasMultiplePhotos && isPhotoSelectMode {
+            // Photo selection grid for move mode
+            photoSelectionGrid
+        } else if hasMultiplePhotos {
             // Multiple photos carousel
             VStack(spacing: 8) {
                 TabView(selection: $selectedPhotoIndex) {
@@ -894,6 +924,92 @@ struct EncounterDetailView: View {
                         }
                     }
             }
+        }
+    }
+
+    // MARK: - Photo Selection Grid (for Move)
+
+    @ViewBuilder
+    private var photoSelectionGrid: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("Select photos to move")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("Cancel") {
+                    withAnimation {
+                        isPhotoSelectMode = false
+                        selectedPhotoIds.removeAll()
+                    }
+                }
+                .font(.subheadline)
+            }
+
+            let columns = [GridItem(.adaptive(minimum: 100), spacing: 4)]
+
+            LazyVGrid(columns: columns, spacing: 4) {
+                ForEach(encounter.sortedPhotos) { photo in
+                    Button {
+                        togglePhotoSelection(photo.id)
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            if let image = UIImage(data: photo.imageData) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(minHeight: 100)
+                                    .clipped()
+                            }
+
+                            Image(systemName: selectedPhotoIds.contains(photo.id) ? "checkmark.circle.fill" : "circle")
+                                .font(.title3)
+                                .foregroundStyle(selectedPhotoIds.contains(photo.id) ? AppColors.teal : .white)
+                                .shadow(radius: 2)
+                                .padding(6)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay {
+                            if selectedPhotoIds.contains(photo.id) {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(AppColors.teal, lineWidth: 3)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if !selectedPhotoIds.isEmpty {
+                let allSelected = selectedPhotoIds.count == encounter.photos.count
+                Button {
+                    showMoveDestination = true
+                } label: {
+                    HStack {
+                        Image(systemName: "photo.on.rectangle.angled")
+                        Text("Move \(selectedPhotoIds.count) Photo\(selectedPhotoIds.count == 1 ? "" : "s")")
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(AppColors.teal)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+
+                if allSelected {
+                    Text("Moving all photos will delete this encounter")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.warning)
+                }
+            }
+        }
+    }
+
+    private func togglePhotoSelection(_ id: UUID) {
+        if selectedPhotoIds.contains(id) {
+            selectedPhotoIds.remove(id)
+        } else {
+            selectedPhotoIds.insert(id)
         }
     }
 
