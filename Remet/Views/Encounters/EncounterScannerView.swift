@@ -270,6 +270,13 @@ struct EncounterScannerView: View {
         }
     }
 
+    /// Fetch asset identifiers already imported into encounters
+    private func fetchImportedAssetIds() -> Set<String> {
+        let descriptor = FetchDescriptor<EncounterPhoto>()
+        guard let photos = try? modelContext.fetch(descriptor) else { return [] }
+        return Set(photos.compactMap { $0.assetIdentifier })
+    }
+
     private func startScan() {
         isScanning = true
         scanProgress = 0
@@ -277,6 +284,8 @@ struct EncounterScannerView: View {
         scannedPhotosCount = 0
         scannedAssetIds = []
         previouslyScannedCount = 0
+
+        let importedIds = fetchImportedAssetIds()
 
         Task {
             let groups: [PhotoGroup]
@@ -287,16 +296,18 @@ struct EncounterScannerView: View {
                 let totalCount = await scannerService.countPhotos(from: customStartDate, to: customEndDate)
 
                 // Use custom date range
-                let assets = await scannerService.fetchPhotos(
+                let allAssets = await scannerService.fetchPhotos(
                     from: customStartDate,
                     to: customEndDate,
                     limit: photoLimit
                 )
+                // Filter out photos already used in encounters
+                let assets = allAssets.filter { !importedIds.contains($0.localIdentifier) }
                 scanTotal = assets.count
-                scannedIds = assets.map { $0.localIdentifier }
+                scannedIds = allAssets.map { $0.localIdentifier }
 
                 await MainActor.run {
-                    totalPhotosInRange = totalCount
+                    totalPhotosInRange = totalCount - importedIds.count
                     scannedPhotosCount = assets.count
                 }
 
@@ -310,15 +321,17 @@ struct EncounterScannerView: View {
                 let totalCount = await scannerService.countPhotos(timeRange: selectedTimeRange)
 
                 // Use preset time range
-                let assets = await scannerService.fetchRecentPhotos(
+                let allAssets = await scannerService.fetchRecentPhotos(
                     limit: photoLimit,
                     timeRange: selectedTimeRange
                 )
+                // Filter out photos already used in encounters
+                let assets = allAssets.filter { !importedIds.contains($0.localIdentifier) }
                 scanTotal = assets.count
-                scannedIds = assets.map { $0.localIdentifier }
+                scannedIds = allAssets.map { $0.localIdentifier }
 
                 await MainActor.run {
-                    totalPhotosInRange = totalCount
+                    totalPhotosInRange = totalCount - importedIds.count
                     scannedPhotosCount = assets.count
                 }
 
@@ -350,8 +363,10 @@ struct EncounterScannerView: View {
         previouslyScannedCount = scannedPhotosCount
         scanProgress = 0
 
+        let importedIds = fetchImportedAssetIds()
+
         Task {
-            // Fetch more photos, skipping already scanned ones
+            // Fetch more photos, skipping already scanned and already imported ones
             let newLimit = scannedPhotosCount + additionalCount
             var newAssets: [PHAsset] = []
             var scannedIds: [String] = []
@@ -362,16 +377,22 @@ struct EncounterScannerView: View {
                     to: customEndDate,
                     limit: newLimit
                 )
-                // Filter out already scanned assets
-                newAssets = allAssets.filter { !scannedAssetIds.contains($0.localIdentifier) }
+                // Filter out already scanned and already imported assets
+                newAssets = allAssets.filter {
+                    !scannedAssetIds.contains($0.localIdentifier) &&
+                    !importedIds.contains($0.localIdentifier)
+                }
                 scannedIds = allAssets.map { $0.localIdentifier }
             } else {
                 let allAssets = await scannerService.fetchRecentPhotos(
                     limit: newLimit,
                     timeRange: selectedTimeRange
                 )
-                // Filter out already scanned assets
-                newAssets = allAssets.filter { !scannedAssetIds.contains($0.localIdentifier) }
+                // Filter out already scanned and already imported assets
+                newAssets = allAssets.filter {
+                    !scannedAssetIds.contains($0.localIdentifier) &&
+                    !importedIds.contains($0.localIdentifier)
+                }
                 scannedIds = allAssets.map { $0.localIdentifier }
             }
 

@@ -32,7 +32,7 @@ struct EncounterReviewView: View {
     @State private var localDetectedFaces: [DetectedFace] = []
 
     // Focus state for name input
-    @FocusState private var isNameFieldFocused: Bool
+
 
     private let scannerService = PhotoLibraryScannerService()
     private let faceDetectionService = FaceDetectionService()
@@ -470,51 +470,17 @@ struct EncounterReviewView: View {
     @ViewBuilder
     private var newPersonSheet: some View {
         let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
-        NavigationStack {
-            Form {
-                if let index = selectedBoxIndex,
-                   index < faces.count {
-                    let face = faces[index]
-                    HStack {
-                        Spacer()
-                        Image(uiImage: face.cropImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 120)
-                            .clipShape(Circle())
-                        Spacer()
-                    }
-                    .listRowBackground(Color.clear)
-                }
-
-                TextField("Name", text: $newPersonName)
-                    .textContentType(.name)
-                    .focused($isNameFieldFocused)
-            }
-            .navigationTitle("New Person")
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    isNameFieldFocused = true
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        newPersonName = ""
-                        showNewPersonSheet = false
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        createAndAssignPerson()
-                    }
-                    .disabled(newPersonName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium])
+        let cropImage: UIImage? = {
+            guard let idx = selectedBoxIndex, idx < faces.count else { return nil }
+            return faces[idx].cropImage
+        }()
+        NewPersonSheetContent(
+            faceCropImage: cropImage,
+            name: $newPersonName,
+            confirmLabel: "Add",
+            onConfirm: { createAndAssignPerson() },
+            onCancel: { newPersonName = ""; showNewPersonSheet = false }
+        )
     }
 
     private func processPhoto() async {

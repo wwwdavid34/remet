@@ -55,6 +55,7 @@
 		81AB8030C5DC0249205DCC6F /* CloudSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */; };
 		828E4087E1F24C0621CD8622 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B46C31F66EEF6265FC61C67 /* AppTheme.swift */; };
 		850080AEEE42F81F45F3862F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 08D42FE113F8837656ABC3BA /* Localizable.xcstrings */; };
+		895EE803C1F62178054A268D /* NewPersonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCD2F3F97CABFA17BDAAD1F /* NewPersonSheet.swift */; };
 		898810411417DD9F8C0B083C /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41544F52E67D4CB06C8D73 /* LiquidGlassStyle.swift */; };
 		9016682C25A644AA47C25B59 /* FaceThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F070BD72AC0EF46DC7A15 /* FaceThumbnailView.swift */; };
 		94EECE7C4AEB9D1BACA898DF /* OnboardingLiveScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A993EA76D2CB5F07559084 /* OnboardingLiveScanView.swift */; };
@@ -139,6 +140,7 @@
 		8506C97A0F1D2A3A3C3BDD51 /* PeopleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleListView.swift; sourceTree = "<group>"; };
 		86F06F2E892DC609EE68FD1D /* OnboardingWelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWelcomeView.swift; sourceTree = "<group>"; };
 		87EFFE3BD6B8C3BEF4E2C1BD /* GlobalSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchView.swift; sourceTree = "<group>"; };
+		8CCD2F3F97CABFA17BDAAD1F /* NewPersonSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPersonSheet.swift; sourceTree = "<group>"; };
 		910C743F3BC5471067CB643C /* AppLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogoView.swift; sourceTree = "<group>"; };
 		9157C1E917CFF24ECFC278A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9490DFD03312D9AD01EB8896 /* DemoDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoDataService.swift; sourceTree = "<group>"; };
@@ -330,6 +332,7 @@
 				73B1C5AC0126ABEFC13CD0F1 /* FloatingActionButton.swift */,
 				37E55E11E0F450C6CA3FB079 /* FloatingTabBar.swift */,
 				3B41544F52E67D4CB06C8D73 /* LiquidGlassStyle.swift */,
+				8CCD2F3F97CABFA17BDAAD1F /* NewPersonSheet.swift */,
 				750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */,
 				2E23F39895AF9B13A0FDC41D /* SplashView.swift */,
 				58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */,
@@ -553,6 +556,7 @@
 				1438F50C9349DD2C3C04E337 /* MatchResultCard.swift in Sources */,
 				C4CA14631D70FBBE1A9EB210 /* MemoryScanView.swift in Sources */,
 				5176F743AA0ADD4E644F4DC2 /* MemoryScanViewModel.swift in Sources */,
+				895EE803C1F62178054A268D /* NewPersonSheet.swift in Sources */,
 				08AC7016FFB6FDD4F21BC0A0 /* OnboardingCompleteView.swift in Sources */,
 				118D2267ED6D521A02B94AFE /* OnboardingContainerView.swift in Sources */,
 				B652F1F91E5F7C56FE788B2C /* OnboardingFirstMemoryView.swift in Sources */,

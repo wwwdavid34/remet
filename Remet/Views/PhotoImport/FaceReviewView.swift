@@ -13,6 +13,7 @@ struct FaceReviewView: View {
     @State private var viewModel = FaceReviewViewModel()
     @State private var showPeoplePicker = false
 
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -219,7 +220,7 @@ struct FaceReviewView: View {
                 let hasIdentifiedFaces = viewModel.facesForReview.contains { $0.assignedPerson != nil }
                 if hasIdentifiedFaces {
                     // Small delay to ensure embeddings are saved
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         _ = viewModel.createEncounter(from: img, modelContext: modelContext)
                     }
                 }
@@ -229,44 +230,13 @@ struct FaceReviewView: View {
 
     @ViewBuilder
     private var newPersonSheet: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                if let face = viewModel.currentFace {
-                    Image(uiImage: face.detectedFace.cropImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 150)
-                        .clipShape(Circle())
-                }
-
-                TextField("Name", text: $viewModel.newPersonName)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.name)
-                    .autocorrectionDisabled()
-                    .padding(.horizontal)
-
-                Spacer()
-            }
-            .padding(.top, 32)
-            .navigationTitle("New Person")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        viewModel.newPersonName = ""
-                        viewModel.showNameInput = false
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        _ = viewModel.createNewPerson(modelContext: modelContext)
-                    }
-                    .disabled(viewModel.newPersonName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium])
+        NewPersonSheetContent(
+            faceCropImage: viewModel.currentFace?.detectedFace.cropImage,
+            name: $viewModel.newPersonName,
+            confirmLabel: "Save",
+            onConfirm: { _ = viewModel.createNewPerson(modelContext: modelContext) },
+            onCancel: { viewModel.newPersonName = ""; viewModel.showNameInput = false }
+        )
     }
 
     @ViewBuilder

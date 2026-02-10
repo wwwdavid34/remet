@@ -37,7 +37,7 @@ struct EncounterEditView: View {
     @State private var isRedetecting = false
 
     // Focus state
-    @FocusState private var isNameFieldFocused: Bool
+
 
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
 
@@ -607,49 +607,13 @@ struct EncounterEditView: View {
 
     @ViewBuilder
     private var newPersonSheet: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                if let faceCrop = selectedFaceCrop {
-                    Image(uiImage: faceCrop)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 120, height: 120)
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(AppColors.teal, lineWidth: 3)
-                        )
-                }
-
-                TextField("Enter name", text: $newPersonName)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($isNameFieldFocused)
-                    .padding(.horizontal)
-
-                Spacer()
-            }
-            .padding(.top, 40)
-            .navigationTitle("New Person")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        newPersonName = ""
-                        showNewPersonSheet = false
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") {
-                        createNewPerson()
-                    }
-                    .disabled(newPersonName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-            .onAppear {
-                isNameFieldFocused = true
-            }
-        }
+        NewPersonSheetContent(
+            faceCropImage: selectedFaceCrop,
+            name: $newPersonName,
+            confirmLabel: "Create",
+            onConfirm: { createNewPerson() },
+            onCancel: { newPersonName = ""; showNewPersonSheet = false }
+        )
     }
 
     // MARK: - Helper Methods

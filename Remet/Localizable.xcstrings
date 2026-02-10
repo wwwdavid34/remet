@@ -10147,6 +10147,7 @@
       }
     },
     "Person's Name" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

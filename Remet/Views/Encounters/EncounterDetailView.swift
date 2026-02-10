@@ -23,6 +23,7 @@ struct EncounterDetailView: View {
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
 
+
     // Session-level face embedding cache for realtime matching
     @State private var sessionEmbeddings: [UUID: (personId: UUID, embedding: [Float])] = [:]
     @State private var isPropagating = false
@@ -426,54 +427,13 @@ struct EncounterDetailView: View {
 
     @ViewBuilder
     private var newPersonSheet: some View {
-        NavigationStack {
-            Form {
-                // Show the face being labeled for reference
-                if let faceCrop = selectedFaceCrop {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Image(uiImage: faceCrop)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 120)
-                                .clipShape(Circle())
-                                .overlay(
-                                    Circle()
-                                        .stroke(AppColors.coral.opacity(0.5), lineWidth: 2)
-                                )
-                            Spacer()
-                        }
-                    }
-                    .listRowBackground(Color.clear)
-                }
-
-                Section {
-                    TextField("Name", text: $newPersonName)
-                        .textContentType(.name)
-                } header: {
-                    Text("Person's Name")
-                }
-            }
-            .navigationTitle("New Person")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        newPersonName = ""
-                        showNewPersonSheet = false
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        createAndAssignPerson()
-                    }
-                    .disabled(newPersonName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium])
+        NewPersonSheetContent(
+            faceCropImage: selectedFaceCrop,
+            name: $newPersonName,
+            confirmLabel: "Add",
+            onConfirm: { createAndAssignPerson() },
+            onCancel: { newPersonName = ""; showNewPersonSheet = false }
+        )
     }
 
     // MARK: - Face Labeling Helpers
