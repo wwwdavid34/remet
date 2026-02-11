@@ -183,6 +183,7 @@ final class FaceReviewViewModel {
         }
 
         modelContext.insert(encounter)
+        try? modelContext.save()
         createdEncounter = encounter
 
         return encounter

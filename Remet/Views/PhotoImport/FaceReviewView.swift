@@ -221,6 +221,7 @@ struct FaceReviewView: View {
                 if hasIdentifiedFaces {
                     // Small delay to ensure embeddings are saved
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        guard viewModel.createdEncounter == nil else { return }
                         _ = viewModel.createEncounter(from: img, modelContext: modelContext)
                     }
                 }

@@ -173,11 +173,60 @@ struct EncounterListView: View {
     }
 
     var body: some View {
-        Group {
+        List {
             if encounters.isEmpty {
-                emptyStateView
+                ContentUnavailableView {
+                    Label(WittyCopy.emptyEncountersTitle, systemImage: "person.2.crop.square.stack")
+                } description: {
+                    Text(WittyCopy.emptyEncountersSubtitle)
+                } actions: {
+                    Button("Add Encounter") { showScanner = true }
+                        .buttonStyle(.borderedProminent)
+                }
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             } else {
-                encountersList
+                // Tag filter bar
+                if hasAnyTags {
+                    Section {
+                        TagFilterView(
+                            availableTags: tagsInUse,
+                            selectedTags: $selectedTagFilters,
+                            onClear: { selectedTagFilters.removeAll() }
+                        )
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                }
+
+                ForEach(filteredEncounters) { encounter in
+                    if isSelectMode {
+                        Button {
+                            toggleSelection(encounter.id)
+                        } label: {
+                            HStack {
+                                Image(systemName: selectedEncounterIds.contains(encounter.id) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedEncounterIds.contains(encounter.id) ? AppColors.teal : .secondary)
+                                    .font(.title3)
+                                EncounterRowView(encounter: encounter)
+                            }
+                        }
+                        .foregroundStyle(.primary)
+                    } else {
+                        NavigationLink {
+                            EncounterDetailView(encounter: encounter)
+                        } label: {
+                            EncounterRowView(encounter: encounter)
+                        }
+                    }
+                }
+                .onDelete(perform: isSelectMode ? nil : deleteEncounters)
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if isSelectMode && selectedEncounterIds.count >= 2 {
+                mergeBar
             }
         }
         .navigationTitle(String(localized: "Encounters"))
@@ -243,63 +292,6 @@ struct EncounterListView: View {
                 withAnimation {
                     isSelectMode = false
                     selectedEncounterIds.removeAll()
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var emptyStateView: some View {
-        EmptyStateView(
-            icon: "person.2.crop.square.stack",
-            title: WittyCopy.emptyEncountersTitle,
-            subtitle: WittyCopy.emptyEncountersSubtitle,
-            actionTitle: "Add Encounter",
-            action: { showScanner = true }
-        )
-    }
-
-    @ViewBuilder
-    private var encountersList: some View {
-        VStack(spacing: 0) {
-            // Tag filter bar
-            if hasAnyTags {
-                TagFilterView(
-                    availableTags: tagsInUse,
-                    selectedTags: $selectedTagFilters,
-                    onClear: { selectedTagFilters.removeAll() }
-                )
-                .padding(.vertical, 8)
-                .background(Color(.systemBackground))
-            }
-
-            List {
-                ForEach(filteredEncounters) { encounter in
-                    if isSelectMode {
-                        Button {
-                            toggleSelection(encounter.id)
-                        } label: {
-                            HStack {
-                                Image(systemName: selectedEncounterIds.contains(encounter.id) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(selectedEncounterIds.contains(encounter.id) ? AppColors.teal : .secondary)
-                                    .font(.title3)
-                                EncounterRowView(encounter: encounter)
-                            }
-                        }
-                        .foregroundStyle(.primary)
-                    } else {
-                        NavigationLink {
-                            EncounterDetailView(encounter: encounter)
-                        } label: {
-                            EncounterRowView(encounter: encounter)
-                        }
-                    }
-                }
-                .onDelete(perform: isSelectMode ? nil : deleteEncounters)
-            }
-            .safeAreaInset(edge: .bottom) {
-                if isSelectMode && selectedEncounterIds.count >= 2 {
-                    mergeBar
                 }
             }
         }

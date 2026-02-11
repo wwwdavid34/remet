@@ -15,6 +15,7 @@ struct PeopleHomeView: View {
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
     @State private var showAccount = false
+    @State private var showAllEncounters = false
     @State private var scrollOffset: CGFloat = 0
     @State private var showSearchField = false
     @FocusState private var searchFieldFocused: Bool
@@ -149,6 +150,16 @@ struct PeopleHomeView: View {
             }
             .navigationDestination(item: $selectedPerson) { person in
                 PersonDetailView(person: person)
+            }
+            .sheet(isPresented: $showAllEncounters) {
+                NavigationStack {
+                    EncounterListView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") { showAllEncounters = false }
+                            }
+                        }
+                }
             }
             .sheet(item: $selectedEncounter) { encounter in
                 NavigationStack {
@@ -400,8 +411,8 @@ struct PeopleHomeView: View {
                         .fontWeight(.semibold)
                 }
                 Spacer()
-                NavigationLink {
-                    EncounterListView()
+                Button {
+                    showAllEncounters = true
                 } label: {
                     Text("See All")
                         .font(.caption)

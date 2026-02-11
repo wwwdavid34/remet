@@ -103,6 +103,7 @@ struct EncounterScannerView: View {
                     people: people
                 ) { encounter in
                     modelContext.insert(encounter)
+                    try? modelContext.save()
                     // Remove processed group and strip saved photos from remaining groups
                     photoGroups.removeAll { $0.id == group.id }
                     stripImportedPhotosFromGroups()
