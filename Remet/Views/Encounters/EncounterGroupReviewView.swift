@@ -248,7 +248,7 @@ struct EncounterGroupReviewView: View {
                 } else {
                     ForEach(allPeople, id: \.id) { person in
                         HStack {
-                            if let firstEmbedding = person.embeddings.first,
+                            if let firstEmbedding = person.embeddings?.first,
                                let image = UIImage(data: firstEmbedding.faceCropData) {
                                 Image(uiImage: image)
                                     .resizable()
@@ -382,7 +382,7 @@ struct EncounterGroupReviewView: View {
                                 assignPerson(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings.first,
+                                    if let firstEmbedding = match.person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -434,7 +434,7 @@ struct EncounterGroupReviewView: View {
                                 assignPerson(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings.first,
+                                    if let firstEmbedding = person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -952,7 +952,7 @@ struct EncounterGroupReviewView: View {
             }
 
             encounterPhoto.encounter = encounter
-            encounter.photos.append(encounterPhoto)
+            encounter.photos = (encounter.photos ?? []) + [encounterPhoto]
         }
 
         // Set thumbnail from first photo (always use compact size for thumbnails)
@@ -1003,7 +1003,7 @@ struct EncounterGroupReviewView: View {
     private func cleanupCreatedPersons() {
         for person in createdPersons {
             // Delete embeddings first (should cascade, but be explicit)
-            for embedding in person.embeddings {
+            for embedding in person.embeddings ?? [] {
                 modelContext.delete(embedding)
             }
             modelContext.delete(person)

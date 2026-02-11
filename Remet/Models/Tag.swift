@@ -11,10 +11,10 @@ final class Tag {
 
     // Inverse relationships
     @Relationship(inverse: \Person.tags)
-    var people: [Person] = []
+    var people: [Person]?
 
     @Relationship(inverse: \Encounter.tags)
-    var encounters: [Encounter] = []
+    var encounters: [Encounter]?
 
     init(
         id: UUID = UUID(),
@@ -33,7 +33,7 @@ final class Tag {
     }
 
     var usageCount: Int {
-        people.count + encounters.count
+        (people ?? []).count + (encounters ?? []).count
     }
 }
 

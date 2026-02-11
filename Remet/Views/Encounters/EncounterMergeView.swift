@@ -28,13 +28,13 @@ struct EncounterMergeView: View {
     }
 
     private var totalPhotos: Int {
-        encounters.reduce(0) { $0 + max($1.photos.count, $1.imageData != nil ? 1 : 0) }
+        encounters.reduce(0) { $0 + max(($1.photos ?? []).count, $1.imageData != nil ? 1 : 0) }
     }
 
     private var totalPeople: Int {
         var ids = Set<UUID>()
         for e in encounters {
-            for p in e.people { ids.insert(p.id) }
+            for p in e.people ?? [] { ids.insert(p.id) }
         }
         return ids.count
     }
@@ -42,7 +42,7 @@ struct EncounterMergeView: View {
     private var totalTags: Int {
         var ids = Set<UUID>()
         for e in encounters {
-            for t in e.tags { ids.insert(t.id) }
+            for t in e.tags ?? [] { ids.insert(t.id) }
         }
         return ids.count
     }

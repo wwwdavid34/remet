@@ -54,7 +54,7 @@ struct EncounterDetailView: View {
 
     // Check if this encounter has multiple photos
     private var hasMultiplePhotos: Bool {
-        !encounter.photos.isEmpty
+        !(encounter.photos ?? []).isEmpty
     }
 
     var body: some View {
@@ -67,7 +67,7 @@ struct EncounterDetailView: View {
             }
             .padding()
             .onAppear {
-                selectedTags = encounter.tags
+                selectedTags = encounter.tags ?? []
             }
         }
         .navigationTitle(encounter.occasion ?? "Encounter")
@@ -219,7 +219,7 @@ struct EncounterDetailView: View {
                                 assignPersonToFace(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings.first,
+                                    if let firstEmbedding = match.person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -271,7 +271,7 @@ struct EncounterDetailView: View {
                                 assignPersonToFace(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings.first,
+                                    if let firstEmbedding = person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -412,7 +412,7 @@ struct EncounterDetailView: View {
 
                 // Get regular matches from stored embeddings
                 // Boost persons already in this encounter to encourage consistent labeling
-                let encounterPersonIds = Set(encounter.people.map { $0.id })
+                let encounterPersonIds = Set((encounter.people ?? []).map { $0.id })
                 let regularMatches = matchingService.findMatches(for: embedding, in: allPeople, topK: 5, threshold: 0.5, boostPersonIds: encounterPersonIds)
 
                 // Merge matches, preferring higher similarity and removing duplicates
@@ -503,8 +503,8 @@ struct EncounterDetailView: View {
         }
 
         // Link person to encounter if not already
-        if !encounter.people.contains(where: { $0.id == person.id }) {
-            encounter.people.append(person)
+        if !(encounter.people ?? []).contains(where: { $0.id == person.id }) {
+            encounter.people = (encounter.people ?? []) + [person]
         }
 
         // Create embedding for this face assignment (pass boxId for re-label tracking)
@@ -574,7 +574,7 @@ struct EncounterDetailView: View {
 
     /// Propagate face label to similar faces in other photos of the same encounter
     private func propagateFaceLabelToOtherPhotos(person: Person, sourceBox: FaceBoundingBox, sourcePhoto: EncounterPhoto) {
-        let otherPhotos = encounter.photos.filter { $0.id != sourcePhoto.id }
+        let otherPhotos = (encounter.photos ?? []).filter { $0.id != sourcePhoto.id }
         guard !otherPhotos.isEmpty else { return }
 
         isPropagating = true
@@ -706,7 +706,7 @@ struct EncounterDetailView: View {
         if let personId = removedPersonId {
             let stillHasFaces = checkPersonHasFacesInEncounter(personId)
             if !stillHasFaces {
-                encounter.people.removeAll { $0.id == personId }
+                encounter.people = (encounter.people ?? []).filter { $0.id != personId }
             }
         }
 
@@ -717,7 +717,7 @@ struct EncounterDetailView: View {
 
     private func checkPersonHasFacesInEncounter(_ personId: UUID) -> Bool {
         // Check all photos
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             if photo.faceBoundingBoxes.contains(where: { $0.personId == personId }) {
                 return true
             }
@@ -746,13 +746,13 @@ struct EncounterDetailView: View {
                 .font(.headline)
 
             InlineTagEditor(
-                tags: encounter.tags,
+                tags: encounter.tags ?? [],
                 onAddTag: {
-                    selectedTags = encounter.tags
+                    selectedTags = encounter.tags ?? []
                     showTagPicker = true
                 },
                 onRemoveTag: { tag in
-                    encounter.tags.removeAll { $0.id == tag.id }
+                    encounter.tags = (encounter.tags ?? []).filter { $0.id != tag.id }
                 }
             )
         }
@@ -822,7 +822,7 @@ struct EncounterDetailView: View {
                         }
                     }
                 } else {
-                    Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos • Tap to expand")
+                    Text("\(selectedPhotoIndex + 1) of \((encounter.photos ?? []).count) photos • Tap to expand")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
@@ -980,7 +980,7 @@ struct EncounterDetailView: View {
             }
 
             if !selectedPhotoIds.isEmpty {
-                let allSelected = selectedPhotoIds.count == encounter.photos.count
+                let allSelected = selectedPhotoIds.count == (encounter.photos ?? []).count
                 Button {
                     showMoveDestination = true
                 } label: {
@@ -1017,7 +1017,7 @@ struct EncounterDetailView: View {
         if let personId = box.personId {
             // Already labeled - navigate to person profile (unless editing)
             if !isEditing {
-                selectedPerson = encounter.people.first { $0.id == personId }
+                selectedPerson = (encounter.people ?? []).first { $0.id == personId }
             } else {
                 // In edit mode, allow relabeling
                 selectedBoxId = box.id
@@ -1090,15 +1090,15 @@ struct EncounterDetailView: View {
             Text("People")
                 .font(.headline)
 
-            if encounter.people.isEmpty {
+            if (encounter.people ?? []).isEmpty {
                 Text("No people identified")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(encounter.people) { person in
+                ForEach(encounter.people ?? []) { person in
                     HStack {
                         NavigationLink(value: person) {
                             HStack {
-                                if let firstEmbedding = person.embeddings.first,
+                                if let firstEmbedding = person.embeddings?.first,
                                    let image = UIImage(data: firstEmbedding.faceCropData) {
                                     Image(uiImage: image)
                                         .resizable()
@@ -1175,7 +1175,7 @@ struct EncounterDetailView: View {
         let encounterId = encounter.id
 
         // Remove person's face labels from all bounding boxes in this encounter
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             var boxes = photo.faceBoundingBoxes
             for i in boxes.indices where boxes[i].personId == person.id {
                 boxes[i].personId = nil
@@ -1193,7 +1193,7 @@ struct EncounterDetailView: View {
         encounter.faceBoundingBoxes = legacyBoxes
 
         // Delete all embeddings linking this person to this encounter
-        let embeddingsToDelete = person.embeddings.filter { $0.encounterId == encounterId }
+        let embeddingsToDelete = (person.embeddings ?? []).filter { $0.encounterId == encounterId }
         for embedding in embeddingsToDelete {
             // Clear profile photo reference if needed
             if person.profileEmbeddingId == embedding.id {
@@ -1203,7 +1203,7 @@ struct EncounterDetailView: View {
         }
 
         // Remove person from encounter's people list
-        encounter.people.removeAll { $0.id == person.id }
+        encounter.people = (encounter.people ?? []).filter { $0.id != person.id }
     }
 
     @ViewBuilder
@@ -1384,7 +1384,7 @@ struct EncounterDetailView: View {
         guard let faceId = lastAddedFaceId else { return }
 
         if let photoId = lastAddedFacePhotoId,
-           let photo = encounter.photos.first(where: { $0.id == photoId }) {
+           let photo = (encounter.photos ?? []).first(where: { $0.id == photoId }) {
             photo.faceBoundingBoxes.removeAll { $0.id == faceId }
         } else {
             encounter.faceBoundingBoxes.removeAll { $0.id == faceId }
@@ -1405,7 +1405,7 @@ struct EncounterDetailView: View {
         }
 
         // Handle multi-photo encounters
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             guard let image = UIImage(data: photo.imageData) else { continue }
             let oldBoxes = photo.faceBoundingBoxes
 
@@ -1417,7 +1417,7 @@ struct EncounterDetailView: View {
         }
 
         // Handle legacy single-photo encounter
-        if encounter.photos.isEmpty, let imageData = encounter.imageData, let image = UIImage(data: imageData) {
+        if (encounter.photos ?? []).isEmpty, let imageData = encounter.imageData, let image = UIImage(data: imageData) {
             let oldBoxes = encounter.faceBoundingBoxes
 
             let newBoxes = await detectFacesWithTiling(in: image, oldBoxes: oldBoxes)
@@ -1710,7 +1710,7 @@ struct FullPhotoView: View {
                                                 viewSize: imageGeometry.size,
                                                 onTap: {
                                                     if let personId = box.personId,
-                                                       let person = encounter.people.first(where: { $0.id == personId }) {
+                                                       let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
                                                         onSelectPerson(person)
                                                     }
                                                 }
@@ -1768,7 +1768,7 @@ struct MultiPhotoFullView: View {
                 }
 
                 ToolbarItem(placement: .principal) {
-                    Text("\(currentIndex + 1) / \(encounter.photos.count)")
+                    Text("\(currentIndex + 1) / \((encounter.photos ?? []).count)")
                         .foregroundStyle(.white)
                 }
             }
@@ -1797,7 +1797,7 @@ struct MultiPhotoFullView: View {
                                         viewSize: imageGeometry.size,
                                         onTap: {
                                             if let personId = box.personId,
-                                               let person = encounter.people.first(where: { $0.id == personId }) {
+                                               let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
                                                 onSelectPerson(person)
                                             }
                                         }

@@ -327,7 +327,7 @@ struct OnboardingProfileView: View {
                         faceCropData: faceData
                     )
                     faceEmbedding.person = person
-                    person.embeddings.append(faceEmbedding)
+                    person.embeddings = (person.embeddings ?? []) + [faceEmbedding]
                     person.profileEmbeddingId = faceEmbedding.id
                 }
 

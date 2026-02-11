@@ -61,7 +61,7 @@ struct QuickCaptureView: View {
                     QuickCaptureReviewView(
                         image: image,
                         detectedFaces: $detectedFaces,
-                        existingPeople: people.filter { !$0.embeddings.isEmpty },
+                        existingPeople: people.filter { !($0.embeddings ?? []).isEmpty },
                         location: capturedLocation,
                         onSave: { context, locationName, assignments in
                             if !AppSettings.shared.hasShownCameraRollHint {
@@ -221,7 +221,7 @@ struct QuickCaptureView: View {
                             faceCropData: faceData
                         )
                         faceEmbedding.person = person
-                        person.embeddings.append(faceEmbedding)
+                        person.embeddings = (person.embeddings ?? []) + [faceEmbedding]
 
                         if let idx = assignments.firstIndex(where: { $0.id == assignment.id }) {
                             embeddingResults.append((faceEmbedding, person, idx))
@@ -277,8 +277,8 @@ struct QuickCaptureView: View {
 
                 // Link people to encounter
                 for person in allPeople {
-                    encounter.people.append(person)
-                    person.encounters.append(encounter)
+                    encounter.people = (encounter.people ?? []) + [person]
+                    person.encounters = (person.encounters ?? []) + [encounter]
                     person.lastSeenAt = Date()
                 }
 

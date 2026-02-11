@@ -27,7 +27,7 @@ struct GlobalSearchView: View {
         return allPeople.filter { person in
             person.name.localizedCaseInsensitiveContains(searchText) ||
             person.notes?.localizedCaseInsensitiveContains(searchText) == true ||
-            person.tags.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            (person.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
 
@@ -36,8 +36,8 @@ struct GlobalSearchView: View {
         return allEncounters.filter { encounter in
             encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
             encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
-            encounter.people.contains { $0.name.localizedCaseInsensitiveContains(searchText) } ||
-            encounter.tags.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            (encounter.people ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) } ||
+            (encounter.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
 
@@ -268,7 +268,7 @@ struct PersonSearchRow: View {
     var body: some View {
         HStack(spacing: 12) {
             // Face thumbnail
-            if let embedding = person.embeddings.first,
+            if let embedding = person.embeddings?.first,
                let uiImage = UIImage(data: embedding.faceCropData) {
                 Image(uiImage: uiImage)
                     .resizable()
@@ -296,9 +296,9 @@ struct PersonSearchRow: View {
                     .font(.headline)
                     .foregroundStyle(AppColors.textPrimary)
 
-                if !person.tags.isEmpty {
+                if !(person.tags ?? []).isEmpty {
                     HStack(spacing: 4) {
-                        ForEach(person.tags.prefix(3)) { tag in
+                        ForEach((person.tags ?? []).prefix(3)) { tag in
                             Text(tag.name)
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
@@ -368,8 +368,8 @@ struct EncounterSearchRow: View {
                 }
                 .font(.caption)
 
-                if !encounter.people.isEmpty {
-                    Text(encounter.people.map(\.name).joined(separator: ", "))
+                if !(encounter.people ?? []).isEmpty {
+                    Text((encounter.people ?? []).map(\.name).joined(separator: ", "))
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)

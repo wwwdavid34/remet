@@ -47,12 +47,12 @@ struct PersonDetailView: View {
                 }
 
                 // Tags & Interests combined
-                if !person.tags.isEmpty || !person.interests.isEmpty {
+                if !(person.tags ?? []).isEmpty || !person.interests.isEmpty {
                     tagsAndInterestsSection
                 }
 
                 // Activity section (encounters + notes)
-                if !person.encounters.isEmpty || !person.interactionNotes.isEmpty {
+                if !(person.encounters ?? []).isEmpty || !(person.interactionNotes ?? []).isEmpty {
                     activitySection
                 }
 
@@ -60,7 +60,7 @@ struct PersonDetailView: View {
                 moreDetailsSection
 
                 // Face samples at the bottom
-                if !person.embeddings.isEmpty {
+                if !(person.embeddings ?? []).isEmpty {
                     facesSection
                 }
             }
@@ -68,7 +68,7 @@ struct PersonDetailView: View {
             .padding(.top, 8)
             .padding(.bottom, 20)
             .onAppear {
-                selectedTags = person.tags
+                selectedTags = person.tags ?? []
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -419,7 +419,7 @@ struct PersonDetailView: View {
     private var tagsAndInterestsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Tags
-            if !person.tags.isEmpty {
+            if !(person.tags ?? []).isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         HStack(spacing: 6) {
@@ -432,7 +432,7 @@ struct PersonDetailView: View {
                         }
                         Spacer()
                         Button {
-                            selectedTags = person.tags
+                            selectedTags = person.tags ?? []
                             showTagPicker = true
                         } label: {
                             Image(systemName: "plus")
@@ -442,7 +442,7 @@ struct PersonDetailView: View {
                     }
 
                     FlowLayout(spacing: 6) {
-                        ForEach(person.tags) { tag in
+                        ForEach(person.tags ?? []) { tag in
                             Text(tag.name)
                                 .font(.caption)
                                 .padding(.horizontal, 10)
@@ -529,7 +529,7 @@ struct PersonDetailView: View {
                     .fontWeight(.medium)
             }
             Spacer()
-            if !person.encounters.isEmpty {
+            if !(person.encounters ?? []).isEmpty {
                 Button {
                     showEncountersTimeline = true
                 } label: {
@@ -551,7 +551,7 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var encountersList: some View {
-        ForEach(Array(person.encounters.prefix(3))) { encounter in
+        ForEach(Array((person.encounters ?? []).prefix(3))) { encounter in
             ActivityEncounterRow(encounter: encounter) {
                 selectedEncounter = encounter
             }
@@ -648,7 +648,7 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var encountersSection: some View {
-        if !person.encounters.isEmpty {
+        if !(person.encounters ?? []).isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     HStack(spacing: 6) {
@@ -666,7 +666,7 @@ struct PersonDetailView: View {
                         HStack(spacing: 4) {
                             Text(String(localized: "View All"))
                                 .font(.subheadline)
-                            Text("\(person.encounters.count)")
+                            Text("\((person.encounters ?? []).count)")
                                 .font(.caption)
                                 .fontWeight(.medium)
                                 .padding(.horizontal, 6)
@@ -680,7 +680,7 @@ struct PersonDetailView: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(person.encounters.prefix(5)) { encounter in
+                        ForEach((person.encounters ?? []).prefix(5)) { encounter in
                             Button {
                                 selectedEncounter = encounter
                             } label: {
@@ -709,17 +709,17 @@ struct PersonDetailView: View {
 
                 Spacer()
 
-                Text("\(person.embeddings.count)")
+                Text("\((person.embeddings ?? []).count)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
-            if person.embeddings.isEmpty {
+            if (person.embeddings ?? []).isEmpty {
                 Text("No face samples yet")
                     .foregroundStyle(AppColors.textSecondary)
             } else {
                 LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(person.embeddings) { embedding in
+                    ForEach(person.embeddings ?? []) { embedding in
                         if let image = UIImage(data: embedding.faceCropData) {
                             let hasEncounter = findEncounter(for: embedding) != nil
 
@@ -802,13 +802,13 @@ struct PersonDetailView: View {
         if let encounterId = embedding.encounterId,
            let encounter = allEncounters.first(where: { $0.id == encounterId }) {
             // Count remaining embeddings for this person in this encounter (excluding the one being deleted)
-            let remainingEmbeddings = person.embeddings.filter {
+            let remainingEmbeddings = (person.embeddings ?? []).filter {
                 $0.id != embedding.id && $0.encounterId == encounterId
             }
 
             // If no other embeddings link this person to the encounter, remove from people list
             if remainingEmbeddings.isEmpty {
-                encounter.people.removeAll { $0.id == person.id }
+                encounter.people = (encounter.people ?? []).filter { $0.id != person.id }
             }
         }
 
@@ -959,8 +959,8 @@ struct EncounterThumbnail: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     // Photo count badge for multi-photo encounters
-                    if encounter.photos.count > 1 {
-                        Text("\(encounter.photos.count)")
+                    if (encounter.photos ?? []).count > 1 {
+                        Text("\((encounter.photos ?? []).count)")
                             .font(.caption2)
                             .fontWeight(.bold)
                             .padding(3)
@@ -993,7 +993,7 @@ struct FaceSourcePhotoView: View {
 
     // Find photos that contain this person's face
     private var photosWithPerson: [(photo: EncounterPhoto, boxes: [FaceBoundingBox])] {
-        encounter.photos.compactMap { photo in
+        (encounter.photos ?? []).compactMap { photo in
             let matchingBoxes = photo.faceBoundingBoxes.filter { $0.personId == person.id }
             if !matchingBoxes.isEmpty {
                 return (photo, matchingBoxes)
@@ -1144,13 +1144,13 @@ struct FaceSourcePhotoView: View {
             Label(encounter.date.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
                 .foregroundStyle(.secondary)
 
-            if encounter.photos.count > 1 {
-                Label("\(encounter.photos.count) photos in this encounter", systemImage: "photo.stack")
+            if (encounter.photos ?? []).count > 1 {
+                Label("\((encounter.photos ?? []).count) photos in this encounter", systemImage: "photo.stack")
                     .foregroundStyle(.secondary)
             }
 
-            if encounter.people.count > 1 {
-                Label("\(encounter.people.count) people tagged", systemImage: "person.2")
+            if (encounter.people ?? []).count > 1 {
+                Label("\((encounter.people ?? []).count) people tagged", systemImage: "person.2")
                     .foregroundStyle(.secondary)
             }
         }
@@ -1332,7 +1332,7 @@ struct EncountersTimelineSheet: View {
     let onSelectEncounter: (Encounter) -> Void
 
     var sortedEncounters: [Encounter] {
-        person.encounters.sorted { $0.date > $1.date }
+        (person.encounters ?? []).sorted { $0.date > $1.date }
     }
 
     var body: some View {
@@ -1385,10 +1385,10 @@ struct EncountersTimelineSheet: View {
                                             .lineLimit(1)
                                     }
 
-                                    if encounter.photos.count > 1 {
+                                    if (encounter.photos ?? []).count > 1 {
                                         HStack(spacing: 4) {
                                             Image(systemName: "photo.stack")
-                                            Text("\(encounter.photos.count) photos")
+                                            Text("\((encounter.photos ?? []).count) photos")
                                         }
                                         .font(.caption2)
                                         .foregroundStyle(AppColors.softPurple)
@@ -1445,7 +1445,7 @@ struct EditPersonSheet: View {
     private var encountersWithAvailableFaces: [Encounter] {
         allEncounters.filter { encounter in
             // Check if encounter has any unassigned face boxes
-            let hasUnassignedFaces = encounter.photos.contains { photo in
+            let hasUnassignedFaces = (encounter.photos ?? []).contains { photo in
                 photo.faceBoundingBoxes.contains { $0.personId == nil }
             } || encounter.faceBoundingBoxes.contains { $0.personId == nil }
             return hasUnassignedFaces
@@ -1488,7 +1488,7 @@ struct EditPersonSheet: View {
                                 }
                         }
 
-                        if person.embeddings.isEmpty {
+                        if (person.embeddings ?? []).isEmpty {
                             // No face samples - show add button
                             Text("No face photo assigned")
                                 .font(.caption)
@@ -1515,10 +1515,10 @@ struct EditPersonSheet: View {
 
                             // Face samples grid
                             LazyVGrid(columns: photoColumns, spacing: 8) {
-                                ForEach(person.embeddings) { embedding in
+                                ForEach(person.embeddings ?? []) { embedding in
                                     if let image = UIImage(data: embedding.faceCropData) {
                                         let isSelected = person.profileEmbeddingId == embedding.id ||
-                                            (person.profileEmbeddingId == nil && person.embeddings.first?.id == embedding.id)
+                                            (person.profileEmbeddingId == nil && (person.embeddings ?? []).first?.id == embedding.id)
 
                                         Button {
                                             person.profileEmbeddingId = embedding.id
@@ -1788,15 +1788,15 @@ struct FacePickerSheet: View {
         embedding.person = person
 
         modelContext.insert(embedding)
-        person.embeddings.append(embedding)
+        person.embeddings = (person.embeddings ?? []) + [embedding]
 
         // Update the bounding box to link to this person
-        if let photoIndex = encounter.photos.firstIndex(where: { photo in
+        if let photoIndex = (encounter.photos ?? []).firstIndex(where: { photo in
             photo.faceBoundingBoxes.contains { $0.id == box.id }
         }) {
-            if let boxIndex = encounter.photos[photoIndex].faceBoundingBoxes.firstIndex(where: { $0.id == box.id }) {
-                encounter.photos[photoIndex].faceBoundingBoxes[boxIndex].personId = person.id
-                encounter.photos[photoIndex].faceBoundingBoxes[boxIndex].personName = person.name
+            if let boxIndex = encounter.photos?[photoIndex].faceBoundingBoxes.firstIndex(where: { $0.id == box.id }) {
+                encounter.photos?[photoIndex].faceBoundingBoxes[boxIndex].personId = person.id
+                encounter.photos?[photoIndex].faceBoundingBoxes[boxIndex].personName = person.name
             }
         }
 
@@ -1807,8 +1807,8 @@ struct FacePickerSheet: View {
         }
 
         // Link encounter to person if not already
-        if !person.encounters.contains(where: { $0.id == encounter.id }) {
-            person.encounters.append(encounter)
+        if !(person.encounters ?? []).contains(where: { $0.id == encounter.id }) {
+            person.encounters = (person.encounters ?? []) + [encounter]
         }
 
         dismiss()
@@ -1825,7 +1825,7 @@ struct EncounterFacePickerSection: View {
         var faces: [(photo: EncounterPhoto?, box: FaceBoundingBox, faceImage: UIImage?)] = []
 
         // Multi-photo encounters
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             if let image = UIImage(data: photo.imageData) {
                 for box in photo.faceBoundingBoxes where box.personId == nil {
                     let faceImage = cropFace(from: image, box: box)
@@ -1987,7 +1987,7 @@ struct AddNoteSheet: View {
     private func saveNote() {
         let note = InteractionNote(content: noteContent, category: selectedCategory)
         note.person = person
-        person.interactionNotes.append(note)
+        person.interactionNotes = (person.interactionNotes ?? []) + [note]
         modelContext.insert(note)
         dismiss()
     }

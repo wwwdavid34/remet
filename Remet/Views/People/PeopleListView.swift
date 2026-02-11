@@ -15,7 +15,7 @@ struct PeopleListView: View {
         var seenIds = Set<UUID>()
         var result: [Tag] = []
         for person in people {
-            for tag in person.tags {
+            for tag in person.tags ?? [] {
                 if !seenIds.contains(tag.id) {
                     seenIds.insert(tag.id)
                     result.append(tag)
@@ -46,7 +46,7 @@ struct PeopleListView: View {
         // Filter by selected tags
         if !selectedTagFilters.isEmpty {
             result = result.filter { person in
-                let personTagIds = Set(person.tags.map { $0.id })
+                let personTagIds = Set((person.tags ?? []).map { $0.id })
                 return !selectedTagFilters.isDisjoint(with: personTagIds)
             }
         }
@@ -192,9 +192,9 @@ struct PersonRow: View {
                 }
 
                 // Show tags
-                if !person.tags.isEmpty {
+                if !(person.tags ?? []).isEmpty {
                     HStack(spacing: 4) {
-                        ForEach(person.tags.prefix(3)) { tag in
+                        ForEach((person.tags ?? []).prefix(3)) { tag in
                             Text(tag.name)
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
@@ -203,8 +203,8 @@ struct PersonRow: View {
                                 .foregroundStyle(tag.color)
                                 .clipShape(Capsule())
                         }
-                        if person.tags.count > 3 {
-                            Text("+\(person.tags.count - 3)")
+                        if (person.tags ?? []).count > 3 {
+                            Text("+\((person.tags ?? []).count - 3)")
                                 .font(.caption2)
                                 .foregroundStyle(.tertiary)
                         }
@@ -222,11 +222,11 @@ struct PersonRow: View {
 
             VStack(alignment: .trailing, spacing: 4) {
                 // Face count badge
-                if person.embeddings.count > 0 {
+                if (person.embeddings ?? []).count > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: "face.smiling")
                             .font(.caption2)
-                        Text("\(person.embeddings.count)")
+                        Text("\((person.embeddings ?? []).count)")
                             .font(.caption)
                             .fontWeight(.medium)
                     }
@@ -249,7 +249,7 @@ struct PersonRow: View {
 
     @ViewBuilder
     private var personThumbnail: some View {
-        if let firstEmbedding = person.embeddings.first,
+        if let firstEmbedding = person.embeddings?.first,
            let image = UIImage(data: firstEmbedding.faceCropData) {
             Image(uiImage: image)
                 .resizable()

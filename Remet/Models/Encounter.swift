@@ -23,13 +23,13 @@ final class Encounter {
 
     // Multiple photos in this encounter
     @Relationship(deleteRule: .cascade)
-    var photos: [EncounterPhoto] = []
+    var photos: [EncounterPhoto]?
 
     @Relationship(deleteRule: .nullify, inverse: \Person.encounters)
-    var people: [Person] = []
+    var people: [Person]?
 
     @Relationship(deleteRule: .nullify)
-    var tags: [Tag] = []
+    var tags: [Tag]?
 
     init(
         id: UUID = UUID(),
@@ -90,7 +90,7 @@ final class Encounter {
 
     /// Get the display image (first photo or legacy imageData)
     var displayImageData: Data? {
-        if let firstPhoto = photos.first {
+        if let firstPhoto = (photos ?? []).first {
             return firstPhoto.imageData
         }
         return imageData ?? thumbnailData
@@ -98,15 +98,16 @@ final class Encounter {
 
     /// Total number of faces across all photos
     var totalFaceCount: Int {
-        if photos.isEmpty {
+        let p = photos ?? []
+        if p.isEmpty {
             return faceBoundingBoxes.count
         }
-        return photos.reduce(0) { $0 + $1.faceBoundingBoxes.count }
+        return p.reduce(0) { $0 + $1.faceBoundingBoxes.count }
     }
 
     /// Photos sorted by date
     var sortedPhotos: [EncounterPhoto] {
-        photos.sorted { $0.date < $1.date }
+        (photos ?? []).sorted { $0.date < $1.date }
     }
 
     // Legacy convenience for face bounding boxes (single photo mode)

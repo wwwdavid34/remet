@@ -33,7 +33,7 @@ final class FaceMatchingService {
         var results: [(person: Person, similarity: Float, boosted: Bool)] = []
 
         for person in people {
-            let bestSimilarity = person.embeddings
+            let bestSimilarity = (person.embeddings ?? [])
                 .map { cosineSimilarity(embedding, $0.embeddingVector) }
                 .max() ?? 0
 

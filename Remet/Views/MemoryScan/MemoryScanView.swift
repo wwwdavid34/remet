@@ -302,8 +302,8 @@ struct MemoryScanView: View {
             date: Date()
         )
 
-        encounter.people.append(person)
-        person.encounters.append(encounter)
+        encounter.people = (encounter.people ?? []) + [person]
+        person.encounters = (person.encounters ?? []) + [encounter]
 
         modelContext.insert(encounter)
         try? modelContext.save()

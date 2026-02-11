@@ -287,7 +287,7 @@ struct EncounterReviewView: View {
                                 assignPerson(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings.first,
+                                    if let firstEmbedding = match.person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -339,7 +339,7 @@ struct EncounterReviewView: View {
                                 assignPerson(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings.first,
+                                    if let firstEmbedding = person.embeddings?.first,
                                        let image = UIImage(data: firstEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
@@ -755,7 +755,7 @@ struct EncounterReviewView: View {
     private func cleanupCreatedPersons() {
         for person in createdPersons {
             // Delete embeddings first (should cascade, but be explicit)
-            for embedding in person.embeddings {
+            for embedding in person.embeddings ?? [] {
                 modelContext.delete(embedding)
             }
             modelContext.delete(person)

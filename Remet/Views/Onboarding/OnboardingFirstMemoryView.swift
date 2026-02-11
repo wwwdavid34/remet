@@ -184,7 +184,7 @@ struct OnboardingFaceReviewView: View {
 
     /// People with embeddings that can be matched (including "Me")
     private var matchablePeople: [Person] {
-        existingPeople.filter { !$0.embeddings.isEmpty }
+        existingPeople.filter { !($0.embeddings ?? []).isEmpty }
     }
 
     /// Count of unassigned faces
@@ -240,7 +240,7 @@ struct OnboardingFaceReviewView: View {
                                         get: { faceAssignments[index] },
                                         set: { faceAssignments[index] = $0 }
                                     ),
-                                    existingPeople: existingPeople.filter { !$0.embeddings.isEmpty },
+                                    existingPeople: existingPeople.filter { !($0.embeddings ?? []).isEmpty },
                                     isHighlighted: selectedFaceIndex == index || focusedFaceIndex == index,
                                     focusBinding: $focusedFaceIndex,
                                     faceIndex: index
@@ -563,7 +563,7 @@ struct OnboardingFaceReviewView: View {
                         )
                         faceEmbedding.person = person
                         faceEmbedding.encounterId = encounter.id
-                        person.embeddings.append(faceEmbedding)
+                        person.embeddings = (person.embeddings ?? []) + [faceEmbedding]
 
                         if person.profileEmbeddingId == nil {
                             person.profileEmbeddingId = faceEmbedding.id
@@ -571,9 +571,9 @@ struct OnboardingFaceReviewView: View {
                     }
 
                     // Link person to encounter
-                    if !encounter.people.contains(where: { $0.id == person.id }) {
-                        encounter.people.append(person)
-                        person.encounters.append(encounter)
+                    if !(encounter.people ?? []).contains(where: { $0.id == person.id }) {
+                        encounter.people = (encounter.people ?? []) + [person]
+                        person.encounters = (person.encounters ?? []) + [encounter]
                     }
 
                     let box = FaceBoundingBox(

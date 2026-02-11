@@ -48,7 +48,7 @@ struct PracticeHomeView: View {
     @State private var selectedMode: QuizMode = .spaced
 
     private var peopleWithFaces: [Person] {
-        people.filter { !$0.embeddings.isEmpty && !$0.isMe }
+        people.filter { !($0.embeddings ?? []).isEmpty && !$0.isMe }
     }
 
     private var peopleNeedingReview: [Person] {
@@ -108,7 +108,7 @@ struct PracticeHomeView: View {
         }
 
         // Get all quiz attempts
-        let allAttempts = people.flatMap { $0.quizAttempts }
+        let allAttempts = people.flatMap { $0.quizAttempts ?? [] }
 
         // This week's attempts
         let thisWeekAttempts = allAttempts.filter { $0.attemptedAt >= oneWeekAgo }
@@ -399,7 +399,7 @@ struct ReviewPersonRow: View {
         HStack(spacing: 12) {
             // Face thumbnail
             ZStack {
-                if let embedding = person.embeddings.first,
+                if let embedding = person.embeddings?.first,
                    let uiImage = UIImage(data: embedding.faceCropData) {
                     Image(uiImage: uiImage)
                         .resizable()

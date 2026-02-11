@@ -472,7 +472,7 @@ final class DemoDataService {
                             faceCropData: faceCropData
                         )
                         embedding.person = person
-                        person.embeddings.append(embedding)
+                        person.embeddings = (person.embeddings ?? []) + [embedding]
                         person.profileEmbeddingId = embedding.id
                         modelContext.insert(embedding)
                         usedFaceDetection = true
@@ -491,7 +491,7 @@ final class DemoDataService {
                             faceCropData: imageData
                         )
                         embedding.person = person
-                        person.embeddings.append(embedding)
+                        person.embeddings = (person.embeddings ?? []) + [embedding]
                         person.profileEmbeddingId = embedding.id
                         modelContext.insert(embedding)
                     }
@@ -501,7 +501,7 @@ final class DemoDataService {
             // Assign tags
             for tagName in profile.tags {
                 if let tag = tagMap[tagName] {
-                    person.tags.append(tag)
+                    person.tags = (person.tags ?? []) + [tag]
                 }
             }
 
@@ -532,7 +532,7 @@ final class DemoDataService {
                     let photoDate = Calendar.current.date(byAdding: .minute, value: index * 5, to: date) ?? date
                     let photo = EncounterPhoto(imageData: imageData, date: photoDate)
                     photo.encounter = encounter
-                    encounter.photos.append(photo)
+                    encounter.photos = (encounter.photos ?? []) + [photo]
                     modelContext.insert(photo)
 
                     // Set thumbnail from first photo
@@ -545,11 +545,11 @@ final class DemoDataService {
             // Link people and update their embedding's encounterId
             for personName in encounterData.peopleNames {
                 if let person = personMap[personName] {
-                    encounter.people.append(person)
-                    person.encounters.append(encounter)
+                    encounter.people = (encounter.people ?? []) + [person]
+                    person.encounters = (person.encounters ?? []) + [encounter]
 
                     // Link the person's first embedding to this encounter (for "View Source Photo")
-                    if let embedding = person.embeddings.first, embedding.encounterId == nil {
+                    if let embedding = person.embeddings?.first, embedding.encounterId == nil {
                         embedding.encounterId = encounter.id
                     }
                 }
@@ -558,7 +558,7 @@ final class DemoDataService {
             // Assign tags to encounter
             for tagName in encounterData.tags {
                 if let tag = tagMap[tagName] {
-                    encounter.tags.append(tag)
+                    encounter.tags = (encounter.tags ?? []) + [tag]
                 }
             }
 
@@ -598,7 +598,7 @@ final class DemoDataService {
                     attemptedAt: attemptDate
                 )
                 attempt.person = person
-                person.quizAttempts.append(attempt)
+                person.quizAttempts = (person.quizAttempts ?? []) + [attempt]
                 modelContext.insert(attempt)
             }
 
@@ -634,7 +634,7 @@ final class DemoDataService {
                     userGuess: wasCorrect ? nil : "Someone else"
                 )
                 attempt.person = person
-                person.quizAttempts.append(attempt)
+                person.quizAttempts = (person.quizAttempts ?? []) + [attempt]
                 modelContext.insert(attempt)
             }
 

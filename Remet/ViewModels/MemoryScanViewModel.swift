@@ -144,7 +144,7 @@ final class MemoryScanViewModel {
             lastProcessedFaceCrops = detectedFaces.map { $0.cropImage }
 
             // Step 2: Get people with embeddings
-            let peopleWithEmbeddings = people.filter { !$0.embeddings.isEmpty }
+            let peopleWithEmbeddings = people.filter { !($0.embeddings ?? []).isEmpty }
 
             guard !peopleWithEmbeddings.isEmpty else {
                 // No people to match against - return results with no matches

@@ -37,26 +37,26 @@ final class Person {
     var talkingPointsData: Data?  // JSON array of strings
 
     @Relationship(deleteRule: .cascade)
-    var embeddings: [FaceEmbedding] = []
+    var embeddings: [FaceEmbedding]?
 
     @Relationship(deleteRule: .nullify)
-    var encounters: [Encounter] = []
+    var encounters: [Encounter]?
 
     @Relationship(deleteRule: .nullify)
-    var tags: [Tag] = []
+    var tags: [Tag]?
 
     // Relationship memory features
     @Relationship(deleteRule: .cascade)
-    var interactionNotes: [InteractionNote] = []
+    var interactionNotes: [InteractionNote]?
 
     @Relationship(deleteRule: .cascade)
-    var quizAttempts: [QuizAttempt] = []
+    var quizAttempts: [QuizAttempt]?
 
     @Relationship(deleteRule: .cascade)
     var spacedRepetitionData: SpacedRepetitionData?
 
     var encounterCount: Int {
-        encounters.count
+        (encounters ?? []).count
     }
 
     // Computed properties for interests and talking points
@@ -87,16 +87,17 @@ final class Person {
 
     /// The embedding to use for the profile photo (selected or first available)
     var profileEmbedding: FaceEmbedding? {
+        let embs = embeddings ?? []
         if let profileId = profileEmbeddingId,
-           let selected = embeddings.first(where: { $0.id == profileId }) {
+           let selected = embs.first(where: { $0.id == profileId }) {
             return selected
         }
-        return embeddings.first
+        return embs.first
     }
 
     /// Recent interaction notes (last 5)
     var recentNotes: [InteractionNote] {
-        interactionNotes.sorted { $0.createdAt > $1.createdAt }.prefix(5).map { $0 }
+        (interactionNotes ?? []).sorted { $0.createdAt > $1.createdAt }.prefix(5).map { $0 }
     }
 
     init(

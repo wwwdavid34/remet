@@ -43,12 +43,12 @@ struct EncounterEditView: View {
 
     // Support both multi-photo and legacy single-photo encounters
     private var hasMultiplePhotos: Bool {
-        !encounter.photos.isEmpty
+        !(encounter.photos ?? []).isEmpty
     }
 
     private var currentPhoto: EncounterPhoto? {
-        guard hasMultiplePhotos, selectedPhotoIndex < encounter.photos.count else { return nil }
-        return encounter.photos[selectedPhotoIndex]
+        guard hasMultiplePhotos, selectedPhotoIndex < (encounter.photos ?? []).count else { return nil }
+        return (encounter.photos ?? [])[selectedPhotoIndex]
     }
 
     private var currentBoundingBoxes: [FaceBoundingBox] {
@@ -107,7 +107,7 @@ struct EncounterEditView: View {
     private var photoCarousel: some View {
         VStack(spacing: 8) {
             TabView(selection: $selectedPhotoIndex) {
-                ForEach(Array(encounter.photos.enumerated()), id: \.element.id) { index, photo in
+                ForEach(Array((encounter.photos ?? []).enumerated()), id: \.element.id) { index, photo in
                     photoWithOverlays(photo: photo, index: index)
                         .tag(index)
                 }
@@ -115,7 +115,7 @@ struct EncounterEditView: View {
             .tabViewStyle(.page(indexDisplayMode: .automatic))
             .frame(height: 350)
 
-            Text("\(selectedPhotoIndex + 1) of \(encounter.photos.count) photos")
+            Text("\(selectedPhotoIndex + 1) of \((encounter.photos ?? []).count) photos")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -346,13 +346,13 @@ struct EncounterEditView: View {
                 }
             } else if !locateFaceMode {
                 // Show people in encounter
-                if encounter.people.isEmpty {
+                if (encounter.people ?? []).isEmpty {
                     Text("No people identified yet. Tap faces to identify.")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(encounter.people) { person in
+                    ForEach(encounter.people ?? []) { person in
                         HStack {
-                            if let firstEmbedding = person.embeddings.first,
+                            if let firstEmbedding = person.embeddings?.first,
                                let image = UIImage(data: firstEmbedding.faceCropData) {
                                 Image(uiImage: image)
                                     .resizable()
@@ -544,7 +544,7 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func matchRow(match: MatchResult) -> some View {
         HStack {
-            if let firstEmbedding = match.person.embeddings.first,
+            if let firstEmbedding = match.person.embeddings?.first,
                let image = UIImage(data: firstEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
@@ -579,7 +579,7 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func personRow(person: Person) -> some View {
         HStack {
-            if let firstEmbedding = person.embeddings.first,
+            if let firstEmbedding = person.embeddings?.first,
                let image = UIImage(data: firstEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
@@ -675,7 +675,7 @@ struct EncounterEditView: View {
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
-                let encounterPersonIds = Set(encounter.people.map { $0.id })
+                let encounterPersonIds = Set((encounter.people ?? []).map { $0.id })
                 let matches = matchingService.findMatches(for: embedding, in: people, topK: 5, threshold: 0.5, boostPersonIds: encounterPersonIds)
 
                 await MainActor.run {
@@ -705,8 +705,8 @@ struct EncounterEditView: View {
         }
 
         // Link person to encounter if not already
-        if !encounter.people.contains(where: { $0.id == person.id }) {
-            encounter.people.append(person)
+        if !(encounter.people ?? []).contains(where: { $0.id == person.id }) {
+            encounter.people = (encounter.people ?? []) + [person]
         }
 
         // Create embedding for the person if we have a face crop
@@ -751,7 +751,7 @@ struct EncounterEditView: View {
                 )
 
                 await MainActor.run {
-                    person.embeddings.append(faceEmbedding)
+                    person.embeddings = (person.embeddings ?? []) + [faceEmbedding]
                 }
             } catch {
                 print("Error creating embedding: \(error)")
@@ -761,7 +761,7 @@ struct EncounterEditView: View {
 
     private func countPersonAppearances(_ personId: UUID) -> Int {
         var count = 0
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             count += photo.faceBoundingBoxes.filter { $0.personId == personId }.count
         }
         count += encounter.faceBoundingBoxes.filter { $0.personId == personId }.count
@@ -770,7 +770,7 @@ struct EncounterEditView: View {
 
     private func removePersonFromEncounter(_ person: Person) {
         // Clear personId/personName from all bounding boxes referencing this person
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             for index in photo.faceBoundingBoxes.indices {
                 if photo.faceBoundingBoxes[index].personId == person.id {
                     photo.faceBoundingBoxes[index].personId = nil
@@ -788,12 +788,12 @@ struct EncounterEditView: View {
         }
 
         // Remove person from encounter's people list
-        encounter.people.removeAll { $0.id == person.id }
+        encounter.people = (encounter.people ?? []).filter { $0.id != person.id }
     }
 
     private func countUnidentifiedFaces() -> Int {
         var count = 0
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             count += photo.faceBoundingBoxes.filter { $0.personId == nil }.count
         }
         count += encounter.faceBoundingBoxes.filter { $0.personId == nil }.count
@@ -895,7 +895,7 @@ struct EncounterEditView: View {
         guard let faceId = lastAddedFaceId else { return }
 
         if let photoId = lastAddedFacePhotoId,
-           let photo = encounter.photos.first(where: { $0.id == photoId }) {
+           let photo = (encounter.photos ?? []).first(where: { $0.id == photoId }) {
             photo.faceBoundingBoxes.removeAll { $0.id == faceId }
         } else {
             encounter.faceBoundingBoxes.removeAll { $0.id == faceId }
@@ -913,7 +913,7 @@ struct EncounterEditView: View {
         let faceDetectionService = FaceDetectionService()
 
         // Re-detect for multi-photo encounters
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             if let image = UIImage(data: photo.imageData) {
                 do {
                     let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)

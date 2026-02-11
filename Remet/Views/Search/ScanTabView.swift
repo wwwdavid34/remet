@@ -14,7 +14,7 @@ struct ScanTabView: View {
 
     /// People with at least one embedding (required for matching)
     private var matchablePeople: [Person] {
-        people.filter { !$0.embeddings.isEmpty }
+        people.filter { !($0.embeddings ?? []).isEmpty }
     }
 
     private var canScan: Bool {

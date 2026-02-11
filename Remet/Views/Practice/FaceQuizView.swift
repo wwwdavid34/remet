@@ -66,7 +66,7 @@ struct FaceQuizView: View {
                                 )
                                 .frame(width: 200, height: 200)
 
-                            if let embedding = currentPerson.embeddings.randomElement(),
+                            if let embedding = (currentPerson.embeddings ?? []).randomElement(),
                                let uiImage = UIImage(data: embedding.faceCropData) {
                                 Image(uiImage: uiImage)
                                     .resizable()
@@ -231,7 +231,7 @@ struct FaceQuizView: View {
             userGuess: answer
         )
         attempt.person = person
-        person.quizAttempts.append(attempt)
+        person.quizAttempts = (person.quizAttempts ?? []) + [attempt]
         modelContext.insert(attempt)
 
         updateSpacedRepetition(for: person, wasCorrect: wasCorrect)

@@ -18,7 +18,7 @@ struct HomeView: View {
     }
 
     private var peopleWithFaces: [Person] {
-        people.filter { !$0.embeddings.isEmpty }
+        people.filter { !($0.embeddings ?? []).isEmpty }
     }
 
     private var recentEncounters: [Encounter] {
@@ -352,7 +352,7 @@ struct PersonReviewCard: View {
         VStack(spacing: 8) {
             // Face thumbnail
             ZStack {
-                if let embedding = person.embeddings.first,
+                if let embedding = person.embeddings?.first,
                    let uiImage = UIImage(data: embedding.faceCropData) {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -439,8 +439,8 @@ struct RecentEncounterRow: View {
 
                 HStack(spacing: 12) {
                     Label(encounter.date.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
-                    if !encounter.people.isEmpty {
-                        Label("\(encounter.people.count)", systemImage: "person.fill")
+                    if !(encounter.people ?? []).isEmpty {
+                        Label("\((encounter.people ?? []).count)", systemImage: "person.fill")
                     }
                 }
                 .font(.caption)

@@ -263,7 +263,7 @@ struct SettingsView: View {
 
     private func calculateStorageSize() -> String? {
         // Rough estimate based on counts
-        let photoCount = encounters.reduce(0) { $0 + max(1, $1.photos.count) }
+        let photoCount = encounters.reduce(0) { $0 + max(1, ($1.photos ?? []).count) }
         let avgPhotoSize = settings.photoStorageQuality.estimatedSizePerPhoto
         let photoStorage = photoCount * avgPhotoSize // KB
 

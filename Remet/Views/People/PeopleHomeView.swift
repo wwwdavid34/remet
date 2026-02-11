@@ -50,7 +50,7 @@ struct PeopleHomeView: View {
         var seenIds = Set<UUID>()
         var tags: [Tag] = []
         for person in people {
-            for tag in person.tags {
+            for tag in person.tags ?? [] {
                 if !seenIds.contains(tag.id) {
                     seenIds.insert(tag.id)
                     tags.append(tag)
@@ -68,13 +68,13 @@ struct PeopleHomeView: View {
         if !debouncedSearchText.isEmpty {
             result = result.filter {
                 $0.name.localizedCaseInsensitiveContains(debouncedSearchText) ||
-                $0.tags.contains { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
+                ($0.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
             }
         }
 
         if !selectedTagFilters.isEmpty {
             result = result.filter { person in
-                let personTagIds = Set(person.tags.map { $0.id })
+                let personTagIds = Set((person.tags ?? []).map { $0.id })
                 return !selectedTagFilters.isDisjoint(with: personTagIds)
             }
         }
@@ -567,7 +567,7 @@ struct CompactPersonCard: View {
         VStack(spacing: 8) {
             ZStack(alignment: .topTrailing) {
                 // Face thumbnail
-                if let embedding = person.embeddings.first,
+                if let embedding = person.embeddings?.first,
                    let uiImage = UIImage(data: embedding.faceCropData) {
                     Image(uiImage: uiImage)
                         .resizable()

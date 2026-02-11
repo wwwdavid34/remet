@@ -78,7 +78,7 @@ struct EncounterListView: View {
         var seenIds = Set<UUID>()
         var result: [Tag] = []
         for encounter in encounters {
-            for tag in encounter.tags {
+            for tag in encounter.tags ?? [] {
                 if !seenIds.contains(tag.id) {
                     seenIds.insert(tag.id)
                     result.append(tag)
@@ -112,14 +112,14 @@ struct EncounterListView: View {
             result = result.filter { encounter in
                 encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
                 encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
-                encounter.people.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+                (encounter.people ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
             }
         }
 
         // Filter by selected tags
         if !selectedTagFilters.isEmpty {
             result = result.filter { encounter in
-                let encounterTagIds = Set(encounter.tags.map { $0.id })
+                let encounterTagIds = Set((encounter.tags ?? []).map { $0.id })
                 return !selectedTagFilters.isDisjoint(with: encounterTagIds)
             }
         }
@@ -147,9 +147,9 @@ struct EncounterListView: View {
         case .dateOldest:
             result.sort { $0.date < $1.date }
         case .mostPeople:
-            result.sort { $0.people.count > $1.people.count }
+            result.sort { ($0.people ?? []).count > ($1.people ?? []).count }
         case .fewestPeople:
-            result.sort { $0.people.count < $1.people.count }
+            result.sort { ($0.people ?? []).count < ($1.people ?? []).count }
         }
 
         return result
@@ -337,11 +337,11 @@ struct EncounterRowView: View {
     let encounter: Encounter
 
     private var photoCount: Int {
-        encounter.photos.isEmpty ? 1 : encounter.photos.count
+        (encounter.photos ?? []).isEmpty ? 1 : (encounter.photos ?? []).count
     }
 
     private var personCount: Int {
-        encounter.people.count
+        (encounter.people ?? []).count
     }
 
     var body: some View {
@@ -413,17 +413,17 @@ struct EncounterRowView: View {
                 }
 
                 // People names
-                if !encounter.people.isEmpty {
-                    Text(encounter.people.map(\.name).joined(separator: ", "))
+                if !(encounter.people ?? []).isEmpty {
+                    Text((encounter.people ?? []).map(\.name).joined(separator: ", "))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
                 }
 
                 // Show tags
-                if !encounter.tags.isEmpty {
+                if !(encounter.tags ?? []).isEmpty {
                     HStack(spacing: 4) {
-                        ForEach(encounter.tags.prefix(3)) { tag in
+                        ForEach((encounter.tags ?? []).prefix(3)) { tag in
                             Text(tag.name)
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
@@ -432,8 +432,8 @@ struct EncounterRowView: View {
                                 .foregroundStyle(tag.color)
                                 .clipShape(Capsule())
                         }
-                        if encounter.tags.count > 3 {
-                            Text("+\(encounter.tags.count - 3)")
+                        if (encounter.tags ?? []).count > 3 {
+                            Text("+\((encounter.tags ?? []).count - 3)")
                                 .font(.caption2)
                                 .foregroundStyle(AppColors.textMuted)
                         }

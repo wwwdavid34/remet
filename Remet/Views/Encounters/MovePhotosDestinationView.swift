@@ -19,7 +19,7 @@ struct MovePhotosDestinationView: View {
         return others.filter { encounter in
             encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
             encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
-            encounter.people.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            (encounter.people ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
 
@@ -65,8 +65,8 @@ struct MovePhotosDestinationView: View {
                                         Text(encounter.date.formatted(date: .abbreviated, time: .shortened))
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
-                                        if !encounter.people.isEmpty {
-                                            Text(encounter.people.prefix(3).map(\.name).joined(separator: ", "))
+                                        if !(encounter.people ?? []).isEmpty {
+                                            Text((encounter.people ?? []).prefix(3).map(\.name).joined(separator: ", "))
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
                                                 .lineLimit(1)
@@ -77,7 +77,7 @@ struct MovePhotosDestinationView: View {
 
                                     HStack(spacing: 4) {
                                         Image(systemName: "photo")
-                                        Text("\(encounter.photos.count)")
+                                        Text("\((encounter.photos ?? []).count)")
                                     }
                                     .font(.caption)
                                     .foregroundStyle(.secondary)

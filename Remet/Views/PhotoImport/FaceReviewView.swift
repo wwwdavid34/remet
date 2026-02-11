@@ -249,7 +249,7 @@ struct FaceReviewView: View {
                     showPeoplePicker = false
                 } label: {
                     HStack {
-                        if let firstEmbedding = person.embeddings.first,
+                        if let firstEmbedding = person.embeddings?.first,
                            let image = UIImage(data: firstEmbedding.faceCropData) {
                             Image(uiImage: image)
                                 .resizable()

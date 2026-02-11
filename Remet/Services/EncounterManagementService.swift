@@ -23,20 +23,20 @@ struct EncounterManagementService {
             }
 
             // Move all photos (must happen before deleting secondary)
-            for photo in secondary.photos {
+            for photo in secondary.photos ?? [] {
                 photo.encounter = primary
             }
 
             // Merge people (add any not already linked)
-            let existingPersonIds = Set(primary.people.map { $0.id })
-            for person in secondary.people where !existingPersonIds.contains(person.id) {
-                primary.people.append(person)
+            let existingPersonIds = Set((primary.people ?? []).map { $0.id })
+            for person in secondary.people ?? [] where !existingPersonIds.contains(person.id) {
+                primary.people = (primary.people ?? []) + [person]
             }
 
             // Merge tags
-            let existingTagIds = Set(primary.tags.map { $0.id })
-            for tag in secondary.tags where !existingTagIds.contains(tag.id) {
-                primary.tags.append(tag)
+            let existingTagIds = Set((primary.tags ?? []).map { $0.id })
+            for tag in secondary.tags ?? [] where !existingTagIds.contains(tag.id) {
+                primary.tags = (primary.tags ?? []) + [tag]
             }
 
             // Update FaceEmbedding.encounterId from secondary → primary
@@ -60,10 +60,10 @@ struct EncounterManagementService {
         from source: Encounter,
         to destination: Encounter
     ) -> Bool {
-        let photosToMove = source.photos.filter { photoIds.contains($0.id) }
+        let photosToMove = (source.photos ?? []).filter { photoIds.contains($0.id) }
 
         // Skip duplicates (same assetIdentifier already in destination)
-        let destAssetIds = Set(destination.photos.compactMap { $0.assetIdentifier })
+        let destAssetIds = Set((destination.photos ?? []).compactMap { $0.assetIdentifier })
 
         for photo in photosToMove {
             if let assetId = photo.assetIdentifier, destAssetIds.contains(assetId) {
@@ -87,7 +87,7 @@ struct EncounterManagementService {
         updateEncounterThumbnail(destination)
 
         // If source has no photos left, delete it
-        if source.photos.isEmpty && source.imageData == nil {
+        if (source.photos ?? []).isEmpty && source.imageData == nil {
             modelContext.delete(source)
             return true
         }
@@ -103,7 +103,7 @@ struct EncounterManagementService {
         from source: Encounter
     ) -> (newEncounter: Encounter, sourceDeleted: Bool) {
         // Determine date/location from earliest selected photo
-        let selectedPhotos = source.photos
+        let selectedPhotos = (source.photos ?? [])
             .filter { photoIds.contains($0.id) }
             .sorted { $0.date < $1.date }
 
@@ -128,7 +128,7 @@ struct EncounterManagementService {
         var personIds = Set<UUID>()
 
         // Collect personIds from all photos
-        for photo in encounter.photos {
+        for photo in encounter.photos ?? [] {
             for box in photo.faceBoundingBoxes {
                 if let pid = box.personId {
                     personIds.insert(pid)
@@ -144,10 +144,10 @@ struct EncounterManagementService {
         }
 
         // Remove people no longer referenced
-        encounter.people.removeAll { !personIds.contains($0.id) }
+        encounter.people = (encounter.people ?? []).filter { personIds.contains($0.id) }
 
         // Add people that are referenced but not yet linked
-        let existingIds = Set(encounter.people.map { $0.id })
+        let existingIds = Set((encounter.people ?? []).map { $0.id })
         let missingIds = personIds.subtracting(existingIds)
 
         if !missingIds.isEmpty {
@@ -158,7 +158,7 @@ struct EncounterManagementService {
             )
             if let people = try? modelContext.fetch(descriptor) {
                 for person in people {
-                    encounter.people.append(person)
+                    encounter.people = (encounter.people ?? []) + [person]
                 }
             }
         }
@@ -166,7 +166,7 @@ struct EncounterManagementService {
 
     /// Set encounter thumbnail from the earliest photo by date.
     func updateEncounterThumbnail(_ encounter: Encounter) {
-        let sorted = encounter.photos.sorted { $0.date < $1.date }
+        let sorted = (encounter.photos ?? []).sorted { $0.date < $1.date }
         encounter.thumbnailData = sorted.first?.imageData ?? encounter.imageData
     }
 
