@@ -83,7 +83,7 @@ final class FaceReviewViewModel {
     }
 
     func rejectMatch() {
-        showNameInput = true
+        facesForReview[currentFaceIndex].matchResult = nil
     }
 
     func createNewPerson(modelContext: ModelContext) -> Person? {

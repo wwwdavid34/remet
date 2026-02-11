@@ -703,6 +703,17 @@ struct QuickCaptureReviewView: View {
                         TextField("Name (required)", text: $name)
                             .textFieldStyle(.roundedBorder)
                             .focused($nameFieldFocused)
+
+                        if !existingPeople.isEmpty && matchSuggestions.isEmpty {
+                            Button {
+                                showExistingPersonPicker = true
+                            } label: {
+                                Label("Choose Existing Person", systemImage: "person.3")
+                                    .font(.subheadline)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                        }
                     } else {
                         HStack {
                             Image(systemName: "person.fill.checkmark")
@@ -710,6 +721,14 @@ struct QuickCaptureReviewView: View {
                             Text("Adding face to: \(selectedExistingPerson!.name)")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
+                            Spacer()
+                            Button {
+                                selectedExistingPerson = nil
+                                name = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -769,6 +788,43 @@ struct QuickCaptureReviewView: View {
         }
         .onChange(of: detectedFaces.count) { _, _ in
             checkForMatches()
+        }
+        .sheet(isPresented: $showExistingPersonPicker) {
+            NavigationStack {
+                List(existingPeople) { person in
+                    Button {
+                        selectedExistingPerson = person
+                        name = person.name
+                        showExistingPersonPicker = false
+                    } label: {
+                        HStack(spacing: 12) {
+                            if let embedding = person.embeddings.first,
+                               let uiImage = UIImage(data: embedding.faceCropData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 44, height: 44)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .font(.system(size: 44))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Text(person.name)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                }
+                .navigationTitle("Choose Person")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            showExistingPersonPicker = false
+                        }
+                    }
+                }
+            }
         }
     }
 
