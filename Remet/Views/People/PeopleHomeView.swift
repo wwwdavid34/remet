@@ -436,6 +436,20 @@ struct PeopleHomeView: View {
                         }
                         .buttonStyle(.plain)
                     }
+
+                    if encounters.count > recentEncounters.count {
+                        Button {
+                            showAllEncounters = true
+                        } label: {
+                            OverflowCard(
+                                remaining: encounters.count - recentEncounters.count,
+                                icon: "person.2.crop.square.stack",
+                                color: AppColors.teal
+                            )
+                            .frame(width: 192)
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -471,6 +485,21 @@ struct PeopleHomeView: View {
                             selectedPerson = person
                         } label: {
                             EnhancedPersonCard(person: person)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    let totalPeople = people.filter { !$0.isMe }.count
+                    if totalPeople > recentMet.count {
+                        Button {
+                            showAllPeople = true
+                        } label: {
+                            OverflowCard(
+                                remaining: totalPeople - recentMet.count,
+                                icon: "person.3",
+                                color: AppColors.coral
+                            )
+                            .frame(width: 90)
                         }
                         .buttonStyle(.plain)
                     }
@@ -905,6 +934,31 @@ struct EnhancedPersonCard: View {
         }
         .frame(width: 90)
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Overflow Card
+
+struct OverflowCard: View {
+    let remaining: Int
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(color)
+            Text("+\(remaining)")
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+            Text("more")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+        .glassCard(intensity: .thin, cornerRadius: 14)
     }
 }
 
