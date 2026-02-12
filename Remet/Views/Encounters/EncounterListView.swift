@@ -223,6 +223,8 @@ struct EncounterListView: View {
                     }
                 }
                 .onDelete(perform: isSelectMode ? nil : deleteEncounters)
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -387,29 +389,60 @@ struct EncounterRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Thumbnail
-            if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
-               let image = UIImage(data: imageData) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 70, height: 70)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            } else {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+            // Thumbnail + badges below
+            VStack(spacing: 6) {
+                if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
+                   let image = UIImage(data: imageData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 70, height: 70)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .frame(width: 70, height: 70)
-                    .overlay {
-                        Image(systemName: "person.2")
-                            .font(.title2)
-                            .foregroundStyle(AppColors.coral)
+                        .frame(width: 70, height: 70)
+                        .overlay {
+                            Image(systemName: "person.2")
+                                .font(.title2)
+                                .foregroundStyle(AppColors.coral)
+                        }
+                }
+
+                // Badges
+                HStack(spacing: 4) {
+                    if photoCount > 1 {
+                        HStack(spacing: 2) {
+                            Image(systemName: "photo.stack")
+                            Text("\(photoCount)")
+                        }
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(AppColors.softPurple))
+                        .foregroundStyle(.white)
                     }
+
+                    if personCount > 0 {
+                        HStack(spacing: 2) {
+                            Image(systemName: "person.fill")
+                            Text("\(personCount)")
+                        }
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(AppColors.teal))
+                        .foregroundStyle(.white)
+                    }
+                }
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -451,50 +484,22 @@ struct EncounterRowView: View {
                     }
                 }
 
-                HStack(spacing: 8) {
-                    if let location = encounter.location, !location.isEmpty {
-                        Label(location, systemImage: "mappin")
-                            .foregroundStyle(AppColors.teal)
-                    }
-
-                    Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
-                        .foregroundStyle(AppColors.textMuted)
+                if let location = encounter.location, !location.isEmpty {
+                    Label(location, systemImage: "mappin")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.teal)
+                        .lineLimit(1)
                 }
-                .font(.caption)
+
+                Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.textMuted)
             }
 
             Spacer()
-
-            // Badges
-            VStack(alignment: .trailing, spacing: 4) {
-                if photoCount > 1 {
-                    HStack(spacing: 2) {
-                        Image(systemName: "photo.stack")
-                        Text("\(photoCount)")
-                    }
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(AppColors.softPurple))
-                    .foregroundStyle(.white)
-                }
-
-                if personCount > 0 {
-                    HStack(spacing: 2) {
-                        Image(systemName: "person.fill")
-                        Text("\(personCount)")
-                    }
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(AppColors.teal))
-                    .foregroundStyle(.white)
-                }
-            }
         }
-        .padding(.vertical, 4)
+        .padding(10)
+        .glassCard(intensity: .thin, cornerRadius: 14)
     }
 }
 
