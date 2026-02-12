@@ -60,10 +60,14 @@ struct AllPeopleListView: View {
         return result.sorted { $0.name < $1.name }
     }
 
+    private var showMe: Bool {
+        AppSettings.shared.showMeInPeopleList
+    }
+
     var filteredPeople: [Person] {
         _ = filterRefreshId
 
-        var result = people.filter { !$0.isMe }
+        var result = showMe ? Array(people) : people.filter { !$0.isMe }
 
         // Filter by search text
         if !searchText.isEmpty {
@@ -101,6 +105,15 @@ struct AllPeopleListView: View {
             result.sort { ($0.encounters ?? []).count > ($1.encounters ?? []).count }
         }
 
+        // Always sort "Me" to top when visible
+        if showMe {
+            result.sort { p1, p2 in
+                if p1.isMe { return true }
+                if p2.isMe { return false }
+                return false // preserve existing order for non-Me
+            }
+        }
+
         return result
     }
 
@@ -122,7 +135,7 @@ struct AllPeopleListView: View {
 
     var body: some View {
         Group {
-            if people.filter({ !$0.isMe }).isEmpty {
+            if filteredPeople.isEmpty && searchText.isEmpty && !hasActiveFilters {
                 ContentUnavailableView {
                     Label("No People Yet", systemImage: "person.3")
                 } description: {
@@ -174,11 +187,13 @@ struct AllPeopleListView: View {
                                     }
                                     .buttonStyle(.plain)
                                     .contextMenu {
-                                        Button(role: .destructive) {
-                                            personToDelete = person
-                                            showDeleteSingleConfirmation = true
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
+                                        if !person.isMe {
+                                            Button(role: .destructive) {
+                                                personToDelete = person
+                                                showDeleteSingleConfirmation = true
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
                                         }
                                     }
                                 }
@@ -220,7 +235,7 @@ struct AllPeopleListView: View {
         .searchable(text: $searchText, prompt: "Search name, notes, tags")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                if !people.filter({ !$0.isMe }).isEmpty {
+                if !filteredPeople.isEmpty {
                     Button {
                         withAnimation {
                             isSelectMode.toggle()
@@ -333,7 +348,7 @@ struct AllPeopleListView: View {
     }
 
     private func deleteSelectedPeople() {
-        for person in people where selectedPersonIds.contains(person.id) {
+        for person in people where selectedPersonIds.contains(person.id) && !person.isMe {
             modelContext.delete(person)
         }
         try? modelContext.save()
@@ -376,13 +391,31 @@ struct GridPersonCard: View {
                     }
             }
 
-            Text(person.name)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .lineLimit(1)
-                .foregroundStyle(.primary)
+            HStack(spacing: 4) {
+                Text(person.name)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+                    .foregroundStyle(.primary)
 
-            if let relationship = person.relationship {
+                if person.isMe {
+                    Text(String(localized: "You"))
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(AppColors.softPurple)
+                        .clipShape(Capsule())
+                }
+            }
+
+            if person.isMe {
+                Text(String(localized: "Your profile"))
+                    .font(.caption)
+                    .foregroundStyle(AppColors.softPurple)
+                    .lineLimit(1)
+            } else if let relationship = person.relationship {
                 Text(relationship)
                     .font(.caption)
                     .foregroundStyle(.secondary)

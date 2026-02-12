@@ -42,6 +42,7 @@ struct AccountView: View {
                 DeleteConfirmationView(
                     onConfirm: {
                         DemoDataService.clearAllData(modelContext: modelContext)
+                        AppSettings.shared.hasCompletedOnboarding = false
                         showDeleteConfirmation = false
                     },
                     onCancel: {

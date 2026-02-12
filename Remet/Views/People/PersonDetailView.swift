@@ -93,12 +93,14 @@ struct PersonDetailView: View {
                         Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
                     }
 
-                    Divider()
+                    if !person.isMe {
+                        Divider()
 
-                    Button(role: .destructive) {
-                        showDeleteConfirmation = true
-                    } label: {
-                        Label(String(localized: "Delete Person"), systemImage: "trash")
+                        Button(role: .destructive) {
+                            showDeleteConfirmation = true
+                        } label: {
+                            Label(String(localized: "Delete Person"), systemImage: "trash")
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")

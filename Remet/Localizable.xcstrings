@@ -63,9 +63,6 @@
         }
       }
     },
-    "%@ due" : {
-
-    },
     "%@ face(s) identified" : {
       "localizations" : {
         "ja" : {
@@ -1961,6 +1958,7 @@
       }
     },
     "All Caught Up" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {

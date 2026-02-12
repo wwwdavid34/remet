@@ -219,6 +219,12 @@ struct EncounterManagementService {
         combineNotes: Bool
     ) {
         for secondary in secondaries {
+            // Preserve "Me" flag: if a secondary is "Me", transfer to primary
+            if secondary.isMe {
+                secondary.isMe = false
+                primary.isMe = true
+            }
+
             // Combine notes
             if combineNotes {
                 appendPersonNotes(from: secondary, to: primary)
