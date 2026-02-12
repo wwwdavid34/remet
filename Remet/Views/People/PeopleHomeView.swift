@@ -392,12 +392,12 @@ struct PeopleHomeView: View {
                     Text("Recent Encounters")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
             }
+            .buttonStyle(.plain)
             .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -430,12 +430,12 @@ struct PeopleHomeView: View {
                     Text("Recent Met")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
             }
+            .buttonStyle(.plain)
             .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
