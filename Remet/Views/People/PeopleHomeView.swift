@@ -383,21 +383,19 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var recentEncountersSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            Button {
+                showAllEncounters = true
+            } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "clock")
                         .foregroundStyle(AppColors.teal)
                     Text("Recent Encounters")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                }
-                Spacer()
-                Button {
-                    showAllEncounters = true
-                } label: {
-                    Text("See All")
+                        .foregroundStyle(.primary)
+                    Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(AppColors.coral)
+                        .foregroundStyle(.tertiary)
                 }
             }
             .padding(.horizontal)
@@ -423,21 +421,19 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var recentMetSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            Button {
+                showAllPeople = true
+            } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "person.badge.plus")
                         .foregroundStyle(AppColors.coral)
                     Text("Recent Met")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                }
-                Spacer()
-                Button {
-                    showAllPeople = true
-                } label: {
-                    Text("See All")
+                        .foregroundStyle(.primary)
+                    Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(AppColors.coral)
+                        .foregroundStyle(.tertiary)
                 }
             }
             .padding(.horizontal)
