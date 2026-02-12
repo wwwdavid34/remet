@@ -1788,6 +1788,8 @@ struct FullPhotoView: View {
     let encounter: Encounter
     let onSelectPerson: (Person) -> Void
 
+    @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -1801,7 +1803,7 @@ struct FullPhotoView: View {
                                 .scaledToFit()
                                 .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
                                 .overlay {
-                                    if AppSettings.shared.showBoundingBoxes {
+                                    if showFaceBoxes {
                                         GeometryReader { imageGeometry in
                                             ForEach(encounter.faceBoundingBoxes) { box in
                                                 FaceBoxOverlay(
@@ -1832,6 +1834,17 @@ struct FullPhotoView: View {
                     }
                     .foregroundStyle(.white)
                 }
+
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showFaceBoxes.toggle()
+                        }
+                    } label: {
+                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                    }
+                    .foregroundStyle(.white)
+                }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
         }
@@ -1846,6 +1859,7 @@ struct MultiPhotoFullView: View {
     let onSelectPerson: (Person) -> Void
 
     @State private var currentIndex: Int = 0
+    @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
 
     var body: some View {
         NavigationStack {
@@ -1873,6 +1887,17 @@ struct MultiPhotoFullView: View {
                     Text("\(currentIndex + 1) / \((encounter.photos ?? []).count)")
                         .foregroundStyle(.white)
                 }
+
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showFaceBoxes.toggle()
+                        }
+                    } label: {
+                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                    }
+                    .foregroundStyle(.white)
+                }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
         }
@@ -1891,7 +1916,7 @@ struct MultiPhotoFullView: View {
                         .scaledToFit()
                         .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
                         .overlay {
-                            if AppSettings.shared.showBoundingBoxes {
+                            if showFaceBoxes {
                                 GeometryReader { imageGeometry in
                                     ForEach(photo.faceBoundingBoxes) { box in
                                         FaceBoxOverlay(
