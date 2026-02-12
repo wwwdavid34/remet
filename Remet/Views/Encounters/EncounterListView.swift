@@ -225,6 +225,7 @@ struct EncounterListView: View {
                 .onDelete(perform: isSelectMode ? nil : deleteEncounters)
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -497,6 +498,10 @@ struct EncounterRowView: View {
             }
 
             Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
         .padding(10)
         .glassCard(intensity: .thin, cornerRadius: 14)
