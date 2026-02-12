@@ -1657,14 +1657,14 @@ struct FaceBoxOverlay: View {
         let width = box.width * scaledWidth
         let height = box.height * scaledHeight
 
+        // Ensure minimum 44pt tap target per Apple HIG
+        let tapWidth = max(width, 44)
+        let tapHeight = max(height, 44)
+
         ZStack(alignment: .bottom) {
             RoundedRectangle(cornerRadius: 4)
                 .stroke(box.personId != nil ? Color.blue : Color.orange, lineWidth: 2)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.clear)
-                        .contentShape(Rectangle())
-                )
+                .frame(width: width, height: height)
 
             if let name = box.personName {
                 Text(name)
@@ -1677,11 +1677,85 @@ struct FaceBoxOverlay: View {
                     .offset(y: 16)
             }
         }
-        .frame(width: width, height: height)
+        .frame(width: tapWidth, height: tapHeight)
+        .contentShape(Rectangle())
         .position(x: x + width / 2, y: y + height / 2)
         .onTapGesture {
             onTap?()
         }
+    }
+}
+
+// MARK: - Zoomable Container
+struct ZoomableContainer<Content: View>: View {
+    let content: () -> Content
+
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        content()
+            .scaleEffect(scale)
+            .offset(offset)
+            .gesture(magnifyGesture)
+            .simultaneousGesture(dragGesture)
+            .onTapGesture(count: 2) {
+                withAnimation(.spring(response: 0.3)) {
+                    if scale > 1.01 {
+                        scale = 1.0
+                        lastScale = 1.0
+                        offset = .zero
+                        lastOffset = .zero
+                    } else {
+                        scale = 2.5
+                        lastScale = 2.5
+                    }
+                }
+            }
+    }
+
+    private var magnifyGesture: some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                let newScale = lastScale * value.magnification
+                scale = min(max(newScale, 0.5), 5.0)
+            }
+            .onEnded { _ in
+                withAnimation(.spring(response: 0.3)) {
+                    if scale < 1.0 {
+                        scale = 1.0
+                        offset = .zero
+                        lastOffset = .zero
+                    }
+                }
+                lastScale = scale
+            }
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                guard scale > 1.01 else { return }
+                offset = CGSize(
+                    width: lastOffset.width + value.translation.width,
+                    height: lastOffset.height + value.translation.height
+                )
+            }
+            .onEnded { _ in
+                lastOffset = offset
+                if scale <= 1.01 {
+                    withAnimation(.spring(response: 0.3)) {
+                        offset = .zero
+                        lastOffset = .zero
+                    }
+                }
+            }
     }
 }
 
@@ -1693,33 +1767,37 @@ struct FullPhotoView: View {
 
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
-                    ZStack {
-                        Color.black.ignoresSafeArea()
+            ZStack {
+                Color.black.ignoresSafeArea()
 
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .overlay {
-                                if AppSettings.shared.showBoundingBoxes {
-                                    GeometryReader { imageGeometry in
-                                        ForEach(encounter.faceBoundingBoxes) { box in
-                                            FaceBoxOverlay(
-                                                box: box,
-                                                imageSize: image.size,
-                                                viewSize: imageGeometry.size,
-                                                onTap: {
-                                                    if let personId = box.personId,
-                                                       let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
-                                                        onSelectPerson(person)
+                GeometryReader { geometry in
+                    if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
+                        ZoomableContainer {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+                                .overlay {
+                                    if AppSettings.shared.showBoundingBoxes {
+                                        GeometryReader { imageGeometry in
+                                            ForEach(encounter.faceBoundingBoxes) { box in
+                                                FaceBoxOverlay(
+                                                    box: box,
+                                                    imageSize: image.size,
+                                                    viewSize: imageGeometry.size,
+                                                    onTap: {
+                                                        if let personId = box.personId,
+                                                           let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
+                                                            onSelectPerson(person)
+                                                        }
                                                     }
-                                                }
-                                            )
+                                                )
+                                            }
                                         }
                                     }
                                 }
-                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             }
@@ -1784,29 +1862,32 @@ struct MultiPhotoFullView: View {
     private func fullPhotoPage(for photo: EncounterPhoto) -> some View {
         GeometryReader { geometry in
             if let image = UIImage(data: photo.imageData) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay {
-                        if AppSettings.shared.showBoundingBoxes {
-                            GeometryReader { imageGeometry in
-                                ForEach(photo.faceBoundingBoxes) { box in
-                                    FaceBoxOverlay(
-                                        box: box,
-                                        imageSize: image.size,
-                                        viewSize: imageGeometry.size,
-                                        onTap: {
-                                            if let personId = box.personId,
-                                               let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
-                                                onSelectPerson(person)
+                ZoomableContainer {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+                        .overlay {
+                            if AppSettings.shared.showBoundingBoxes {
+                                GeometryReader { imageGeometry in
+                                    ForEach(photo.faceBoundingBoxes) { box in
+                                        FaceBoxOverlay(
+                                            box: box,
+                                            imageSize: image.size,
+                                            viewSize: imageGeometry.size,
+                                            onTap: {
+                                                if let personId = box.personId,
+                                                   let person = (encounter.people ?? []).first(where: { $0.id == personId }) {
+                                                    onSelectPerson(person)
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
