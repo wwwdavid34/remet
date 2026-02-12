@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import Combine
 
 /// Unified view combining Home dashboard and People list
 /// Primary tab for browsing and managing people
@@ -9,16 +8,24 @@ struct PeopleHomeView: View {
     @Query(sort: \Person.name) private var people: [Person]
     @Query(sort: \Encounter.date, order: .reverse) private var encounters: [Encounter]
 
-    @State private var searchText = ""
-    @State private var debouncedSearchText = ""
     @State private var selectedTagFilters: Set<UUID> = []
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
     @State private var showAccount = false
     @State private var showAllEncounters = false
     @State private var scrollOffset: CGFloat = 0
-    @State private var showSearchField = false
+
+    // Search state
+    @State private var showSearch = false
+    @State private var searchText = ""
+    @State private var selectedSearchTab: SearchTab = .all
     @FocusState private var searchFieldFocused: Bool
+
+    enum SearchTab: String, CaseIterable {
+        case all = "All"
+        case people = "People"
+        case encounters = "Encounters"
+    }
 
     // Cached computed values for performance
     @State private var cachedPeopleNeedingReview: [Person] = []
@@ -38,8 +45,29 @@ struct PeopleHomeView: View {
         cachedPeopleNeedingReview.count
     }
 
-    private var isSearching: Bool {
-        !debouncedSearchText.isEmpty || !selectedTagFilters.isEmpty
+    // MARK: - Search Computed Properties
+
+    private var searchFilteredPeople: [Person] {
+        guard !searchText.isEmpty else { return [] }
+        return people.filter { person in
+            person.name.localizedCaseInsensitiveContains(searchText) ||
+            person.notes?.localizedCaseInsensitiveContains(searchText) == true ||
+            (person.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+
+    private var searchFilteredEncounters: [Encounter] {
+        guard !searchText.isEmpty else { return [] }
+        return encounters.filter { encounter in
+            encounter.occasion?.localizedCaseInsensitiveContains(searchText) == true ||
+            encounter.location?.localizedCaseInsensitiveContains(searchText) == true ||
+            (encounter.people ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) } ||
+            (encounter.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+
+    private var hasSearchResults: Bool {
+        !searchFilteredPeople.isEmpty || !searchFilteredEncounters.isEmpty
     }
 
     // MARK: - Cache Update Functions
@@ -64,13 +92,6 @@ struct PeopleHomeView: View {
 
     private func updateFilteredPeople() {
         var result = people
-
-        if !debouncedSearchText.isEmpty {
-            result = result.filter {
-                $0.name.localizedCaseInsensitiveContains(debouncedSearchText) ||
-                ($0.tags ?? []).contains { $0.name.localizedCaseInsensitiveContains(debouncedSearchText) }
-            }
-        }
 
         if !selectedTagFilters.isEmpty {
             result = result.filter { person in
@@ -111,27 +132,16 @@ struct PeopleHomeView: View {
 
                     // Header: Title + Search + Account
                     headerView
-                        .opacity(headerOpacity)
-                        .frame(height: headerIsHidden ? 0 : nil)
+                        .opacity(showSearch ? 1 : headerOpacity)
+                        .frame(height: showSearch ? nil : (headerIsHidden ? 0 : nil))
                         .clipped()
 
-                    // Animated search field
-                    if showSearchField {
-                        searchFieldView
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .top).combined(with: .opacity),
-                                removal: .opacity
-                            ))
-                    }
-
                     VStack(spacing: 20) {
-                        if people.isEmpty {
+                        if showSearch {
+                            searchContent
+                        } else if people.isEmpty {
                             emptyState
-                        } else if isSearching {
-                            // Search results only
-                            searchResultsSection
                         } else {
-                            // Full dashboard view
                             dashboardContent
                         }
                     }
@@ -187,20 +197,8 @@ struct PeopleHomeView: View {
             .onChange(of: people) {
                 updateCaches()
             }
-            .onChange(of: debouncedSearchText) {
-                updateFilteredPeople()
-            }
             .onChange(of: selectedTagFilters) {
                 updateFilteredPeople()
-            }
-            .onChange(of: searchText) {
-                // Debounce search text to avoid lag while typing
-                Task {
-                    try? await Task.sleep(for: .milliseconds(150))
-                    if searchText == self.searchText {
-                        debouncedSearchText = searchText
-                    }
-                }
             }
         }
     }
@@ -209,42 +207,73 @@ struct PeopleHomeView: View {
 
     @ViewBuilder
     private var headerView: some View {
-        HStack {
-            Text("Remet")
-                .font(.system(size: 34, weight: .bold))
-                .foregroundStyle(AppColors.coral)
+        HStack(spacing: 10) {
+            if showSearch {
+                // Expanded search bar
+                HStack(spacing: 10) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
 
-            Spacer()
+                    TextField("Search people, encounters, tags...", text: $searchText)
+                        .textFieldStyle(.plain)
+                        .focused($searchFieldFocused)
+                        .submitLabel(.search)
 
-            // Search button
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    showSearchField.toggle()
-                    if showSearchField {
-                        searchFieldFocused = true
-                    } else {
-                        searchText = ""
-                        searchFieldFocused = false
+                    if !searchText.isEmpty {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
-            } label: {
-                Image(systemName: showSearchField ? "xmark" : "magnifyingglass")
-                    .font(.title2)
-                    .fontWeight(.medium)
-                    .foregroundStyle(AppColors.coral)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
-            }
+                .padding(12)
+                .glassCard(intensity: .thin, cornerRadius: 16)
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.8, anchor: .trailing).combined(with: .opacity),
+                    removal: .scale(scale: 0.8, anchor: .trailing).combined(with: .opacity)
+                ))
 
-            // Account button
-            Button {
-                showAccount = true
-            } label: {
-                Image(systemName: "person.circle.fill")
-                    .font(.title2)
+                Button {
+                    dismissSearch()
+                } label: {
+                    Text("Cancel")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.coral)
+                }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            } else {
+                Text("Remet")
+                    .font(.system(size: 34, weight: .bold))
                     .foregroundStyle(AppColors.coral)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+
+                Spacer()
+
+                // Search button
+                Button {
+                    activateSearch()
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.coral)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .glassCard(intensity: .thin, cornerRadius: 22)
+
+                // Account button
+                Button {
+                    showAccount = true
+                } label: {
+                    Image(systemName: "person.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.coral)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .glassCard(intensity: .thin, cornerRadius: 22)
             }
         }
         .padding(.horizontal)
@@ -252,32 +281,22 @@ struct PeopleHomeView: View {
         .safeAreaPadding(.top)
     }
 
-    // MARK: - Search Field View
-
-    @ViewBuilder
-    private var searchFieldView: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-
-            TextField("Search people...", text: $searchText)
-                .textFieldStyle(.plain)
-                .focused($searchFieldFocused)
-                .submitLabel(.search)
-
-            if !searchText.isEmpty {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-            }
+    private func activateSearch() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+            showSearch = true
         }
-        .padding(12)
-        .glassCard(intensity: .thin, cornerRadius: 12)
-        .padding(.horizontal)
-        .padding(.bottom, 8)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            searchFieldFocused = true
+        }
+    }
+
+    private func dismissSearch() {
+        searchFieldFocused = false
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+            showSearch = false
+            searchText = ""
+            selectedSearchTab = .all
+        }
     }
 
     // MARK: - Dashboard Content
@@ -465,55 +484,122 @@ struct PeopleHomeView: View {
         }
     }
 
-    // MARK: - Search Results
+    // MARK: - Search Content
 
     @ViewBuilder
-    private var searchResultsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Show tag filter bar in search results too
-            if !cachedTagsInUse.isEmpty {
-                TagFilterView(
-                    availableTags: cachedTagsInUse,
-                    selectedTags: $selectedTagFilters,
-                    onClear: { selectedTagFilters.removeAll() }
-                )
-            }
-
-            HStack {
-                Text("Results")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                Spacer()
-                Text("\(cachedFilteredPeople.count) found")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal)
-
-            if cachedFilteredPeople.isEmpty {
-                VStack(spacing: 12) {
+    private var searchContent: some View {
+        VStack(spacing: 0) {
+            if searchText.isEmpty {
+                // Prompt state
+                VStack(spacing: 16) {
+                    Spacer()
                     Image(systemName: "magnifyingglass")
-                        .font(.largeTitle)
+                        .font(.system(size: 50))
                         .foregroundStyle(AppColors.textMuted)
-                    Text(String(localized: "No matches for \"\(searchText)\""))
+                    Text("Search people, encounters, and tags")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
+                .frame(minHeight: 300)
+            } else if !hasSearchResults {
+                // No results
+                VStack(spacing: 12) {
+                    Spacer()
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 50))
+                        .foregroundStyle(AppColors.textMuted)
+                    Text("No Results")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                    Text("No matches for \"\(searchText)\"")
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textSecondary)
+                    Spacer()
+                }
+                .frame(minHeight: 300)
             } else {
-                LazyVStack(spacing: 10) {
-                    ForEach(cachedFilteredPeople) { person in
-                        NavigationLink(value: person) {
-                            PersonRow(person: person)
-                        }
-                        .buttonStyle(.plain)
+                // Results with tab picker
+                Picker("Category", selection: $selectedSearchTab) {
+                    ForEach(SearchTab.allCases, id: \.self) { tab in
+                        Text(searchTabLabel(for: tab)).tag(tab)
                     }
                 }
+                .pickerStyle(.segmented)
                 .padding(.horizontal)
+                .padding(.bottom, 8)
+
+                // People results
+                if (selectedSearchTab == .all || selectedSearchTab == .people) && !searchFilteredPeople.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        if selectedSearchTab == .all {
+                            Label("People (\(searchFilteredPeople.count))", systemImage: "person.fill")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.coral)
+                                .padding(.horizontal)
+                        }
+
+                        LazyVStack(spacing: 0) {
+                            ForEach(searchFilteredPeople) { person in
+                                NavigationLink(value: person) {
+                                    PersonSearchRow(person: person, searchText: searchText)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 8)
+                                }
+                                .buttonStyle(.plain)
+
+                                Divider().padding(.leading, 78)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+
+                // Encounters results
+                if (selectedSearchTab == .all || selectedSearchTab == .encounters) && !searchFilteredEncounters.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        if selectedSearchTab == .all {
+                            Label("Encounters (\(searchFilteredEncounters.count))", systemImage: "person.2.crop.square.stack")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(AppColors.teal)
+                                .padding(.horizontal)
+                                .padding(.top, 12)
+                        }
+
+                        LazyVStack(spacing: 0) {
+                            ForEach(searchFilteredEncounters) { encounter in
+                                Button {
+                                    selectedEncounter = encounter
+                                } label: {
+                                    EncounterSearchRow(encounter: encounter, searchText: searchText)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 8)
+                                }
+                                .buttonStyle(.plain)
+
+                                Divider().padding(.leading, 78)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
             }
         }
-        .padding(.top, 8)
+        .transition(.opacity)
+    }
+
+    private func searchTabLabel(for tab: SearchTab) -> String {
+        switch tab {
+        case .all:
+            let total = searchFilteredPeople.count + searchFilteredEncounters.count
+            return total > 0 ? "All (\(total))" : "All"
+        case .people:
+            return searchFilteredPeople.count > 0 ? "People (\(searchFilteredPeople.count))" : "People"
+        case .encounters:
+            return searchFilteredEncounters.count > 0 ? "Encounters (\(searchFilteredEncounters.count))" : "Encounters"
+        }
     }
 
     // MARK: - Empty State
