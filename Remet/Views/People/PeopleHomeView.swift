@@ -36,7 +36,7 @@ struct PeopleHomeView: View {
     // MARK: - Computed Properties (lightweight)
 
     private var recentEncounters: [Encounter] {
-        Array(encounters.prefix(3))
+        Array(encounters.prefix(5))
     }
 
     private var recentMet: [Person] {
@@ -312,41 +312,28 @@ struct PeopleHomeView: View {
 
     @ViewBuilder
     private var statsBar: some View {
-        HStack(spacing: 16) {
-            // People count
-            HStack(spacing: 6) {
-                Image(systemName: "person.3.fill")
-                    .foregroundStyle(AppColors.coral)
-                Text("\(people.count) people")
-                    .fontWeight(.medium)
-            }
-            .font(.subheadline)
+        HStack(spacing: 12) {
+            DashboardStatCard(
+                value: "\(people.filter { !$0.isMe }.count)",
+                label: "People",
+                icon: "person.3.fill",
+                color: AppColors.coral
+            )
 
-            Spacer()
+            DashboardStatCard(
+                value: "\(encounters.count)",
+                label: "Encounters",
+                icon: "person.2.crop.square.stack",
+                color: AppColors.teal
+            )
 
-            // Review status
-            if reviewsDueToday > 0 {
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(AppColors.warning)
-                        .frame(width: 8, height: 8)
-                    Text("\(reviewsDueToday) due")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(AppColors.warning)
-                }
-            } else {
-                HStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(AppColors.success)
-                    Text("All Caught Up")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.success)
-                }
-            }
+            DashboardStatCard(
+                value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "0",
+                label: reviewsDueToday > 0 ? "Due" : "Caught Up",
+                icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
+                color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
+            )
         }
-        .padding()
-        .glassCard(intensity: .thin, cornerRadius: 12)
     }
 
     // MARK: - Review Nudge Section
@@ -421,7 +408,7 @@ struct PeopleHomeView: View {
                         Button {
                             selectedEncounter = encounter
                         } label: {
-                            CompactEncounterCard(encounter: encounter)
+                            EnhancedEncounterCard(encounter: encounter)
                         }
                         .buttonStyle(.plain)
                     }
@@ -461,7 +448,7 @@ struct PeopleHomeView: View {
                         Button {
                             selectedPerson = person
                         } label: {
-                            CompactPersonCard(person: person)
+                            EnhancedPersonCard(person: person)
                         }
                         .buttonStyle(.plain)
                     }
@@ -732,6 +719,180 @@ struct CompactEncounterCard: View {
             }
         }
         .frame(width: 100)
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Dashboard Stat Card
+
+struct DashboardStatCard: View {
+    let value: String
+    let label: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(color)
+
+            Text(value)
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+
+            Text(label)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .tintedGlassBackground(color, tintOpacity: 0.08, cornerRadius: 14)
+    }
+}
+
+// MARK: - Enhanced Encounter Card
+
+struct EnhancedEncounterCard: View {
+    let encounter: Encounter
+
+    private var personCount: Int {
+        (encounter.people ?? []).count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Thumbnail with people badge
+            ZStack(alignment: .bottomTrailing) {
+                if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 180, height: 110)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.teal.opacity(0.2), AppColors.softPurple.opacity(0.2)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 180, height: 110)
+                        .overlay {
+                            Image(systemName: "person.2")
+                                .font(.title2)
+                                .foregroundStyle(AppColors.teal)
+                        }
+                }
+
+                if personCount > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.fill")
+                            .font(.caption2)
+                        Text("\(personCount)")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .padding(6)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(encounter.occasion ?? "Encounter")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+
+                if let location = encounter.location, !location.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin")
+                            .font(.caption2)
+                        Text(location)
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+
+                Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 4)
+        }
+        .padding(6)
+        .glassCard(intensity: .thin, cornerRadius: 14)
+        .frame(width: 192)
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Enhanced Person Card
+
+struct EnhancedPersonCard: View {
+    let person: Person
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                // Face thumbnail
+                if let embedding = person.embeddings?.first,
+                   let uiImage = UIImage(data: embedding.faceCropData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 64, height: 64)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 64, height: 64)
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
+                }
+
+                // Face count badge
+                if (person.embeddings ?? []).count > 1 {
+                    Text("\((person.embeddings ?? []).count)")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 18, height: 18)
+                        .background(Circle().fill(AppColors.teal))
+                        .offset(x: 2, y: -2)
+                }
+            }
+
+            Text(person.name)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .lineLimit(1)
+
+            if let relationship = person.relationship {
+                Text(relationship)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .frame(width: 90)
         .contentShape(Rectangle())
     }
 }

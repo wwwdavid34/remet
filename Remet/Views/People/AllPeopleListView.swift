@@ -36,6 +36,15 @@ struct AllPeopleListView: View {
     @State private var showMergeSheet = false
     @State private var showDeleteSelectedConfirmation = false
 
+    // Single-delete via context menu
+    @State private var personToDelete: Person?
+    @State private var showDeleteSingleConfirmation = false
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
+    ]
+
     /// Tags that are currently assigned to at least one person
     var tagsInUse: [Tag] {
         var seenIds = Set<UUID>()
@@ -112,52 +121,74 @@ struct AllPeopleListView: View {
     }
 
     var body: some View {
-        List {
+        Group {
             if people.filter({ !$0.isMe }).isEmpty {
                 ContentUnavailableView {
                     Label("No People Yet", systemImage: "person.3")
                 } description: {
                     Text("People you've met will appear here.")
                 }
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
             } else {
-                // Tag filter bar
-                if hasAnyTags {
-                    Section {
-                        TagFilterView(
-                            availableTags: tagsInUse,
-                            selectedTags: $selectedTagFilters,
-                            onClear: { selectedTagFilters.removeAll() }
-                        )
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                }
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Tag filter bar
+                        if hasAnyTags {
+                            TagFilterView(
+                                availableTags: tagsInUse,
+                                selectedTags: $selectedTagFilters,
+                                onClear: { selectedTagFilters.removeAll() }
+                            )
+                        }
 
-                ForEach(filteredPeople) { person in
-                    if isSelectMode {
-                        Button {
-                            toggleSelection(person.id)
-                        } label: {
-                            HStack {
-                                Image(systemName: selectedPersonIds.contains(person.id) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(selectedPersonIds.contains(person.id) ? AppColors.teal : .secondary)
-                                    .font(.title3)
-                                PersonRow(person: person)
+                        // People count
+                        HStack {
+                            Text("\(filteredPeople.count) people")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+
+                        // 2-column grid
+                        LazyVGrid(columns: columns, spacing: 12) {
+                            ForEach(filteredPeople) { person in
+                                if isSelectMode {
+                                    Button {
+                                        toggleSelection(person.id)
+                                    } label: {
+                                        GridPersonCard(person: person)
+                                            .overlay(alignment: .topLeading) {
+                                                Image(systemName: selectedPersonIds.contains(person.id) ? "checkmark.circle.fill" : "circle")
+                                                    .font(.title3)
+                                                    .foregroundStyle(selectedPersonIds.contains(person.id) ? AppColors.teal : .white.opacity(0.7))
+                                                    .shadow(color: .black.opacity(0.3), radius: 2)
+                                                    .padding(8)
+                                            }
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    NavigationLink {
+                                        PersonDetailView(person: person)
+                                    } label: {
+                                        GridPersonCard(person: person)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            personToDelete = person
+                                            showDeleteSingleConfirmation = true
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
                             }
                         }
-                        .foregroundStyle(.primary)
-                    } else {
-                        NavigationLink {
-                            PersonDetailView(person: person)
-                        } label: {
-                            PersonRow(person: person)
-                        }
+                        .padding(.horizontal)
                     }
+                    .padding(.vertical)
                 }
-                .onDelete(perform: isSelectMode ? nil : deletePeople)
+                .background(Color(.systemGroupedBackground))
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -169,6 +200,18 @@ struct AllPeopleListView: View {
             Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
                 deleteSelectedPeople()
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
+        .alert("Delete \(personToDelete?.name ?? "this person")?", isPresented: $showDeleteSingleConfirmation) {
+            Button("Cancel", role: .cancel) {
+                personToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let person = personToDelete {
+                    deleteSinglePerson(person)
+                }
             }
         } message: {
             Text("This action cannot be undone.")
@@ -283,12 +326,10 @@ struct AllPeopleListView: View {
         .padding(.bottom, 4)
     }
 
-    private func deletePeople(at offsets: IndexSet) {
-        for index in offsets {
-            let person = filteredPeople[index]
-            modelContext.delete(person)
-        }
+    private func deleteSinglePerson(_ person: Person) {
+        modelContext.delete(person)
         try? modelContext.save()
+        personToDelete = nil
     }
 
     private func deleteSelectedPeople() {
@@ -300,6 +341,75 @@ struct AllPeopleListView: View {
             isSelectMode = false
             selectedPersonIds.removeAll()
         }
+    }
+}
+
+// MARK: - Grid Person Card
+
+struct GridPersonCard: View {
+    let person: Person
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                // Face thumbnail
+                if let embedding = person.embeddings?.first,
+                   let uiImage = UIImage(data: embedding.faceCropData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 56, height: 56)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 56, height: 56)
+                        .overlay {
+                            Image(systemName: "person.fill")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
+                }
+
+                // Face count badge
+                if (person.embeddings ?? []).count > 0 {
+                    HStack(spacing: 2) {
+                        Image(systemName: "face.smiling")
+                            .font(.system(size: 8))
+                        Text("\((person.embeddings ?? []).count)")
+                            .font(.system(size: 9, weight: .bold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(AppColors.teal))
+                    .offset(x: 4, y: -4)
+                }
+            }
+
+            Text(person.name)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .lineLimit(1)
+                .foregroundStyle(.primary)
+
+            if let relationship = person.relationship {
+                Text(relationship)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+        .glassCard(intensity: .thin, cornerRadius: 14)
     }
 }
 
