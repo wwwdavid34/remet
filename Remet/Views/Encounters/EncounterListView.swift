@@ -387,59 +387,29 @@ struct EncounterRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Thumbnail with badges
-            ZStack(alignment: .bottomTrailing) {
-                if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
-                   let image = UIImage(data: imageData) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 70, height: 70)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                } else {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+            // Thumbnail
+            if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
+               let image = UIImage(data: imageData) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 70, height: 70)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            } else {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .frame(width: 70, height: 70)
-                        .overlay {
-                            Image(systemName: "person.2")
-                                .font(.title2)
-                                .foregroundStyle(AppColors.coral)
-                        }
-                }
-
-                // Badges stack
-                VStack(spacing: 2) {
-                    if photoCount > 1 {
-                        HStack(spacing: 2) {
-                            Image(systemName: "photo.stack")
-                            Text("\(photoCount)")
-                        }
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .padding(3)
-                        .background(Capsule().fill(AppColors.softPurple))
-                        .foregroundStyle(.white)
+                    )
+                    .frame(width: 70, height: 70)
+                    .overlay {
+                        Image(systemName: "person.2")
+                            .font(.title2)
+                            .foregroundStyle(AppColors.coral)
                     }
-
-                    if personCount > 0 {
-                        HStack(spacing: 2) {
-                            Image(systemName: "person.fill")
-                            Text("\(personCount)")
-                        }
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .padding(3)
-                        .background(Capsule().fill(AppColors.teal))
-                        .foregroundStyle(.white)
-                    }
-                }
-                .offset(x: 4, y: 4)
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -494,6 +464,36 @@ struct EncounterRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .overlay(alignment: .topTrailing) {
+            VStack(spacing: 4) {
+                if photoCount > 1 {
+                    HStack(spacing: 2) {
+                        Image(systemName: "photo.stack")
+                        Text("\(photoCount)")
+                    }
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(AppColors.softPurple))
+                    .foregroundStyle(.white)
+                }
+
+                if personCount > 0 {
+                    HStack(spacing: 2) {
+                        Image(systemName: "person.fill")
+                        Text("\(personCount)")
+                    }
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(AppColors.teal))
+                    .foregroundStyle(.white)
+                }
+            }
+            .padding(.top, 4)
+        }
     }
 }
 

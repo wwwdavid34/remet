@@ -351,46 +351,29 @@ struct GridPersonCard: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            ZStack(alignment: .topTrailing) {
-                // Face thumbnail
-                if let embedding = person.embeddings?.first,
-                   let uiImage = UIImage(data: embedding.faceCropData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 56, height: 56)
-                        .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+            // Face thumbnail
+            if let embedding = person.embeddings?.first,
+               let uiImage = UIImage(data: embedding.faceCropData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 56, height: 56)
+                    .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .frame(width: 56, height: 56)
-                        .overlay {
-                            Image(systemName: "person.fill")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                        }
-                }
-
-                // Face count badge
-                if (person.embeddings ?? []).count > 0 {
-                    HStack(spacing: 2) {
-                        Image(systemName: "face.smiling")
-                            .font(.system(size: 8))
-                        Text("\((person.embeddings ?? []).count)")
-                            .font(.system(size: 9, weight: .bold))
+                    )
+                    .frame(width: 56, height: 56)
+                    .overlay {
+                        Image(systemName: "person.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white)
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(AppColors.teal))
-                    .offset(x: 4, y: -4)
-                }
             }
 
             Text(person.name)
@@ -410,6 +393,21 @@ struct GridPersonCard: View {
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .glassCard(intensity: .thin, cornerRadius: 14)
+        .overlay(alignment: .topTrailing) {
+            if (person.embeddings ?? []).count > 0 {
+                HStack(spacing: 2) {
+                    Image(systemName: "face.smiling")
+                        .font(.system(size: 8))
+                    Text("\((person.embeddings ?? []).count)")
+                        .font(.system(size: 9, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(Capsule().fill(AppColors.teal))
+                .padding(8)
+            }
+        }
     }
 }
 

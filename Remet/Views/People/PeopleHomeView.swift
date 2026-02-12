@@ -839,41 +839,29 @@ struct EnhancedPersonCard: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            ZStack(alignment: .topTrailing) {
-                // Face thumbnail
-                if let embedding = person.embeddings?.first,
-                   let uiImage = UIImage(data: embedding.faceCropData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 64, height: 64)
-                        .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+            // Face thumbnail
+            if let embedding = person.embeddings?.first,
+               let uiImage = UIImage(data: embedding.faceCropData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 64, height: 64)
+                    .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [AppColors.coral.opacity(0.3), AppColors.teal.opacity(0.3)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .frame(width: 64, height: 64)
-                        .overlay {
-                            Image(systemName: "person.fill")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                        }
-                }
-
-                // Face count badge
-                if (person.embeddings ?? []).count > 1 {
-                    Text("\((person.embeddings ?? []).count)")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 18, height: 18)
-                        .background(Circle().fill(AppColors.teal))
-                        .offset(x: 2, y: -2)
-                }
+                    )
+                    .frame(width: 64, height: 64)
+                    .overlay {
+                        Image(systemName: "person.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white)
+                    }
             }
 
             Text(person.name)
