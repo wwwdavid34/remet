@@ -73,6 +73,7 @@ struct EncounterListView: View {
     @State private var selectedEncounterIds: Set<UUID> = []
     @State private var showMergeSheet = false
     @State private var showDeleteSelectedConfirmation = false
+    @State private var selectedEncounter: Encounter?
 
     /// Tags that are currently assigned to at least one encounter
     var tagsInUse: [Tag] {
@@ -215,17 +216,18 @@ struct EncounterListView: View {
                         }
                         .foregroundStyle(.primary)
                     } else {
-                        NavigationLink {
-                            EncounterDetailView(encounter: encounter)
+                        Button {
+                            selectedEncounter = encounter
                         } label: {
                             EncounterRowView(encounter: encounter)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
                 .onDelete(perform: isSelectMode ? nil : deleteEncounters)
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -240,6 +242,9 @@ struct EncounterListView: View {
             }
         } message: {
             Text("This action cannot be undone.")
+        }
+        .navigationDestination(item: $selectedEncounter) { encounter in
+            EncounterDetailView(encounter: encounter)
         }
         .navigationTitle(String(localized: "Encounters"))
         .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
