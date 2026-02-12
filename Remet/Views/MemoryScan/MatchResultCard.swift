@@ -109,7 +109,7 @@ struct NoFaceDetectedView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "face.viewfinder")
+            Image(systemName: "person.crop.rectangle")
                 .font(.system(size: 60))
                 .foregroundStyle(AppColors.warning)
 

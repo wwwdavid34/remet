@@ -288,10 +288,12 @@ struct EncounterListView: View {
         }
         .sheet(isPresented: $showMergeSheet) {
             let selected = encounters.filter { selectedEncounterIds.contains($0.id) }
-            EncounterMergeView(encounters: selected) {
-                withAnimation {
-                    isSelectMode = false
-                    selectedEncounterIds.removeAll()
+            if selected.count >= 2 {
+                EncounterMergeView(encounters: selected) {
+                    withAnimation {
+                        isSelectMode = false
+                        selectedEncounterIds.removeAll()
+                    }
                 }
             }
         }

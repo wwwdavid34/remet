@@ -132,7 +132,7 @@ struct EncounterEditView: View {
                             ProgressView()
                                 .scaleEffect(0.7)
                         } else {
-                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                            Image(systemName: "faceid")
                         }
                         Text("Re-detect")
                     }
@@ -156,7 +156,7 @@ struct EncounterEditView: View {
                             ProgressView()
                                 .scaleEffect(0.7)
                         } else {
-                            Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                            Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
                         }
                         Text(locateFaceMode ? String(localized: "Cancel") : String(localized: "Missing faces?"))
                     }
@@ -257,7 +257,7 @@ struct EncounterEditView: View {
                             ProgressView()
                                 .scaleEffect(0.7)
                         } else {
-                            Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                            Image(systemName: "faceid")
                         }
                         Text("Re-detect")
                     }
@@ -280,7 +280,7 @@ struct EncounterEditView: View {
                             ProgressView()
                                 .scaleEffect(0.7)
                         } else {
-                            Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                            Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
                         }
                         Text(locateFaceMode ? String(localized: "Cancel") : String(localized: "Missing faces?"))
                     }

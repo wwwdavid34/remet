@@ -33,7 +33,7 @@ struct ScanningAnimationView: View {
                 .rotationEffect(.degrees(rotation))
 
             // Center icon
-            Image(systemName: "face.viewfinder")
+            Image(systemName: "person.crop.rectangle")
                 .font(.system(size: 30))
                 .foregroundStyle(tintColor)
                 .scaleEffect(isAnimating ? 1.1 : 1.0)

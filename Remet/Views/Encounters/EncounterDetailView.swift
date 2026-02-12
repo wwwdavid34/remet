@@ -89,7 +89,7 @@ struct EncounterDetailView: View {
                     } label: {
                         Label(
                             locateFaceMode ? String(localized: "Cancel Locate Face") : String(localized: "Locate Missing Face"),
-                            systemImage: locateFaceMode ? "xmark.circle" : "face.viewfinder"
+                            systemImage: locateFaceMode ? "xmark.circle" : "person.crop.rectangle"
                         )
                     }
                     .disabled(isLocatingFace)
@@ -99,7 +99,7 @@ struct EncounterDetailView: View {
                             await redetectFaces()
                         }
                     } label: {
-                        Label(String(localized: "Re-detect Faces"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                        Label(String(localized: "Re-detect Faces"), systemImage: "faceid")
                     }
                     .disabled(isRedetecting)
 
@@ -153,6 +153,7 @@ struct EncounterDetailView: View {
         }
         .sheet(isPresented: $showTagPicker, onDismiss: {
             encounter.tags = selectedTags
+            try? modelContext.save()
         }) {
             TagPickerView(selectedTags: $selectedTags, title: "Tags for Encounter")
         }

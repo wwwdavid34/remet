@@ -643,7 +643,7 @@ struct QuickCaptureReviewView: View {
                         ProgressView()
                             .scaleEffect(0.7)
                     } else {
-                        Image(systemName: locateFaceMode ? "xmark.circle" : "face.viewfinder")
+                        Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
                     }
                     Text(locateFaceMode ? "Cancel" : "Missing?")
                 }

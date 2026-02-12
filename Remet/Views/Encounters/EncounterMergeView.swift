@@ -180,6 +180,7 @@ struct EncounterMergeView: View {
 
     private func performMerge() {
         guard let primary = primaryEncounter else { return }
+        guard !secondaryEncounters.isEmpty else { return }
         isMerging = true
 
         let service = EncounterManagementService(modelContext: modelContext)
@@ -188,9 +189,14 @@ struct EncounterMergeView: View {
             secondaries: secondaryEncounters,
             combineNotes: combineNotes
         )
+        try? modelContext.save()
 
         isMerging = false
-        onMerged()
         dismiss()
+        // Call onMerged after dismiss so parent clears stale references
+        // before @Query re-evaluates with deleted encounters
+        DispatchQueue.main.async {
+            onMerged()
+        }
     }
 }
