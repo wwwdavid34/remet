@@ -462,10 +462,11 @@ struct EncounterRowView: View {
                 }
                 .font(.caption)
             }
-        }
-        .padding(.vertical, 4)
-        .overlay(alignment: .topTrailing) {
-            VStack(spacing: 4) {
+
+            Spacer()
+
+            // Badges
+            VStack(alignment: .trailing, spacing: 4) {
                 if photoCount > 1 {
                     HStack(spacing: 2) {
                         Image(systemName: "photo.stack")
@@ -492,8 +493,8 @@ struct EncounterRowView: View {
                     .foregroundStyle(.white)
                 }
             }
-            .padding(.top, 4)
         }
+        .padding(.vertical, 4)
     }
 }
 
