@@ -5,12 +5,15 @@ struct PersonDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var allEncounters: [Encounter]
+    @Query(sort: \Person.name) private var allPeople: [Person]
     @Bindable var person: Person
     @State private var showEditSheet = false
     @State private var selectedEncounter: Encounter?
     @State private var faceSourceEncounter: Encounter?
     @State private var selectedEmbedding: FaceEmbedding?
     @State private var showDeleteConfirmation = false
+    @State private var showMergeWithPicker = false
+    @State private var mergeTargetPerson: Person?
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
     @State private var showEncountersTimeline = false
@@ -84,6 +87,14 @@ struct PersonDetailView: View {
                         Label(String(localized: "Edit Details"), systemImage: "pencil")
                     }
 
+                    Button {
+                        showMergeWithPicker = true
+                    } label: {
+                        Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
+                    }
+
+                    Divider()
+
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
                     } label: {
@@ -130,6 +141,24 @@ struct PersonDetailView: View {
                     selectedEncounter = encounter
                 }
             })
+        }
+        .sheet(isPresented: $showMergeWithPicker) {
+            PersonMergePickerView(
+                currentPerson: person,
+                allPeople: allPeople,
+                onSelect: { target in
+                    showMergeWithPicker = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        mergeTargetPerson = target
+                    }
+                }
+            )
+        }
+        .sheet(item: $mergeTargetPerson) { target in
+            PersonMergeView(people: [person, target]) {
+                mergeTargetPerson = nil
+                dismiss()
+            }
         }
     }
 

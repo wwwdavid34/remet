@@ -1119,7 +1119,11 @@ struct EncounterDetailView: View {
             } else {
                 ForEach(encounter.people ?? []) { person in
                     HStack {
-                        NavigationLink(value: person) {
+                        Button {
+                            if !isEditing {
+                                selectedPerson = person
+                            }
+                        } label: {
                             HStack {
                                 if let firstEmbedding = person.embeddings?.first,
                                    let image = UIImage(data: firstEmbedding.faceCropData) {
@@ -1187,9 +1191,6 @@ struct EncounterDetailView: View {
             if let person = personToRemove {
                 Text("Remove \(person.name) from this encounter? This will unlink all their face labels from this encounter.")
             }
-        }
-        .navigationDestination(for: Person.self) { person in
-            PersonDetailView(person: person)
         }
     }
 

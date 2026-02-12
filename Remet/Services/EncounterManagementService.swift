@@ -208,4 +208,126 @@ struct EncounterManagementService {
             destination.notes = sourceNotes
         }
     }
+
+    // MARK: - Merge People
+
+    /// Merge multiple people into a primary one.
+    /// Embeddings, encounters, tags, notes, and related data are transferred; secondaries are deleted.
+    func mergePeople(
+        primary: Person,
+        secondaries: [Person],
+        combineNotes: Bool
+    ) {
+        for secondary in secondaries {
+            // Combine notes
+            if combineNotes {
+                appendPersonNotes(from: secondary, to: primary)
+            }
+
+            // Move all face embeddings to primary
+            for embedding in secondary.embeddings ?? [] {
+                embedding.person = primary
+            }
+
+            // Merge encounters (add any not already linked)
+            let existingEncounterIds = Set((primary.encounters ?? []).map { $0.id })
+            for encounter in secondary.encounters ?? [] where !existingEncounterIds.contains(encounter.id) {
+                primary.encounters = (primary.encounters ?? []) + [encounter]
+            }
+
+            // Merge tags
+            let existingTagIds = Set((primary.tags ?? []).map { $0.id })
+            for tag in secondary.tags ?? [] where !existingTagIds.contains(tag.id) {
+                primary.tags = (primary.tags ?? []) + [tag]
+            }
+
+            // Move interaction notes
+            for note in secondary.interactionNotes ?? [] {
+                note.person = primary
+            }
+
+            // Move quiz attempts
+            for attempt in secondary.quizAttempts ?? [] {
+                attempt.person = primary
+            }
+
+            // Discard secondary's spaced repetition data (keep primary's)
+            if let srData = secondary.spacedRepetitionData {
+                modelContext.delete(srData)
+            }
+
+            // Fill empty optional fields from secondary
+            if primary.relationship == nil { primary.relationship = secondary.relationship }
+            if primary.contextTag == nil { primary.contextTag = secondary.contextTag }
+            if primary.company == nil { primary.company = secondary.company }
+            if primary.jobTitle == nil { primary.jobTitle = secondary.jobTitle }
+            if primary.email == nil { primary.email = secondary.email }
+            if primary.phone == nil { primary.phone = secondary.phone }
+            if primary.birthday == nil { primary.birthday = secondary.birthday }
+            if primary.linkedIn == nil { primary.linkedIn = secondary.linkedIn }
+            if primary.twitter == nil { primary.twitter = secondary.twitter }
+            if primary.howWeMet == nil { primary.howWeMet = secondary.howWeMet }
+            if primary.contactIdentifier == nil { primary.contactIdentifier = secondary.contactIdentifier }
+
+            // Union interests and talking points (deduplicate)
+            let mergedInterests = Array(Set(primary.interests + secondary.interests))
+            if mergedInterests.count > primary.interests.count {
+                primary.interests = mergedInterests
+            }
+
+            let mergedTalkingPoints = Array(Set(primary.talkingPoints + secondary.talkingPoints))
+            if mergedTalkingPoints.count > primary.talkingPoints.count {
+                primary.talkingPoints = mergedTalkingPoints
+            }
+
+            // Update face bounding box personId references in all encounters
+            updateBoundingBoxPersonIds(from: secondary.id, to: primary.id)
+
+            // Delete the now-empty secondary person
+            modelContext.delete(secondary)
+        }
+    }
+
+    /// Update personId in face bounding boxes across all encounters and photos.
+    private func updateBoundingBoxPersonIds(from oldId: UUID, to newId: UUID) {
+        let descriptor = FetchDescriptor<Encounter>()
+        guard let allEncounters = try? modelContext.fetch(descriptor) else { return }
+
+        for encounter in allEncounters {
+            // Update legacy bounding boxes on encounter
+            var legacyBoxes = encounter.faceBoundingBoxes
+            var legacyChanged = false
+            for i in legacyBoxes.indices where legacyBoxes[i].personId == oldId {
+                legacyBoxes[i].personId = newId
+                legacyChanged = true
+            }
+            if legacyChanged {
+                encounter.faceBoundingBoxes = legacyBoxes
+            }
+
+            // Update bounding boxes on photos
+            for photo in encounter.photos ?? [] {
+                var boxes = photo.faceBoundingBoxes
+                var changed = false
+                for i in boxes.indices where boxes[i].personId == oldId {
+                    boxes[i].personId = newId
+                    changed = true
+                }
+                if changed {
+                    photo.faceBoundingBoxes = boxes
+                }
+            }
+        }
+    }
+
+    /// Append notes from source person to destination, handling nil/empty gracefully.
+    private func appendPersonNotes(from source: Person, to destination: Person) {
+        guard let sourceNotes = source.notes, !sourceNotes.isEmpty else { return }
+
+        if let existingNotes = destination.notes, !existingNotes.isEmpty {
+            destination.notes = existingNotes + "\n\n" + sourceNotes
+        } else {
+            destination.notes = sourceNotes
+        }
+    }
 }

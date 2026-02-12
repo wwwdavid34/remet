@@ -82,6 +82,7 @@
 		CB1973A4EA63A43353D48831 /* SyncSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238DE2A764731DE98E7D50AF /* SyncSettingsView.swift */; };
 		D362EA332267D1BAC1A7400C /* StatusBarFadeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */; };
 		D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* PersonMergeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */; };
 		E00EC07AADAEBE2072EA08D6 /* EncounterGroupReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2AC37A21CA31106498C6E2 /* EncounterGroupReviewView.swift */; };
 		E6FBB221BB4D06F4D2B5587F /* FaceEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */; };
 		E9A063887364C98257DFE000 /* QuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */; };
@@ -125,6 +126,7 @@
 		429F386BA20D6758F12C7C05 /* EncounterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterDetailView.swift; sourceTree = "<group>"; };
 		450F9A1A3B5B6AD0D184E282 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMergeView.swift; sourceTree = "<group>"; };
 		49021AC39EB69B1086AA70A3 /* EncounterEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterEditView.swift; sourceTree = "<group>"; };
 		4B86348856F51C62121EC088 /* InteractionNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionNote.swift; sourceTree = "<group>"; };
 		4B8A6EB8EBB2A9D20B57FC52 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
@@ -434,6 +436,7 @@
 				345B472647BAF030FA79A0B2 /* PeopleHomeView.swift */,
 				8506C97A0F1D2A3A3C3BDD51 /* PeopleListView.swift */,
 				4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */,
+				F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */,
 			);
 			path = People;
 			sourceTree = "<group>";
@@ -581,6 +584,7 @@
 				7702051B9C47A5D782F8C7F8 /* PeopleListView.swift in Sources */,
 				C30F9E41870DF68EB50DEC93 /* Person.swift in Sources */,
 				D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* PersonMergeView.swift in Sources */,
 				60126316EDBE2CB1FEF6EB6C /* PhotoImportView.swift in Sources */,
 				09C25603D1D5B39E492CE4DD /* PhotoImportViewModel.swift in Sources */,
 				457C0CB01FC45D37EB6B5B59 /* PhotoLibraryScannerService.swift in Sources */,

@@ -15,6 +15,12 @@ struct PeopleHomeView: View {
     @State private var showAllEncounters = false
     @State private var scrollOffset: CGFloat = 0
 
+    // Multi-select for merge/delete
+    @State private var isSelectMode = false
+    @State private var selectedPersonIds: Set<UUID> = []
+    @State private var showPersonMergeSheet = false
+    @State private var showDeleteSelectedConfirmation = false
+
     // Search state
     @State private var showSearch = false
     @State private var searchText = ""
@@ -155,9 +161,6 @@ struct PeopleHomeView: View {
             .background(Color(.systemGroupedBackground))
             .statusBarFade()
             .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(for: Person.self) { person in
-                PersonDetailView(person: person)
-            }
             .navigationDestination(item: $selectedPerson) { person in
                 PersonDetailView(person: person)
             }
@@ -189,6 +192,28 @@ struct PeopleHomeView: View {
                                 Button("Done") { showAccount = false }
                             }
                         }
+                }
+            }
+            .sheet(isPresented: $showPersonMergeSheet) {
+                PersonMergeView(people: people.filter { selectedPersonIds.contains($0.id) }) {
+                    withAnimation {
+                        isSelectMode = false
+                        selectedPersonIds.removeAll()
+                    }
+                }
+            }
+            .alert("Delete Selected?", isPresented: $showDeleteSelectedConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) {
+                    deleteSelectedPeople()
+                }
+            } message: {
+                Text("Delete \(selectedPersonIds.count) selected people? This cannot be undone.")
+            }
+            .overlay(alignment: .bottom) {
+                if isSelectMode && !selectedPersonIds.isEmpty {
+                    selectModeBar
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .task {
@@ -249,6 +274,22 @@ struct PeopleHomeView: View {
                     .foregroundStyle(AppColors.coral)
 
                 Spacer()
+
+                // Select button (only when people exist)
+                if !people.isEmpty {
+                    Button {
+                        withAnimation {
+                            isSelectMode.toggle()
+                            if !isSelectMode {
+                                selectedPersonIds.removeAll()
+                            }
+                        }
+                    } label: {
+                        Text(isSelectMode ? "Cancel" : "Select")
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.coral)
+                    }
+                }
 
                 // Search button
                 Button {
@@ -462,7 +503,7 @@ struct PeopleHomeView: View {
     private var peopleListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("All People")
+                Text(isSelectMode ? "\(selectedPersonIds.count) Selected" : "All People")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
@@ -474,13 +515,88 @@ struct PeopleHomeView: View {
 
             LazyVStack(spacing: 10) {
                 ForEach(cachedFilteredPeople) { person in
-                    NavigationLink(value: person) {
-                        PersonRow(person: person)
+                    if isSelectMode {
+                        Button {
+                            togglePersonSelection(person.id)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: selectedPersonIds.contains(person.id) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedPersonIds.contains(person.id) ? AppColors.coral : .secondary)
+                                    .font(.title3)
+                                PersonRow(person: person)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        Button {
+                            selectedPerson = person
+                        } label: {
+                            PersonRow(person: person)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal)
+        }
+    }
+
+    private func togglePersonSelection(_ id: UUID) {
+        if selectedPersonIds.contains(id) {
+            selectedPersonIds.remove(id)
+        } else {
+            selectedPersonIds.insert(id)
+        }
+    }
+
+    // MARK: - Select Mode Bar
+
+    @ViewBuilder
+    private var selectModeBar: some View {
+        HStack(spacing: 12) {
+            Button {
+                showDeleteSelectedConfirmation = true
+            } label: {
+                HStack {
+                    Image(systemName: "trash")
+                    Text("Delete")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(AppColors.coral)
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+
+            Button {
+                showPersonMergeSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.triangle.merge")
+                    Text("Merge")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(selectedPersonIds.count >= 2 ? AppColors.teal : AppColors.teal.opacity(0.4))
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .disabled(selectedPersonIds.count < 2)
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 4)
+    }
+
+    private func deleteSelectedPeople() {
+        for person in people where selectedPersonIds.contains(person.id) {
+            modelContext.delete(person)
+        }
+        try? modelContext.save()
+        withAnimation {
+            isSelectMode = false
+            selectedPersonIds.removeAll()
         }
     }
 
@@ -542,7 +658,9 @@ struct PeopleHomeView: View {
 
                         LazyVStack(spacing: 0) {
                             ForEach(searchFilteredPeople) { person in
-                                NavigationLink(value: person) {
+                                Button {
+                                    selectedPerson = person
+                                } label: {
                                     PersonSearchRow(person: person, searchText: searchText)
                                         .padding(.horizontal)
                                         .padding(.vertical, 8)
