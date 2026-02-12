@@ -8,6 +8,7 @@ struct FaceReviewView: View {
 
     let image: UIImage?
     let detectedFaces: [DetectedFace]
+    var assetIdentifier: String? = nil
     let onComplete: () -> Void
 
     @State private var viewModel = FaceReviewViewModel()
@@ -204,7 +205,7 @@ struct FaceReviewView: View {
                 if let img = image, viewModel.createdEncounter == nil {
                     let hasIdentifiedFaces = viewModel.facesForReview.contains { $0.assignedPerson != nil }
                     if hasIdentifiedFaces {
-                        _ = viewModel.createEncounter(from: img, modelContext: modelContext)
+                        _ = viewModel.createEncounter(from: img, assetIdentifier: assetIdentifier, modelContext: modelContext)
                     }
                 }
                 onComplete()
@@ -222,7 +223,7 @@ struct FaceReviewView: View {
                     // Small delay to ensure embeddings are saved
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         guard viewModel.createdEncounter == nil else { return }
-                        _ = viewModel.createEncounter(from: img, modelContext: modelContext)
+                        _ = viewModel.createEncounter(from: img, assetIdentifier: self.assetIdentifier, modelContext: modelContext)
                     }
                 }
             }

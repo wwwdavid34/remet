@@ -35,7 +35,9 @@ struct PhotoImportView: View {
                     .controlSize(.large)
 
                     // Single photo picker
-                    PhotosPicker(selection: $viewModel.selectedItem, matching: .images) {
+                    Button {
+                        viewModel.showPhotoPicker = true
+                    } label: {
                         Label("Choose Single Photo", systemImage: "photo.on.rectangle")
                             .frame(maxWidth: .infinity)
                     }
@@ -66,18 +68,44 @@ struct PhotoImportView: View {
                 Spacer()
             }
             .navigationTitle("Remet")
-            .onChange(of: viewModel.selectedItem) {
+            .sheet(isPresented: $viewModel.showPhotoPicker, onDismiss: {
+                // Process after picker sheet fully dismisses to avoid sheet conflict
+                guard let image = viewModel.pendingImage else { return }
+                let assetId = viewModel.pendingAssetId
+                viewModel.pendingImage = nil
+                viewModel.pendingAssetId = nil
                 Task {
-                    await viewModel.processSelectedPhoto()
+                    await viewModel.processPickedPhoto(
+                        image: image,
+                        assetIdentifier: assetId,
+                        modelContext: modelContext
+                    )
                 }
+            }) {
+                SinglePhotoPicker(
+                    onPick: { image, assetIdentifier in
+                        viewModel.pendingImage = image
+                        viewModel.pendingAssetId = assetIdentifier
+                        viewModel.showPhotoPicker = false
+                    },
+                    onCancel: {
+                        viewModel.showPhotoPicker = false
+                    }
+                )
             }
             .sheet(isPresented: $viewModel.showFaceReview) {
                 FaceReviewView(
                     image: viewModel.importedImage,
-                    detectedFaces: viewModel.detectedFaces
+                    detectedFaces: viewModel.detectedFaces,
+                    assetIdentifier: viewModel.assetIdentifier
                 ) {
                     viewModel.reset()
                 }
+            }
+            .alert("Already Imported", isPresented: $viewModel.showAlreadyImportedAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("This photo has already been imported.")
             }
             .sheet(isPresented: $showScanner) {
                 EncounterScannerView()
@@ -114,21 +142,52 @@ struct PhotoImportView: View {
             return
         }
 
-        await processCamera(image: image)
+        await viewModel.processPickedPhoto(image: image, assetIdentifier: nil, modelContext: modelContext)
+    }
+}
+
+// MARK: - PHPicker Wrapper (provides assetIdentifier for dedup)
+struct SinglePhotoPicker: UIViewControllerRepresentable {
+    let onPick: (UIImage, String?) -> Void
+    var onCancel: (() -> Void)? = nil
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 1
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
     }
 
-    private func processCamera(image: UIImage) async {
-        viewModel.importedImage = image
-        do {
-            let faceDetectionService = FaceDetectionService()
-            viewModel.detectedFaces = try await faceDetectionService.detectFaces(in: image)
-            viewModel.showFaceReview = !viewModel.detectedFaces.isEmpty
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
 
-            if viewModel.detectedFaces.isEmpty {
-                viewModel.errorMessage = "No faces detected in this photo"
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onPick: onPick, onCancel: onCancel)
+    }
+
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let onPick: (UIImage, String?) -> Void
+        let onCancel: (() -> Void)?
+
+        init(onPick: @escaping (UIImage, String?) -> Void, onCancel: (() -> Void)?) {
+            self.onPick = onPick
+            self.onCancel = onCancel
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            guard let result = results.first else {
+                DispatchQueue.main.async { self.onCancel?() }
+                return
             }
-        } catch {
-            viewModel.errorMessage = error.localizedDescription
+            let assetId = result.assetIdentifier
+
+            result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                guard let image = object as? UIImage else { return }
+                DispatchQueue.main.async {
+                    self.onPick(image, assetId)
+                }
+            }
         }
     }
 }

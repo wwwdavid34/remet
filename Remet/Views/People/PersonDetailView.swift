@@ -72,9 +72,9 @@ struct PersonDetailView: View {
             }
         }
         .background(Color(.systemGroupedBackground))
-        .statusBarFade()
         .navigationTitle(person.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {

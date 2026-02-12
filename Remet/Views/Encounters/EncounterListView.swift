@@ -68,10 +68,11 @@ struct EncounterListView: View {
     @State private var showFilters = false
     @State private var filterRefreshId = UUID()
 
-    // Multi-select for merge
+    // Multi-select for merge/delete
     @State private var isSelectMode = false
     @State private var selectedEncounterIds: Set<UUID> = []
     @State private var showMergeSheet = false
+    @State private var showDeleteSelectedConfirmation = false
 
     /// Tags that are currently assigned to at least one encounter
     var tagsInUse: [Tag] {
@@ -225,9 +226,17 @@ struct EncounterListView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if isSelectMode && selectedEncounterIds.count >= 2 {
-                mergeBar
+            if isSelectMode && !selectedEncounterIds.isEmpty {
+                selectModeBar
             }
+        }
+        .alert("Delete \(selectedEncounterIds.count) Encounter\(selectedEncounterIds.count == 1 ? "" : "s")?", isPresented: $showDeleteSelectedConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                deleteSelectedEncounters()
+            }
+        } message: {
+            Text("This action cannot be undone.")
         }
         .navigationTitle(String(localized: "Encounters"))
         .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
@@ -308,29 +317,59 @@ struct EncounterListView: View {
     }
 
     @ViewBuilder
-    private var mergeBar: some View {
-        Button {
-            showMergeSheet = true
-        } label: {
-            HStack {
-                Image(systemName: "arrow.triangle.merge")
-                Text("Merge \(selectedEncounterIds.count) Encounters")
-                    .fontWeight(.semibold)
+    private var selectModeBar: some View {
+        HStack(spacing: 12) {
+            Button {
+                showDeleteSelectedConfirmation = true
+            } label: {
+                HStack {
+                    Image(systemName: "trash")
+                    Text("Delete")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(AppColors.coral)
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(AppColors.teal)
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .padding(.horizontal)
-            .padding(.bottom, 4)
+
+            Button {
+                showMergeSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.triangle.merge")
+                    Text("Merge")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(selectedEncounterIds.count >= 2 ? AppColors.teal : AppColors.teal.opacity(0.4))
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .disabled(selectedEncounterIds.count < 2)
         }
+        .padding(.horizontal)
+        .padding(.bottom, 4)
     }
 
     private func deleteEncounters(at offsets: IndexSet) {
         for index in offsets {
             let encounter = filteredEncounters[index]
             modelContext.delete(encounter)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteSelectedEncounters() {
+        for encounter in encounters where selectedEncounterIds.contains(encounter.id) {
+            modelContext.delete(encounter)
+        }
+        try? modelContext.save()
+        withAnimation {
+            isSelectMode = false
+            selectedEncounterIds.removeAll()
         }
     }
 }

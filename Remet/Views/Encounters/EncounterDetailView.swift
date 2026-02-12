@@ -52,6 +52,10 @@ struct EncounterDetailView: View {
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
 
+    // Delete encounter state
+    @Environment(\.dismiss) private var dismiss
+    @State private var showDeleteEncounterConfirmation = false
+
     // Check if this encounter has multiple photos
     private var hasMultiplePhotos: Bool {
         !(encounter.photos ?? []).isEmpty
@@ -115,6 +119,14 @@ struct EncounterDetailView: View {
                             Label(String(localized: "Move Photos"), systemImage: "photo.on.rectangle.angled")
                         }
                     }
+
+                    Divider()
+
+                    Button(role: .destructive) {
+                        showDeleteEncounterConfirmation = true
+                    } label: {
+                        Label(String(localized: "Delete Encounter"), systemImage: "trash")
+                    }
                 } label: {
                     if isRedetecting || isLocatingFace {
                         ProgressView()
@@ -168,6 +180,16 @@ struct EncounterDetailView: View {
                 isPhotoSelectMode = false
                 selectedPhotoIds.removeAll()
             }
+        }
+        .alert("Delete Encounter?", isPresented: $showDeleteEncounterConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                modelContext.delete(encounter)
+                try? modelContext.save()
+                dismiss()
+            }
+        } message: {
+            Text("This encounter and its photos will be permanently deleted.")
         }
     }
 

@@ -129,6 +129,7 @@ final class FaceReviewViewModel {
                         faceCropData: imageData
                     )
                     faceEmbedding.person = person
+                    person.embeddings = (person.embeddings ?? []) + [faceEmbedding]
                     modelContext.insert(faceEmbedding)
                     person.lastSeenAt = Date()
 
@@ -142,7 +143,7 @@ final class FaceReviewViewModel {
     }
 
     /// Create an encounter from the imported photo and identified faces
-    func createEncounter(from image: UIImage, modelContext: ModelContext) -> Encounter {
+    func createEncounter(from image: UIImage, assetIdentifier: String? = nil, modelContext: ModelContext) -> Encounter {
         let settings = AppSettings.shared
         let resizedImage = resizeImage(image, targetSize: settings.photoTargetSize)
         let imageData = resizedImage.jpegData(compressionQuality: settings.photoJpegQuality) ?? Data()
@@ -160,15 +161,26 @@ final class FaceReviewViewModel {
             boundingBoxes.append(box)
         }
 
-        // Create encounter
+        // Create encounter with EncounterPhoto (not legacy imageData)
         let encounter = Encounter(
-            imageData: imageData,
             occasion: nil,
             notes: nil,
             location: nil,
             date: Date()
         )
-        encounter.faceBoundingBoxes = boundingBoxes
+
+        let encounterPhoto = EncounterPhoto(
+            imageData: imageData,
+            date: Date(),
+            assetIdentifier: assetIdentifier
+        )
+        encounterPhoto.faceBoundingBoxes = boundingBoxes
+        encounterPhoto.encounter = encounter
+        encounter.photos = [encounterPhoto]
+
+        // Set thumbnail
+        let thumbnailImage = resizeImage(image, targetSize: CGSize(width: 256, height: 256))
+        encounter.thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.5)
 
         // Link identified people
         let identifiedPeople = facesForReview.compactMap { $0.assignedPerson }
