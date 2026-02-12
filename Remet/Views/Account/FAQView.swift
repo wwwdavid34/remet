@@ -80,11 +80,44 @@ struct FAQView: View {
                 FAQSection(
                     question: String(localized: "Is my face data secure?"),
                     answer: String(localized: """
-                    Yes. All face detection and recognition happens entirely on your device. \
-                    Your photos and face data are never sent to external servers.
+                    Yes. All face detection and recognition happens entirely on your device \
+                    using Apple's Vision and Core ML frameworks. No face images, embeddings, \
+                    or biometric data are ever transmitted to external servers.
 
-                    Premium users' data syncs via iCloud, which is encrypted and accessible \
-                    only to your Apple ID. We cannot access your iCloud data.
+                    Premium users' data syncs via iCloud, stored in your private CloudKit \
+                    container. This data is encrypted and accessible only to your Apple ID. \
+                    We cannot access your iCloud data.
+
+                    No advertising or analytics SDKs are integrated into the app. \
+                    No device fingerprinting or user profiling is performed.
+                    """)
+                )
+
+                FAQSection(
+                    question: String(localized: "What data does Remet collect?"),
+                    answer: String(localized: """
+                    Remet stores the following data locally on your device:
+
+                    • Photos and camera images used for face recognition
+                    • Face embeddings (mathematical vectors, not actual photos of faces)
+                    • Encounter notes, tags, and optional contact/location data
+                    • App configuration settings
+
+                    All processing happens on-device. Because we do not possess your data, \
+                    we are unable to disclose it to any third party.
+                    """)
+                )
+
+                FAQSection(
+                    question: String(localized: "Can I delete my data?"),
+                    answer: String(localized: """
+                    Yes. You have full control over your data at all times:
+
+                    • Delete individual people, encounters, or face samples from within the app
+                    • Use "Delete All Data" in Account settings for a complete reset
+                    • Deleting the app removes all local data permanently
+
+                    For iCloud data, deletion syncs across devices during the next sync cycle.
                     """)
                 )
 

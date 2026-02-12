@@ -94,13 +94,7 @@ struct ContactLinkSection: View {
                 Spacer()
 
                 if !subscriptionManager.isPremium {
-                    HStack(spacing: 3) {
-                        Image(systemName: "crown.fill")
-                            .font(.caption2)
-                        Text("Premium")
-                            .font(.caption2)
-                    }
-                    .foregroundStyle(AppColors.warmYellow)
+                    PremiumBadge()
                 }
 
                 Image(systemName: "chevron.right")

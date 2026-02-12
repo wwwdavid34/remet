@@ -58,6 +58,24 @@ struct LimitWarningCompact: View {
     }
 }
 
+/// Unified premium badge — gold crown capsule
+struct PremiumBadge: View {
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "crown.fill")
+                .font(.caption2)
+            Text("Premium")
+                .font(.caption2)
+                .fontWeight(.semibold)
+        }
+        .foregroundStyle(AppColors.warmYellow)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(AppColors.warmYellow.opacity(0.15))
+        .clipShape(Capsule())
+    }
+}
+
 #Preview("Approaching Limit") {
     VStack {
         LimitWarningBanner(

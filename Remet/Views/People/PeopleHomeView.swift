@@ -367,23 +367,12 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var reviewNudgeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "brain.head.profile")
-                        .foregroundStyle(AppColors.warning)
-                    Text("Practice These")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                }
-                Spacer()
-                Text("\(cachedPeopleNeedingReview.count)")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppColors.warning.opacity(0.15))
+            HStack(spacing: 6) {
+                Image(systemName: "brain.head.profile")
                     .foregroundStyle(AppColors.warning)
-                    .clipShape(Capsule())
+                Text("Practice These")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
             }
             .padding(.horizontal)
 
@@ -394,6 +383,13 @@ struct PeopleHomeView: View {
                             selectedPerson = person
                         } label: {
                             CompactPersonCard(person: person, showReviewBadge: true)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    if cachedPeopleNeedingReview.count > 8 {
+                        Button { showPractice = true } label: {
+                            OverflowBadge(remaining: cachedPeopleNeedingReview.count - 8, color: AppColors.warning)
                         }
                         .buttonStyle(.plain)
                     }
@@ -438,15 +434,8 @@ struct PeopleHomeView: View {
                     }
 
                     if encounters.count > recentEncounters.count {
-                        Button {
-                            showAllEncounters = true
-                        } label: {
-                            OverflowCard(
-                                remaining: encounters.count - recentEncounters.count,
-                                icon: "person.2.crop.square.stack",
-                                color: AppColors.teal
-                            )
-                            .frame(width: 192)
+                        Button { showAllEncounters = true } label: {
+                            OverflowBadge(remaining: encounters.count - recentEncounters.count, color: AppColors.teal)
                         }
                         .buttonStyle(.plain)
                     }
@@ -491,15 +480,8 @@ struct PeopleHomeView: View {
 
                     let totalPeople = people.filter { !$0.isMe }.count
                     if totalPeople > recentMet.count {
-                        Button {
-                            showAllPeople = true
-                        } label: {
-                            OverflowCard(
-                                remaining: totalPeople - recentMet.count,
-                                icon: "person.3",
-                                color: AppColors.coral
-                            )
-                            .frame(width: 90)
+                        Button { showAllPeople = true } label: {
+                            OverflowBadge(remaining: totalPeople - recentMet.count, color: AppColors.coral)
                         }
                         .buttonStyle(.plain)
                     }
@@ -939,26 +921,17 @@ struct EnhancedPersonCard: View {
 
 // MARK: - Overflow Card
 
-struct OverflowCard: View {
+struct OverflowBadge: View {
     let remaining: Int
-    let icon: String
     let color: Color
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(color)
-            Text("+\(remaining)")
-                .font(.system(size: 22, weight: .bold, design: .rounded))
-                .foregroundStyle(color)
-            Text("more")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
-        .glassCard(intensity: .thin, cornerRadius: 14)
+        Text("+\(remaining)")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundStyle(color)
+            .frame(width: 56, height: 56)
+            .glassCard(intensity: .thin, cornerRadius: 28)
     }
 }
 

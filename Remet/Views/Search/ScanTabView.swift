@@ -162,14 +162,7 @@ struct ScanTabView: View {
                                 .foregroundStyle(.primary)
 
                             if !subscriptionManager.isPremium {
-                                Text("Premium")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(AppColors.softPurple.opacity(0.2))
-                                    .foregroundStyle(AppColors.softPurple)
-                                    .clipShape(Capsule())
+                                PremiumBadge()
                             }
                         }
 

@@ -308,16 +308,23 @@ struct PrivacyInfoView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Local Storage", systemImage: "internaldrive")
+                    Label("Local-First Storage", systemImage: "internaldrive")
                         .font(.headline)
-                    Text("Face embeddings and photos are stored only in the app's private storage on your device.")
+                    Text("Face embeddings and photos are stored in the app's private storage on your device. No biometric data is ever uploaded to our servers.")
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("No Cloud Sync", systemImage: "icloud.slash")
+                    Label("Optional iCloud Sync", systemImage: "icloud.fill")
                         .font(.headline)
-                    Text("Your data is not synced to iCloud or any cloud service. If you delete the app, all data is permanently removed.")
+                    Text("Premium users can sync data via iCloud, stored in your private CloudKit container. This data is encrypted and accessible only to your Apple ID. We cannot access your iCloud data.")
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("No Tracking", systemImage: "hand.raised.fill")
+                        .font(.headline)
+                    Text("No advertising or analytics SDKs are integrated. No device fingerprinting or user profiling. Your data is used solely to help you remember people.")
                         .foregroundStyle(.secondary)
                 }
 
