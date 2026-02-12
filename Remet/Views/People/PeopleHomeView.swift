@@ -8,11 +8,11 @@ struct PeopleHomeView: View {
     @Query(sort: \Person.name) private var people: [Person]
     @Query(sort: \Encounter.date, order: .reverse) private var encounters: [Encounter]
 
-    @State private var selectedTagFilters: Set<UUID> = []
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
     @State private var showAccount = false
     @State private var showAllEncounters = false
+    @State private var showAllPeople = false
     @State private var scrollOffset: CGFloat = 0
 
     // Search state
@@ -29,8 +29,6 @@ struct PeopleHomeView: View {
 
     // Cached computed values for performance
     @State private var cachedPeopleNeedingReview: [Person] = []
-    @State private var cachedTagsInUse: [Tag] = []
-    @State private var cachedFilteredPeople: [Person] = []
 
     // Header fade threshold
     private let headerFadeThreshold: CGFloat = 60
@@ -39,6 +37,13 @@ struct PeopleHomeView: View {
 
     private var recentEncounters: [Encounter] {
         Array(encounters.prefix(3))
+    }
+
+    private var recentMet: [Person] {
+        people.filter { !$0.isMe }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(8)
+            .map { $0 }
     }
 
     private var reviewsDueToday: Int {
@@ -74,33 +79,6 @@ struct PeopleHomeView: View {
 
     private func updateCaches() {
         cachedPeopleNeedingReview = people.filter { $0.needsReview }
-
-        var seenIds = Set<UUID>()
-        var tags: [Tag] = []
-        for person in people {
-            for tag in person.tags ?? [] {
-                if !seenIds.contains(tag.id) {
-                    seenIds.insert(tag.id)
-                    tags.append(tag)
-                }
-            }
-        }
-        cachedTagsInUse = tags.sorted { $0.name < $1.name }
-
-        updateFilteredPeople()
-    }
-
-    private func updateFilteredPeople() {
-        var result = people
-
-        if !selectedTagFilters.isEmpty {
-            result = result.filter { person in
-                let personTagIds = Set((person.tags ?? []).map { $0.id })
-                return !selectedTagFilters.isDisjoint(with: personTagIds)
-            }
-        }
-
-        cachedFilteredPeople = result
     }
 
     // MARK: - Body
@@ -188,14 +166,21 @@ struct PeopleHomeView: View {
                         }
                 }
             }
+            .sheet(isPresented: $showAllPeople) {
+                NavigationStack {
+                    AllPeopleListView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") { showAllPeople = false }
+                            }
+                        }
+                }
+            }
             .task {
                 updateCaches()
             }
             .onChange(of: people) {
                 updateCaches()
-            }
-            .onChange(of: selectedTagFilters) {
-                updateFilteredPeople()
             }
         }
     }
@@ -315,17 +300,10 @@ struct PeopleHomeView: View {
                 recentEncountersSection
             }
 
-            // Tag filter bar
-            if !cachedTagsInUse.isEmpty {
-                TagFilterView(
-                    availableTags: cachedTagsInUse,
-                    selectedTags: $selectedTagFilters,
-                    onClear: { selectedTagFilters.removeAll() }
-                )
+            // Recent met
+            if !recentMet.isEmpty {
+                recentMetSection
             }
-
-            // People list
-            peopleListSection
         }
         .padding(.top, 8)
     }
@@ -422,7 +400,7 @@ struct PeopleHomeView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "clock")
                         .foregroundStyle(AppColors.teal)
-                    Text("Recent")
+                    Text("Recent Encounters")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                 }
@@ -453,33 +431,43 @@ struct PeopleHomeView: View {
         }
     }
 
-    // MARK: - People List Section
+    // MARK: - Recent Met Section
 
     @ViewBuilder
-    private var peopleListSection: some View {
+    private var recentMetSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("All People")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                HStack(spacing: 6) {
+                    Image(systemName: "person.badge.plus")
+                        .foregroundStyle(AppColors.coral)
+                    Text("Recent Met")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
                 Spacer()
-                Text("\(cachedFilteredPeople.count)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal)
-
-            LazyVStack(spacing: 10) {
-                ForEach(cachedFilteredPeople) { person in
-                    Button {
-                        selectedPerson = person
-                    } label: {
-                        PersonRow(person: person)
-                    }
-                    .buttonStyle(.plain)
+                Button {
+                    showAllPeople = true
+                } label: {
+                    Text("See All")
+                        .font(.caption)
+                        .foregroundStyle(AppColors.coral)
                 }
             }
             .padding(.horizontal)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(recentMet) { person in
+                        Button {
+                            selectedPerson = person
+                        } label: {
+                            CompactPersonCard(person: person)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+            }
         }
     }
 
