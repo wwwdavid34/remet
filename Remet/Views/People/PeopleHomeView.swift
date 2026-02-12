@@ -13,6 +13,7 @@ struct PeopleHomeView: View {
     @State private var showAccount = false
     @State private var showAllEncounters = false
     @State private var showAllPeople = false
+    @State private var showPractice = false
     @State private var scrollOffset: CGFloat = 0
 
     // Search state
@@ -112,7 +113,7 @@ struct PeopleHomeView: View {
                     headerView
                         .opacity(showSearch ? 1 : headerOpacity)
                         .frame(height: showSearch ? nil : (headerIsHidden ? 0 : nil))
-                        .clipped()
+                        .allowsHitTesting(!headerIsHidden || showSearch)
 
                     VStack(spacing: 20) {
                         if showSearch {
@@ -172,6 +173,16 @@ struct PeopleHomeView: View {
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
                                 Button("Done") { showAllPeople = false }
+                            }
+                        }
+                }
+            }
+            .sheet(isPresented: $showPractice) {
+                NavigationStack {
+                    PracticeHomeView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") { showPractice = false }
                             }
                         }
                 }
@@ -313,26 +324,41 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var statsBar: some View {
         HStack(spacing: 12) {
-            DashboardStatCard(
-                value: "\(people.filter { !$0.isMe }.count)",
-                label: "People",
-                icon: "person.3.fill",
-                color: AppColors.coral
-            )
+            Button {
+                showAllPeople = true
+            } label: {
+                DashboardStatCard(
+                    value: "\(people.filter { !$0.isMe }.count)",
+                    label: "People",
+                    icon: "person.3.fill",
+                    color: AppColors.coral
+                )
+            }
+            .buttonStyle(.plain)
 
-            DashboardStatCard(
-                value: "\(encounters.count)",
-                label: "Encounters",
-                icon: "person.2.crop.square.stack",
-                color: AppColors.teal
-            )
+            Button {
+                showAllEncounters = true
+            } label: {
+                DashboardStatCard(
+                    value: "\(encounters.count)",
+                    label: "Encounters",
+                    icon: "person.2.crop.square.stack",
+                    color: AppColors.teal
+                )
+            }
+            .buttonStyle(.plain)
 
-            DashboardStatCard(
-                value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "0",
-                label: reviewsDueToday > 0 ? "Due" : "Caught Up",
-                icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
-                color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
-            )
+            Button {
+                showPractice = true
+            } label: {
+                DashboardStatCard(
+                    value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "0",
+                    label: reviewsDueToday > 0 ? "Due" : "Caught Up",
+                    icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
+                    color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
+                )
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -826,8 +852,9 @@ struct EnhancedEncounterCard: View {
             .padding(.horizontal, 4)
         }
         .padding(6)
-        .glassCard(intensity: .thin, cornerRadius: 14)
         .frame(width: 192)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
         .contentShape(Rectangle())
     }
 }

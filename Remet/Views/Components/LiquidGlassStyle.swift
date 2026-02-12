@@ -134,6 +134,7 @@ struct TintedGlassModifier: ViewModifier {
     let tintOpacity: Double
     var cornerRadius: CGFloat
     var isCapsule: Bool
+    var isInteractive: Bool
 
     @ViewBuilder
     func body(content: Content) -> some View {
@@ -148,11 +149,17 @@ struct TintedGlassModifier: ViewModifier {
     @ViewBuilder
     private func nativeContent(_ content: Content) -> some View {
         if isCapsule {
-            content
-                .glassEffect(.regular.tint(tintColor.opacity(tintOpacity)).interactive(), in: .capsule)
+            if isInteractive {
+                content.glassEffect(.regular.tint(tintColor.opacity(tintOpacity)).interactive(), in: .capsule)
+            } else {
+                content.glassEffect(.regular.tint(tintColor.opacity(tintOpacity)), in: .capsule)
+            }
         } else {
-            content
-                .glassEffect(.regular.tint(tintColor.opacity(tintOpacity)).interactive(), in: .rect(cornerRadius: cornerRadius))
+            if isInteractive {
+                content.glassEffect(.regular.tint(tintColor.opacity(tintOpacity)).interactive(), in: .rect(cornerRadius: cornerRadius))
+            } else {
+                content.glassEffect(.regular.tint(tintColor.opacity(tintOpacity)), in: .rect(cornerRadius: cornerRadius))
+            }
         }
     }
 
@@ -220,13 +227,17 @@ struct TintedGlassModifier: ViewModifier {
 struct GlassCardModifier: ViewModifier {
     var intensity: LiquidGlassIntensity
     var cornerRadius: CGFloat
+    var isInteractive: Bool
     @Environment(\.colorScheme) private var colorScheme
 
     @ViewBuilder
     func body(content: Content) -> some View {
         if #available(iOS 26, *) {
-            content
-                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
+            if isInteractive {
+                content.glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
+            } else {
+                content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+            }
         } else {
             content
                 .background {
@@ -340,13 +351,15 @@ extension View {
         _ tintColor: Color,
         tintOpacity: Double = 0.1,
         cornerRadius: CGFloat = 16,
-        isCapsule: Bool = false
+        isCapsule: Bool = false,
+        interactive: Bool = true
     ) -> some View {
         modifier(TintedGlassModifier(
             tintColor: tintColor,
             tintOpacity: tintOpacity,
             cornerRadius: cornerRadius,
-            isCapsule: isCapsule
+            isCapsule: isCapsule,
+            isInteractive: interactive
         ))
     }
 
@@ -354,8 +367,8 @@ extension View {
     /// - Parameters:
     ///   - intensity: Glass blur intensity
     ///   - cornerRadius: Corner radius
-    func glassCard(intensity: LiquidGlassIntensity = .regular, cornerRadius: CGFloat = 16) -> some View {
-        modifier(GlassCardModifier(intensity: intensity, cornerRadius: cornerRadius))
+    func glassCard(intensity: LiquidGlassIntensity = .regular, cornerRadius: CGFloat = 16, interactive: Bool = true) -> some View {
+        modifier(GlassCardModifier(intensity: intensity, cornerRadius: cornerRadius, isInteractive: interactive))
     }
 
     /// Applies glass effect to navigation bar

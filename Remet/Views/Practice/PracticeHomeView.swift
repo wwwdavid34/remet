@@ -388,7 +388,7 @@ struct PracticeStatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .tintedGlassBackground(color, tintOpacity: 0.08, cornerRadius: 16)
+        .tintedGlassBackground(color, tintOpacity: 0.08, cornerRadius: 16, interactive: false)
     }
 }
 
