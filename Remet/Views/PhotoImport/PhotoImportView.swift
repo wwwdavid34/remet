@@ -103,8 +103,8 @@ struct PhotoImportView: View {
                             asset: nil,
                             image: image,
                             detectedFaces: viewModel.detectedFaces,
-                            date: Date(),
-                            location: nil
+                            date: viewModel.photoDate ?? Date(),
+                            location: viewModel.photoLocation
                         ),
                         people: people,
                         onSave: { encounter in

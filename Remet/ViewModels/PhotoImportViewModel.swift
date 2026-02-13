@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 import SwiftData
+import CoreLocation
 
 @Observable
 final class PhotoImportViewModel {
@@ -12,6 +13,8 @@ final class PhotoImportViewModel {
     var assetIdentifier: String?
     var showAlreadyImportedAlert = false
     var showPhotoPicker = false
+    var photoDate: Date?
+    var photoLocation: CLLocation?
 
     // Pending pick data — stored when photo is picked, processed after picker sheet dismisses
     var pendingImage: UIImage?
@@ -32,6 +35,15 @@ final class PhotoImportViewModel {
         }
 
         importedImage = image
+
+        // Extract date and location from PHAsset metadata
+        if let assetId = assetIdentifier {
+            let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
+            if let asset = fetchResult.firstObject {
+                photoDate = asset.creationDate
+                photoLocation = asset.location
+            }
+        }
 
         do {
             detectedFaces = try await faceDetectionService.detectFaces(in: image)
@@ -62,5 +74,7 @@ final class PhotoImportViewModel {
         showAlreadyImportedAlert = false
         pendingImage = nil
         pendingAssetId = nil
+        photoDate = nil
+        photoLocation = nil
     }
 }
