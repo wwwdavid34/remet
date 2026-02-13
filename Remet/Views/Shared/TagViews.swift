@@ -127,6 +127,7 @@ struct TagPickerView: View {
     @State private var showCreateTag = false
     @State private var newTagName = ""
     @State private var newTagColor: TagColor = .blue
+    @State private var hasShownAssignHint = false
 
     var filteredTags: [Tag] {
         if searchText.isEmpty {
@@ -156,11 +157,16 @@ struct TagPickerView: View {
                 }
 
                 // Existing tags section
-                Section("Available Tags") {
+                Section {
                     if filteredTags.isEmpty && searchText.isEmpty {
                         Text("No tags yet. Create one below!")
                             .foregroundStyle(.secondary)
                     } else {
+                        if hasShownAssignHint && selectedTags.isEmpty {
+                            Text(String(localized: "Tap a tag below to assign it"))
+                                .font(.caption)
+                                .foregroundStyle(AppColors.teal)
+                        }
                         ForEach(filteredTags) { tag in
                             TagRowView(
                                 tag: tag,
@@ -170,6 +176,8 @@ struct TagPickerView: View {
                             }
                         }
                     }
+                } header: {
+                    Text("Available Tags")
                 }
 
                 // Quick create from search
@@ -258,6 +266,9 @@ struct TagPickerView: View {
     private func createPresetTag(_ preset: PresetTag) {
         let tag = Tag(name: preset.rawValue, colorHex: preset.suggestedColor.hex)
         modelContext.insert(tag)
+        if !hasShownAssignHint {
+            hasShownAssignHint = true
+        }
     }
 }
 

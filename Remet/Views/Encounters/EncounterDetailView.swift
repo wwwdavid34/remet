@@ -51,6 +51,7 @@ struct EncounterDetailView: View {
     // Tag editing state
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
+    @State private var tagRefreshId = UUID()
 
     // Delete encounter state
     @Environment(\.dismiss) private var dismiss
@@ -66,6 +67,7 @@ struct EncounterDetailView: View {
             VStack(spacing: 20) {
                 photoSection
                 tagsSection
+                    .id(tagRefreshId)
                 peopleSection
                 detailsSection
             }
@@ -166,6 +168,7 @@ struct EncounterDetailView: View {
         .sheet(isPresented: $showTagPicker, onDismiss: {
             encounter.tags = selectedTags
             try? modelContext.save()
+            tagRefreshId = UUID()
         }) {
             TagPickerView(selectedTags: $selectedTags, title: "Tags for Encounter")
         }
@@ -781,6 +784,8 @@ struct EncounterDetailView: View {
                 },
                 onRemoveTag: { tag in
                     encounter.tags = (encounter.tags ?? []).filter { $0.id != tag.id }
+                    try? modelContext.save()
+                    tagRefreshId = UUID()
                 }
             )
         }
