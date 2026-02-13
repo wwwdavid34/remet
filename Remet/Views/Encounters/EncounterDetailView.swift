@@ -48,6 +48,9 @@ struct EncounterDetailView: View {
     @State private var personToRemove: Person?
     @State private var showRemovePersonConfirmation = false
 
+    // Face label search
+    @State private var labelSearchText = ""
+
     // Tag editing state
     @State private var showTagPicker = false
     @State private var selectedTags: [Tag] = []
@@ -286,9 +289,24 @@ struct EncounterDetailView: View {
                     }
                 }
 
-                // Other people (not in top matches)
+                // Add new person option
+                Section {
+                    Button {
+                        showFaceLabelPicker = false
+                        showNewPersonSheet = true
+                    } label: {
+                        Label("Add New Person", systemImage: "person.badge.plus")
+                    }
+                }
+
+                // Other people (not in top matches), filtered by search
                 let matchedPersonIds = Set(potentialMatches.map { $0.person.id })
-                let otherPeople = allPeople.filter { !matchedPersonIds.contains($0.id) }
+                let otherPeople = allPeople.filter { person in
+                    guard !matchedPersonIds.contains(person.id) else { return false }
+                    if labelSearchText.isEmpty { return true }
+                    return person.name.localizedCaseInsensitiveContains(labelSearchText) ||
+                        person.company?.localizedCaseInsensitiveContains(labelSearchText) == true
+                }
 
                 if !otherPeople.isEmpty {
                     Section("Other People") {
@@ -325,16 +343,6 @@ struct EncounterDetailView: View {
                     }
                 }
 
-                // Add new person option
-                Section {
-                    Button {
-                        showFaceLabelPicker = false
-                        showNewPersonSheet = true
-                    } label: {
-                        Label("Add New Person", systemImage: "person.badge.plus")
-                    }
-                }
-
                 // Option to remove label
                 if let boxId = selectedBoxId {
                     let hasLabel = findBox(by: boxId)?.personId != nil
@@ -349,6 +357,7 @@ struct EncounterDetailView: View {
                     }
                 }
             }
+            .searchable(text: $labelSearchText, prompt: "Search people")
             .navigationTitle("Who is this?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -359,10 +368,12 @@ struct EncounterDetailView: View {
                         selectedPhotoForLabeling = nil
                         selectedFaceCrop = nil
                         potentialMatches = []
+                        labelSearchText = ""
                     }
                 }
             }
             .onAppear {
+                labelSearchText = ""
                 loadFaceCropAndMatches()
             }
         }

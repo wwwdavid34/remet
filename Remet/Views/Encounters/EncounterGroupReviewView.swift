@@ -19,6 +19,7 @@ struct EncounterGroupReviewView: View {
 
     @State private var selectedBoxIndex: Int?
     @State private var showPersonPicker = false
+    @State private var labelSearchText = ""
     @State private var showNewPersonSheet = false
     @State private var newPersonName = ""
     @State private var createdEmbeddings: [FaceEmbedding] = []
@@ -423,9 +424,24 @@ struct EncounterGroupReviewView: View {
                     }
                 }
 
-                // Other people (not in top matches)
+                // Add new person option
+                Section {
+                    Button {
+                        showPersonPicker = false
+                        showNewPersonSheet = true
+                    } label: {
+                        Label("Add New Person", systemImage: "person.badge.plus")
+                    }
+                }
+
+                // Other people (not in top matches), filtered by search
                 let matchedPersonIds = Set(potentialMatches.map { $0.person.id })
-                let otherPeople = people.filter { !matchedPersonIds.contains($0.id) }
+                let otherPeople = people.filter { person in
+                    guard !matchedPersonIds.contains(person.id) else { return false }
+                    if labelSearchText.isEmpty { return true }
+                    return person.name.localizedCaseInsensitiveContains(labelSearchText) ||
+                        person.company?.localizedCaseInsensitiveContains(labelSearchText) == true
+                }
 
                 if !otherPeople.isEmpty {
                     Section("Other People") {
@@ -462,16 +478,6 @@ struct EncounterGroupReviewView: View {
                     }
                 }
 
-                // Add new person option
-                Section {
-                    Button {
-                        showPersonPicker = false
-                        showNewPersonSheet = true
-                    } label: {
-                        Label("Add New Person", systemImage: "person.badge.plus")
-                    }
-                }
-
                 // Remove label option (if face is already tagged)
                 if let photo = currentPhoto,
                    let boxIndex = selectedBoxIndex,
@@ -487,6 +493,7 @@ struct EncounterGroupReviewView: View {
                     }
                 }
             }
+            .searchable(text: $labelSearchText, prompt: "Search people")
             .navigationTitle("Who is this?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -495,10 +502,12 @@ struct EncounterGroupReviewView: View {
                         showPersonPicker = false
                         selectedFaceCrop = nil
                         potentialMatches = []
+                        labelSearchText = ""
                     }
                 }
             }
             .onAppear {
+                labelSearchText = ""
                 loadFaceCropAndMatches()
             }
         }
