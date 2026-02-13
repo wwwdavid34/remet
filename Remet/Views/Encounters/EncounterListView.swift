@@ -237,7 +237,7 @@ struct EncounterListView: View {
                                 }
                             } label: {
                                 Label(
-                                    encounter.isFavorite ? "Unfavorite" : "Favorite",
+                                    encounter.isFavorite ? String(localized: "Unfavorite") : String(localized: "Favorite"),
                                     systemImage: encounter.isFavorite ? "star.slash" : "star.fill"
                                 )
                             }
@@ -565,7 +565,7 @@ struct EncounterFilterSheet: View {
                 // Favorites Filter
                 Section {
                     Toggle(isOn: $filterFavoritesOnly) {
-                        Label("Favorites Only", systemImage: "star.fill")
+                        Label(String(localized: "Favorites Only"), systemImage: "star.fill")
                             .foregroundStyle(.primary)
                     }
                     .tint(.yellow)

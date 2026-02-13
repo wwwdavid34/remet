@@ -482,7 +482,7 @@ struct PersonFilterSheet: View {
                 // Favorites Filter
                 Section {
                     Toggle(isOn: $filterFavoritesOnly) {
-                        Label("Favorites Only", systemImage: "star.fill")
+                        Label(String(localized: "Favorites Only"), systemImage: "star.fill")
                             .foregroundStyle(.primary)
                     }
                     .tint(.yellow)

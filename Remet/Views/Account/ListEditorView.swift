@@ -94,14 +94,14 @@ struct ListEditorView: View {
                                     save()
                                 }
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                Label(String(localized: "Delete"), systemImage: "trash")
                             }
                         }
                         Button {
                             renameItem = item
                             renameText = item.value
                         } label: {
-                            Label("Rename", systemImage: "pencil")
+                            Label(String(localized: "Rename"), systemImage: "pencil")
                         }
                         .tint(AppColors.teal)
                     }
@@ -111,21 +111,21 @@ struct ListEditorView: View {
                     save()
                 }
             } footer: {
-                Text("Swipe left to rename or delete. Drag to reorder. Items assigned to people cannot be deleted.")
+                Text(String(localized: "Swipe left to rename or delete. Drag to reorder. Items assigned to people cannot be deleted."))
             }
 
             Section {
                 Button {
                     showAddAlert = true
                 } label: {
-                    Label("Add New", systemImage: "plus.circle.fill")
+                    Label(String(localized: "Add New"), systemImage: "plus.circle.fill")
                         .foregroundStyle(AppColors.teal)
                 }
 
                 Button {
                     showResetConfirmation = true
                 } label: {
-                    Label("Reset to Defaults", systemImage: "arrow.counterclockwise")
+                    Label(String(localized: "Reset to Defaults"), systemImage: "arrow.counterclockwise")
                         .foregroundStyle(AppColors.coral)
                 }
             }
@@ -133,9 +133,9 @@ struct ListEditorView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .environment(\.editMode, .constant(.active))
-        .alert("Add New", isPresented: $showAddAlert) {
-            TextField("Name", text: $newItemText)
-            Button("Add") {
+        .alert(String(localized: "Add New"), isPresented: $showAddAlert) {
+            TextField(String(localized: "Name"), text: $newItemText)
+            Button(String(localized: "Add")) {
                 let trimmed = newItemText.trimmingCharacters(in: .whitespaces)
                 if !trimmed.isEmpty && !items.contains(where: { $0.value == trimmed }) {
                     withAnimation {
@@ -145,16 +145,16 @@ struct ListEditorView: View {
                 }
                 newItemText = ""
             }
-            Button("Cancel", role: .cancel) {
+            Button(String(localized: "Cancel"), role: .cancel) {
                 newItemText = ""
             }
         }
-        .alert("Rename", isPresented: Binding(
+        .alert(String(localized: "Rename"), isPresented: Binding(
             get: { renameItem != nil },
             set: { if !$0 { renameItem = nil } }
         )) {
-            TextField("Name", text: $renameText)
-            Button("Save") {
+            TextField(String(localized: "Name"), text: $renameText)
+            Button(String(localized: "Save")) {
                 guard let item = renameItem else { return }
                 let trimmed = renameText.trimmingCharacters(in: .whitespaces)
                 let oldValue = item.value
@@ -168,7 +168,7 @@ struct ListEditorView: View {
                 renameItem = nil
                 renameText = ""
             }
-            Button("Cancel", role: .cancel) {
+            Button(String(localized: "Cancel"), role: .cancel) {
                 renameItem = nil
                 renameText = ""
             }
@@ -176,21 +176,21 @@ struct ListEditorView: View {
             if let item = renameItem {
                 let count = usageCount(for: item.value)
                 if count > 0 {
-                    Text("This will update \(count) \(count == 1 ? "person" : "people").")
+                    Text(String(localized: "This will update \(count) people."))
                 }
             }
         }
-        .confirmationDialog("Reset to Defaults", isPresented: $showResetConfirmation) {
-            Button("Reset", role: .destructive) {
+        .confirmationDialog(String(localized: "Reset to Defaults"), isPresented: $showResetConfirmation) {
+            Button(String(localized: "Reset"), role: .destructive) {
                 resetToDefaults()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "Cancel"), role: .cancel) {}
         } message: {
             let orphans = inUseNonDefaults
             if orphans.isEmpty {
-                Text("Restore the original list of options.")
+                Text(String(localized: "Restore the original list of options."))
             } else {
-                Text("Custom items in use (\(orphans.joined(separator: ", "))) will be kept.")
+                Text(String(localized: "Custom items in use (\(orphans.joined(separator: ", "))) will be kept."))
             }
         }
     }
