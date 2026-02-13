@@ -1,9 +1,11 @@
 import SwiftUI
+import SwiftData
 import PhotosUI
 
 struct PhotoImportView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppState.self) private var appState: AppState?
+    @Query(sort: \Person.name) private var people: [Person]
     @State private var viewModel = PhotoImportViewModel()
     @State private var showScanner = false
 
@@ -94,12 +96,23 @@ struct PhotoImportView: View {
                 )
             }
             .sheet(isPresented: $viewModel.showFaceReview) {
-                FaceReviewView(
-                    image: viewModel.importedImage,
-                    detectedFaces: viewModel.detectedFaces,
-                    assetIdentifier: viewModel.assetIdentifier
-                ) {
-                    viewModel.reset()
+                if let image = viewModel.importedImage {
+                    EncounterReviewView(
+                        scannedPhoto: ScannedPhoto(
+                            id: viewModel.assetIdentifier ?? UUID().uuidString,
+                            asset: nil,
+                            image: image,
+                            detectedFaces: viewModel.detectedFaces,
+                            date: Date(),
+                            location: nil
+                        ),
+                        people: people,
+                        onSave: { encounter in
+                            modelContext.insert(encounter)
+                            try? modelContext.save()
+                            viewModel.reset()
+                        }
+                    )
                 }
             }
             .alert("Already Imported", isPresented: $viewModel.showAlreadyImportedAlert) {

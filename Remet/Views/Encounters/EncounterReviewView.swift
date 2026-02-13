@@ -182,6 +182,7 @@ struct EncounterReviewView: View {
                             showPersonPicker = true
                         },
                         onClear: {
+                            removeExistingEmbedding(for: box.id)
                             boundingBoxes[index].personId = nil
                             boundingBoxes[index].personName = nil
                             boundingBoxes[index].confidence = nil
@@ -411,6 +412,9 @@ struct EncounterReviewView: View {
         guard let boxIndex = selectedBoxIndex,
               boxIndex < boundingBoxes.count else { return }
 
+        let boxId = boundingBoxes[boxIndex].id
+        removeExistingEmbedding(for: boxId)
+
         boundingBoxes[boxIndex].personId = nil
         boundingBoxes[boxIndex].personName = nil
         boundingBoxes[boxIndex].confidence = nil
@@ -419,6 +423,15 @@ struct EncounterReviewView: View {
         showPersonPicker = false
         selectedFaceCrop = nil
         potentialMatches = []
+    }
+
+    /// Remove any existing embedding created during this review session for the given bounding box
+    private func removeExistingEmbedding(for boundingBoxId: UUID) {
+        guard let index = createdEmbeddings.firstIndex(where: { $0.boundingBoxId == boundingBoxId }) else { return }
+        let embedding = createdEmbeddings[index]
+        embedding.person = nil
+        modelContext.delete(embedding)
+        createdEmbeddings.remove(at: index)
     }
 
     private func confidenceColor(for similarity: Float) -> Color {
@@ -580,6 +593,10 @@ struct EncounterReviewView: View {
 
     private func assignPerson(_ person: Person) {
         guard let index = selectedBoxIndex else { return }
+
+        // Remove old embedding if re-labeling
+        let boxId = boundingBoxes[index].id
+        removeExistingEmbedding(for: boxId)
 
         boundingBoxes[index].personId = person.id
         boundingBoxes[index].personName = person.name
@@ -774,7 +791,6 @@ struct EncounterReviewView: View {
         let longitude = scannedPhoto.location?.coordinate.longitude
 
         let encounter = Encounter(
-            imageData: imageData,
             occasion: occasion.isEmpty ? nil : occasion,
             notes: notes.isEmpty ? nil : notes,
             location: location.isEmpty ? nil : location,
@@ -783,7 +799,21 @@ struct EncounterReviewView: View {
             date: scannedPhoto.date
         )
 
-        encounter.faceBoundingBoxes = boundingBoxes
+        // Create EncounterPhoto with assetIdentifier for dedup
+        let encounterPhoto = EncounterPhoto(
+            imageData: imageData,
+            date: scannedPhoto.date,
+            latitude: latitude,
+            longitude: longitude,
+            assetIdentifier: scannedPhoto.id
+        )
+        encounterPhoto.faceBoundingBoxes = boundingBoxes
+        encounterPhoto.encounter = encounter
+        encounter.photos = [encounterPhoto]
+
+        // Set thumbnail
+        let thumbnailImage = resizeImage(originalImage, targetSize: CGSize(width: 256, height: 256))
+        encounter.thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.5)
 
         // Link people to encounter
         let linkedPeople = boundingBoxes.compactMap { box -> Person? in

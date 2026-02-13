@@ -510,6 +510,9 @@ struct EncounterGroupReviewView: View {
               var boxes = photoFaceData[photo.id],
               boxIndex < boxes.count else { return }
 
+        let boxId = boxes[boxIndex].id
+        removeExistingEmbedding(for: boxId)
+
         boxes[boxIndex].personId = nil
         boxes[boxIndex].personName = nil
         boxes[boxIndex].confidence = nil
@@ -519,6 +522,15 @@ struct EncounterGroupReviewView: View {
         showPersonPicker = false
         selectedFaceCrop = nil
         potentialMatches = []
+    }
+
+    /// Remove any existing embedding created during this review session for the given bounding box
+    private func removeExistingEmbedding(for boundingBoxId: UUID) {
+        guard let index = createdEmbeddings.firstIndex(where: { $0.boundingBoxId == boundingBoxId }) else { return }
+        let embedding = createdEmbeddings[index]
+        embedding.person = nil
+        modelContext.delete(embedding)
+        createdEmbeddings.remove(at: index)
     }
 
     private func confidenceColor(for similarity: Float) -> Color {
@@ -772,6 +784,10 @@ struct EncounterGroupReviewView: View {
     private func assignPerson(_ person: Person) {
         guard let photo = currentPhoto, let boxIndex = selectedBoxIndex else { return }
         guard var boxes = photoFaceData[photo.id], boxIndex < boxes.count else { return }
+
+        // Remove old embedding if re-labeling
+        let boxId = boxes[boxIndex].id
+        removeExistingEmbedding(for: boxId)
 
         boxes[boxIndex].personId = person.id
         boxes[boxIndex].personName = person.name

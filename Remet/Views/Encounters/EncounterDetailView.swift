@@ -725,6 +725,9 @@ struct EncounterDetailView: View {
             }
         }
 
+        // Delete the FaceEmbedding linked to this bounding box
+        removeExistingEmbedding(for: boxId)
+
         // Check if person should be unlinked from encounter
         if let personId = removedPersonId {
             let stillHasFaces = checkPersonHasFacesInEncounter(personId)
@@ -732,6 +735,8 @@ struct EncounterDetailView: View {
                 encounter.people = (encounter.people ?? []).filter { $0.id != personId }
             }
         }
+
+        try? modelContext.save()
 
         showFaceLabelPicker = false
         selectedBoxId = nil

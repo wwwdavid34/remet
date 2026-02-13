@@ -4,7 +4,7 @@ import CoreLocation
 
 struct ScannedPhoto: Identifiable {
     let id: String
-    let asset: PHAsset
+    let asset: PHAsset?
     var image: UIImage?
     var detectedFaces: [DetectedFace]
     var date: Date

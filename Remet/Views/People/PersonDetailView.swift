@@ -829,9 +829,30 @@ struct PersonDetailView: View {
             person.profileEmbeddingId = nil
         }
 
-        // Check if person should be unlinked from the associated encounter
+        // Clear the bounding box label in the source encounter
         if let encounterId = embedding.encounterId,
            let encounter = allEncounters.first(where: { $0.id == encounterId }) {
+
+            if let boundingBoxId = embedding.boundingBoxId {
+                // Check multi-photo encounters
+                for photo in encounter.photos ?? [] {
+                    var boxes = photo.faceBoundingBoxes
+                    if let index = boxes.firstIndex(where: { $0.id == boundingBoxId }) {
+                        boxes[index].personId = nil
+                        boxes[index].personName = nil
+                        photo.faceBoundingBoxes = boxes
+                        break
+                    }
+                }
+                // Check legacy single-photo bounding boxes
+                var legacyBoxes = encounter.faceBoundingBoxes
+                if let index = legacyBoxes.firstIndex(where: { $0.id == boundingBoxId }) {
+                    legacyBoxes[index].personId = nil
+                    legacyBoxes[index].personName = nil
+                    encounter.faceBoundingBoxes = legacyBoxes
+                }
+            }
+
             // Count remaining embeddings for this person in this encounter (excluding the one being deleted)
             let remainingEmbeddings = (person.embeddings ?? []).filter {
                 $0.id != embedding.id && $0.encounterId == encounterId
@@ -844,6 +865,7 @@ struct PersonDetailView: View {
         }
 
         modelContext.delete(embedding)
+        try? modelContext.save()
     }
 }
 
