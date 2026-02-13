@@ -32,6 +32,7 @@ struct AccountView: View {
                 if !hasMeProfile {
                     myProfileSection
                 }
+                customizationSection
                 displaySection
                 photoStorageSection
                 faceMatchingSection
@@ -409,6 +410,49 @@ struct AccountView: View {
             Text(String(localized: "Data Management"))
         } footer: {
             Text(String(localized: "This will permanently delete all your people, encounters, and photos. This action cannot be undone."))
+        }
+    }
+
+    // MARK: - Customization Section
+
+    @ViewBuilder
+    private var customizationSection: some View {
+        Section {
+            NavigationLink {
+                ListEditorView(
+                    title: String(localized: "Relationship Types"),
+                    field: .relationship,
+                    items: settings.customRelationships,
+                    defaults: AppSettings.defaultRelationships,
+                    onSave: { settings.customRelationships = $0 }
+                )
+            } label: {
+                HStack {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(AppColors.teal)
+                        .frame(width: 28)
+                    Text(String(localized: "Relationship Types"))
+                }
+            }
+
+            NavigationLink {
+                ListEditorView(
+                    title: String(localized: "Context Types"),
+                    field: .context,
+                    items: settings.customContexts,
+                    defaults: AppSettings.defaultContexts,
+                    onSave: { settings.customContexts = $0 }
+                )
+            } label: {
+                HStack {
+                    Image(systemName: "mappin.circle.fill")
+                        .foregroundStyle(AppColors.softPurple)
+                        .frame(width: 28)
+                    Text(String(localized: "Context Types"))
+                }
+            }
+        } header: {
+            Text(String(localized: "Customization"))
         }
     }
 

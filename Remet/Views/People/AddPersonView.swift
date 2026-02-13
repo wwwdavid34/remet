@@ -12,8 +12,8 @@ struct AddPersonView: View {
     @State private var showPaywall = false
 
     private let limitChecker = LimitChecker()
-    private let relationships = ["", "Family", "Friend", "Coworker", "Acquaintance", "Other"]
-    private let contexts = ["", "Work", "School", "Gym", "Church", "Neighborhood", "Other"]
+    private var relationships: [String] { [""] + AppSettings.shared.customRelationships }
+    private var contexts: [String] { [""] + AppSettings.shared.customContexts }
 
     private var limitStatus: LimitChecker.LimitStatus {
         limitChecker.canAddPerson(currentCount: people.count)

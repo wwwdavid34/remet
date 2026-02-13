@@ -71,7 +71,12 @@ final class AppSettings {
         static let subscriptionLimitsVersion = "subscriptionLimitsVersion"
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
         static let showMeInPeopleList = "showMeInPeopleList"
+        static let customRelationships = "customRelationships"
+        static let customContexts = "customContexts"
     }
+
+    static let defaultRelationships = ["Family", "Friend", "Coworker", "Acquaintance", "Client", "Mentor"]
+    static let defaultContexts = ["Work", "School", "Gym", "Church", "Neighborhood", "Online", "Event"]
 
     // MARK: - Stored Properties (for @Observable tracking)
 
@@ -83,6 +88,8 @@ final class AppSettings {
     private var _hasShownCameraRollHint: Bool = false
     private var _hasCompletedOnboarding: Bool = false
     private var _showMeInPeopleList: Bool = true
+    private var _customRelationships: [String] = AppSettings.defaultRelationships
+    private var _customContexts: [String] = AppSettings.defaultContexts
 
     var photoStorageQuality: PhotoStorageQuality {
         get { _photoStorageQuality }
@@ -145,6 +152,26 @@ final class AppSettings {
         set {
             _showMeInPeopleList = newValue
             defaults.set(newValue, forKey: Keys.showMeInPeopleList)
+        }
+    }
+
+    var customRelationships: [String] {
+        get { _customRelationships }
+        set {
+            _customRelationships = newValue
+            if let data = try? JSONEncoder().encode(newValue) {
+                defaults.set(data, forKey: Keys.customRelationships)
+            }
+        }
+    }
+
+    var customContexts: [String] {
+        get { _customContexts }
+        set {
+            _customContexts = newValue
+            if let data = try? JSONEncoder().encode(newValue) {
+                defaults.set(data, forKey: Keys.customContexts)
+            }
         }
     }
 
@@ -257,6 +284,15 @@ final class AppSettings {
         // Default to true if not set
         if defaults.object(forKey: Keys.showMeInPeopleList) != nil {
             _showMeInPeopleList = defaults.bool(forKey: Keys.showMeInPeopleList)
+        }
+
+        if let data = defaults.data(forKey: Keys.customRelationships),
+           let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            _customRelationships = decoded
+        }
+        if let data = defaults.data(forKey: Keys.customContexts),
+           let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            _customContexts = decoded
         }
     }
 }

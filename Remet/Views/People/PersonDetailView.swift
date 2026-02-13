@@ -1636,12 +1636,15 @@ struct EditPersonSheet: View {
                             set: { person.relationship = $0.isEmpty ? nil : $0 }
                         )) {
                             Text("Not set").tag("")
-                            Text("Family").tag("Family")
-                            Text("Friend").tag("Friend")
-                            Text("Coworker").tag("Coworker")
-                            Text("Acquaintance").tag("Acquaintance")
-                            Text("Client").tag("Client")
-                            Text("Mentor").tag("Mentor")
+                            ForEach(AppSettings.shared.customRelationships, id: \.self) { rel in
+                                Text(rel).tag(rel)
+                            }
+                            // Show current value if not in custom list (orphaned)
+                            if let current = person.relationship,
+                               !current.isEmpty,
+                               !AppSettings.shared.customRelationships.contains(current) {
+                                Text(current).tag(current)
+                            }
                         }
                         .tint(AppColors.textPrimary)
                     }
@@ -1680,13 +1683,15 @@ struct EditPersonSheet: View {
                             set: { person.contextTag = $0.isEmpty ? nil : $0 }
                         )) {
                             Text(String(localized: "Not set")).tag("")
-                            Text(String(localized: "Work")).tag("Work")
-                            Text(String(localized: "School")).tag("School")
-                            Text(String(localized: "Gym")).tag("Gym")
-                            Text(String(localized: "Church")).tag("Church")
-                            Text(String(localized: "Neighborhood")).tag("Neighborhood")
-                            Text(String(localized: "Online")).tag("Online")
-                            Text(String(localized: "Event")).tag("Event")
+                            ForEach(AppSettings.shared.customContexts, id: \.self) { ctx in
+                                Text(ctx).tag(ctx)
+                            }
+                            // Show current value if not in custom list (orphaned)
+                            if let current = person.contextTag,
+                               !current.isEmpty,
+                               !AppSettings.shared.customContexts.contains(current) {
+                                Text(current).tag(current)
+                            }
                         }
                         .tint(AppColors.textPrimary)
                     }
