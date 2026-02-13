@@ -40,9 +40,17 @@ struct PeopleHomeView: View {
         Array(encounters.prefix(5))
     }
 
+    private var showMe: Bool {
+        AppSettings.shared.showMeInPeopleList
+    }
+
     private var recentMet: [Person] {
-        people.filter { !$0.isMe }
-            .sorted { $0.createdAt > $1.createdAt }
+        people.filter { !$0.isMe || showMe }
+            .sorted { p1, p2 in
+                if p1.isMe { return true }
+                if p2.isMe { return false }
+                return p1.createdAt > p2.createdAt
+            }
             .prefix(8)
             .map { $0 }
     }
@@ -79,7 +87,7 @@ struct PeopleHomeView: View {
     // MARK: - Cache Update Functions
 
     private func updateCaches() {
-        cachedPeopleNeedingReview = people.filter { $0.needsReview }
+        cachedPeopleNeedingReview = people.filter { $0.needsReview && !$0.isMe }
     }
 
     // MARK: - Body
@@ -118,7 +126,7 @@ struct PeopleHomeView: View {
                     VStack(spacing: 20) {
                         if showSearch {
                             searchContent
-                        } else if people.isEmpty {
+                        } else if !people.contains(where: { !$0.isMe || showMe }) {
                             emptyState
                         } else {
                             dashboardContent
@@ -328,7 +336,7 @@ struct PeopleHomeView: View {
                 showAllPeople = true
             } label: {
                 DashboardStatCard(
-                    value: "\(people.filter { !$0.isMe }.count)",
+                    value: "\(people.filter { !$0.isMe || showMe }.count)",
                     label: "People",
                     icon: "person.3.fill",
                     color: AppColors.coral
@@ -478,7 +486,7 @@ struct PeopleHomeView: View {
                         .buttonStyle(.plain)
                     }
 
-                    let totalPeople = people.filter { !$0.isMe }.count
+                    let totalPeople = people.filter { !$0.isMe || showMe }.count
                     if totalPeople > recentMet.count {
                         Button { showAllPeople = true } label: {
                             OverflowBadge(remaining: totalPeople - recentMet.count, color: AppColors.coral)
