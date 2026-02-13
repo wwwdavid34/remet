@@ -80,30 +80,41 @@ struct PersonDetailView: View {
         .toolbar(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Menu {
+                HStack(spacing: 16) {
                     Button {
-                        showEditSheet = true
-                    } label: {
-                        Label(String(localized: "Edit Details"), systemImage: "pencil")
-                    }
-
-                    Button {
-                        showMergeWithPicker = true
-                    } label: {
-                        Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
-                    }
-
-                    if !person.isMe {
-                        Divider()
-
-                        Button(role: .destructive) {
-                            showDeleteConfirmation = true
-                        } label: {
-                            Label(String(localized: "Delete Person"), systemImage: "trash")
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            person.isFavorite.toggle()
                         }
+                    } label: {
+                        Image(systemName: person.isFavorite ? "star.fill" : "star")
+                            .foregroundStyle(person.isFavorite ? .yellow : .secondary)
                     }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+
+                    Menu {
+                        Button {
+                            showEditSheet = true
+                        } label: {
+                            Label(String(localized: "Edit Details"), systemImage: "pencil")
+                        }
+
+                        Button {
+                            showMergeWithPicker = true
+                        } label: {
+                            Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
+                        }
+
+                        if !person.isMe {
+                            Divider()
+
+                            Button(role: .destructive) {
+                                showDeleteConfirmation = true
+                            } label: {
+                                Label(String(localized: "Delete Person"), systemImage: "trash")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
                 }
             }
         }

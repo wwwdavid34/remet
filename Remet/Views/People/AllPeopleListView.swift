@@ -28,6 +28,7 @@ struct AllPeopleListView: View {
     @State private var selectedTagFilters: Set<UUID> = []
     @State private var selectedTimeFilter: TimeFilter = .all
     @State private var selectedSortOption: PersonSortOption = .nameAZ
+    @State private var filterFavoritesOnly = false
     @State private var showFilters = false
     @State private var filterRefreshId = UUID()
 
@@ -94,6 +95,11 @@ struct AllPeopleListView: View {
             }
         }
 
+        // Filter by favorites
+        if filterFavoritesOnly {
+            result = result.filter { $0.isFavorite }
+        }
+
         // Apply sorting
         switch selectedSortOption {
         case .nameAZ:
@@ -123,13 +129,14 @@ struct AllPeopleListView: View {
     }
 
     var hasActiveFilters: Bool {
-        selectedTimeFilter != .all || !selectedTagFilters.isEmpty || selectedSortOption != .nameAZ
+        selectedTimeFilter != .all || !selectedTagFilters.isEmpty || selectedSortOption != .nameAZ || filterFavoritesOnly
     }
 
     var activeFilterCount: Int {
         var count = 0
         if selectedTimeFilter != .all { count += 1 }
         if selectedSortOption != .nameAZ { count += 1 }
+        if filterFavoritesOnly { count += 1 }
         count += selectedTagFilters.count
         return count
     }
@@ -282,6 +289,7 @@ struct AllPeopleListView: View {
                 selectedTimeFilter: $selectedTimeFilter,
                 selectedTagFilters: $selectedTagFilters,
                 selectedSortOption: $selectedSortOption,
+                filterFavoritesOnly: $filterFavoritesOnly,
                 availableTags: tagsInUse
             )
             .presentationDetents([.medium, .large])
@@ -430,6 +438,14 @@ struct GridPersonCard: View {
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .glassCard(intensity: .thin, cornerRadius: 14)
+        .overlay(alignment: .topLeading) {
+            if person.isFavorite {
+                Image(systemName: "star.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.yellow)
+                    .padding(8)
+            }
+        }
         .overlay(alignment: .topTrailing) {
             if (person.embeddings ?? []).count > 0 {
                 HStack(spacing: 2) {
@@ -456,12 +472,22 @@ struct PersonFilterSheet: View {
     @Binding var selectedTimeFilter: TimeFilter
     @Binding var selectedTagFilters: Set<UUID>
     @Binding var selectedSortOption: PersonSortOption
+    @Binding var filterFavoritesOnly: Bool
 
     let availableTags: [Tag]
 
     var body: some View {
         NavigationStack {
             List {
+                // Favorites Filter
+                Section {
+                    Toggle(isOn: $filterFavoritesOnly) {
+                        Label("Favorites Only", systemImage: "star.fill")
+                            .foregroundStyle(.primary)
+                    }
+                    .tint(.yellow)
+                }
+
                 // Sort Options
                 Section {
                     ForEach(PersonSortOption.allCases) { option in
@@ -551,6 +577,7 @@ struct PersonFilterSheet: View {
                         selectedSortOption = .nameAZ
                         selectedTimeFilter = .all
                         selectedTagFilters.removeAll()
+                        filterFavoritesOnly = false
                     }
                     .foregroundStyle(AppColors.coral)
                 }

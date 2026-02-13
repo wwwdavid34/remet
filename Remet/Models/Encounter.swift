@@ -9,6 +9,7 @@ final class Encounter {
     var location: String?
     var date: Date = Date()
     var createdAt: Date = Date()
+    var isFavorite: Bool = false
 
     // GPS coordinates (from first photo or average)
     var latitude: Double?

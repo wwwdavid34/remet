@@ -83,61 +83,72 @@ struct EncounterDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Menu {
+                HStack(spacing: 16) {
                     Button {
-                        showEditView = true
-                    } label: {
-                        Label(String(localized: "Edit Details"), systemImage: "pencil")
-                    }
-
-                    Button {
-                        locateFaceMode.toggle()
-                        if !locateFaceMode {
-                            locateFaceError = nil
+                        withAnimation(.bouncy(duration: 0.3)) {
+                            encounter.isFavorite.toggle()
                         }
                     } label: {
-                        Label(
-                            locateFaceMode ? String(localized: "Cancel Locate Face") : String(localized: "Locate Missing Face"),
-                            systemImage: locateFaceMode ? "xmark.circle" : "person.crop.rectangle"
-                        )
+                        Image(systemName: encounter.isFavorite ? "star.fill" : "star")
+                            .foregroundStyle(encounter.isFavorite ? .yellow : .secondary)
                     }
-                    .disabled(isLocatingFace)
 
-                    Button {
-                        Task {
-                            await redetectFaces()
+                    Menu {
+                        Button {
+                            showEditView = true
+                        } label: {
+                            Label(String(localized: "Edit Details"), systemImage: "pencil")
                         }
-                    } label: {
-                        Label(String(localized: "Re-detect Faces"), systemImage: "faceid")
-                    }
-                    .disabled(isRedetecting)
-
-                    if hasMultiplePhotos {
-                        Divider()
 
                         Button {
-                            withAnimation {
-                                isPhotoSelectMode = true
-                                selectedPhotoIds.removeAll()
+                            locateFaceMode.toggle()
+                            if !locateFaceMode {
+                                locateFaceError = nil
                             }
                         } label: {
-                            Label(String(localized: "Move Photos"), systemImage: "photo.on.rectangle.angled")
+                            Label(
+                                locateFaceMode ? String(localized: "Cancel Locate Face") : String(localized: "Locate Missing Face"),
+                                systemImage: locateFaceMode ? "xmark.circle" : "person.crop.rectangle"
+                            )
                         }
-                    }
+                        .disabled(isLocatingFace)
 
-                    Divider()
+                        Button {
+                            Task {
+                                await redetectFaces()
+                            }
+                        } label: {
+                            Label(String(localized: "Re-detect Faces"), systemImage: "faceid")
+                        }
+                        .disabled(isRedetecting)
 
-                    Button(role: .destructive) {
-                        showDeleteEncounterConfirmation = true
+                        if hasMultiplePhotos {
+                            Divider()
+
+                            Button {
+                                withAnimation {
+                                    isPhotoSelectMode = true
+                                    selectedPhotoIds.removeAll()
+                                }
+                            } label: {
+                                Label(String(localized: "Move Photos"), systemImage: "photo.on.rectangle.angled")
+                            }
+                        }
+
+                        Divider()
+
+                        Button(role: .destructive) {
+                            showDeleteEncounterConfirmation = true
+                        } label: {
+                            Label(String(localized: "Delete Encounter"), systemImage: "trash")
+                        }
                     } label: {
-                        Label(String(localized: "Delete Encounter"), systemImage: "trash")
-                    }
-                } label: {
-                    if isRedetecting || isLocatingFace {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                    } else {
-                        Image(systemName: "ellipsis.circle")
+                        if isRedetecting || isLocatingFace {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "ellipsis.circle")
+                        }
                     }
                 }
             }

@@ -13,6 +13,9 @@ final class Person {
     /// Whether this is the user's own profile (excluded from practice)
     var isMe: Bool = false
 
+    /// Whether the user has marked this person as a favorite
+    var isFavorite: Bool = false
+
     // Personal details
     var company: String?
     var jobTitle: String?

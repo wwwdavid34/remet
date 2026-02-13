@@ -66,6 +66,7 @@ struct EncounterListView: View {
     @State private var selectedTimeFilter: TimeFilter = .all
     @State private var selectedLocation: String? = nil
     @State private var selectedSortOption: EncounterSortOption = .dateNewest
+    @State private var filterFavoritesOnly = false
     @State private var showFilters = false
     @State private var filterRefreshId = UUID()
 
@@ -143,6 +144,11 @@ struct EncounterListView: View {
             }
         }
 
+        // Filter by favorites
+        if filterFavoritesOnly {
+            result = result.filter { $0.isFavorite }
+        }
+
         // Apply sorting
         switch selectedSortOption {
         case .dateNewest:
@@ -163,7 +169,7 @@ struct EncounterListView: View {
     }
 
     var hasActiveFilters: Bool {
-        selectedTimeFilter != .all || selectedLocation != nil || !selectedTagFilters.isEmpty || selectedSortOption != .dateNewest
+        selectedTimeFilter != .all || selectedLocation != nil || !selectedTagFilters.isEmpty || selectedSortOption != .dateNewest || filterFavoritesOnly
     }
 
     var activeFilterCount: Int {
@@ -171,6 +177,7 @@ struct EncounterListView: View {
         if selectedTimeFilter != .all { count += 1 }
         if selectedLocation != nil { count += 1 }
         if selectedSortOption != .dateNewest { count += 1 }
+        if filterFavoritesOnly { count += 1 }
         count += selectedTagFilters.count
         return count
     }
@@ -223,6 +230,19 @@ struct EncounterListView: View {
                             EncounterRowView(encounter: encounter)
                         }
                         .buttonStyle(.plain)
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                withAnimation {
+                                    encounter.isFavorite.toggle()
+                                }
+                            } label: {
+                                Label(
+                                    encounter.isFavorite ? "Unfavorite" : "Favorite",
+                                    systemImage: encounter.isFavorite ? "star.slash" : "star.fill"
+                                )
+                            }
+                            .tint(.yellow)
+                        }
                     }
                 }
                 .onDelete(perform: isSelectMode ? nil : deleteEncounters)
@@ -299,6 +319,7 @@ struct EncounterListView: View {
                 selectedLocation: $selectedLocation,
                 selectedTagFilters: $selectedTagFilters,
                 selectedSortOption: $selectedSortOption,
+                filterFavoritesOnly: $filterFavoritesOnly,
                 availableLocations: locationsInUse,
                 availableTags: tagsInUse
             )
@@ -456,14 +477,21 @@ struct EncounterRowView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                if let occasion = encounter.occasion, !occasion.isEmpty {
-                    Text(occasion)
-                        .font(.headline)
-                        .lineLimit(1)
-                } else {
-                    Text("Encounter")
-                        .font(.headline)
-                        .foregroundStyle(AppColors.textSecondary)
+                HStack(spacing: 4) {
+                    if encounter.isFavorite {
+                        Image(systemName: "star.fill")
+                            .font(.caption)
+                            .foregroundStyle(.yellow)
+                    }
+                    if let occasion = encounter.occasion, !occasion.isEmpty {
+                        Text(occasion)
+                            .font(.headline)
+                            .lineLimit(1)
+                    } else {
+                        Text("Encounter")
+                            .font(.headline)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
                 }
 
                 // People names
@@ -526,6 +554,7 @@ struct EncounterFilterSheet: View {
     @Binding var selectedLocation: String?
     @Binding var selectedTagFilters: Set<UUID>
     @Binding var selectedSortOption: EncounterSortOption
+    @Binding var filterFavoritesOnly: Bool
 
     let availableLocations: [String]
     let availableTags: [Tag]
@@ -533,6 +562,15 @@ struct EncounterFilterSheet: View {
     var body: some View {
         NavigationStack {
             List {
+                // Favorites Filter
+                Section {
+                    Toggle(isOn: $filterFavoritesOnly) {
+                        Label("Favorites Only", systemImage: "star.fill")
+                            .foregroundStyle(.primary)
+                    }
+                    .tint(.yellow)
+                }
+
                 // Sort Options
                 Section {
                     ForEach(EncounterSortOption.allCases) { option in
@@ -665,6 +703,7 @@ struct EncounterFilterSheet: View {
                         selectedTimeFilter = .all
                         selectedLocation = nil
                         selectedTagFilters.removeAll()
+                        filterFavoritesOnly = false
                     }
                     .foregroundStyle(AppColors.coral)
                 }
