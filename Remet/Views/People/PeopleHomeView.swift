@@ -148,11 +148,6 @@ struct PeopleHomeView: View {
             .sheet(isPresented: $showAllEncounters) {
                 NavigationStack {
                     EncounterListView()
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { showAllEncounters = false }
-                            }
-                        }
                 }
             }
             .sheet(item: $selectedEncounter) { encounter in
@@ -178,11 +173,6 @@ struct PeopleHomeView: View {
             .sheet(isPresented: $showAllPeople) {
                 NavigationStack {
                     AllPeopleListView()
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { showAllPeople = false }
-                            }
-                        }
                 }
             }
             .sheet(isPresented: $showPractice) {

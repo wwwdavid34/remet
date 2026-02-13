@@ -57,6 +57,7 @@ enum TimeFilter: String, CaseIterable, Identifiable {
 
 struct EncounterListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @Query(sort: \Encounter.date, order: .reverse) private var encounters: [Encounter]
 
     @State private var showScanner = false
@@ -249,6 +250,9 @@ struct EncounterListView: View {
         .navigationTitle(String(localized: "Encounters"))
         .searchable(text: $searchText, prompt: String(localized: "Search occasions, locations, people"))
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Done") { dismiss() }
+            }
             ToolbarItem(placement: .topBarLeading) {
                 if !encounters.isEmpty {
                     Button {

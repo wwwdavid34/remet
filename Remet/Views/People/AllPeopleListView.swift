@@ -21,6 +21,7 @@ enum PersonSortOption: String, CaseIterable, Identifiable {
 
 struct AllPeopleListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @Query(sort: \Person.name) private var people: [Person]
 
     @State private var searchText = ""
@@ -234,6 +235,9 @@ struct AllPeopleListView: View {
         .navigationTitle("All People")
         .searchable(text: $searchText, prompt: "Search name, notes, tags")
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Done") { dismiss() }
+            }
             ToolbarItem(placement: .topBarLeading) {
                 if !filteredPeople.isEmpty {
                     Button {
