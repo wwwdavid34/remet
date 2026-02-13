@@ -254,15 +254,19 @@ struct QuickCaptureView: View {
                     boundingBoxes.append(box)
                 }
 
-                // Build occasion string
-                let names = allPeople.map { $0.name }
+                // Build occasion string: prefer user input, fall back to auto-generated
                 let occasion: String?
-                if names.isEmpty {
+                if let context, !context.isEmpty {
                     occasion = context
-                } else if names.count == 1 {
-                    occasion = "Met \(names[0])"
                 } else {
-                    occasion = "Met \(names.dropLast().joined(separator: ", ")) & \(names.last!)"
+                    let names = allPeople.map { $0.name }
+                    if names.isEmpty {
+                        occasion = nil
+                    } else if names.count == 1 {
+                        occasion = "Met \(names[0])"
+                    } else {
+                        occasion = "Met \(names.dropLast().joined(separator: ", ")) & \(names.last!)"
+                    }
                 }
 
                 let encounter = Encounter(
