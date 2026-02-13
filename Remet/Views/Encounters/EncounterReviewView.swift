@@ -724,6 +724,9 @@ struct EncounterReviewView: View {
                 if person.profileEmbeddingId == nil {
                     person.profileEmbeddingId = faceEmbedding.id
                 }
+
+                // Track for encounterId assignment on save
+                createdEmbeddings.append(faceEmbedding)
             }
         } catch {
             print("Error adding embedding for propagated face: \(error)")

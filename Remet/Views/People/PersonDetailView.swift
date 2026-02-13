@@ -550,26 +550,25 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var activityHeader: some View {
-        HStack {
+        Button {
+            showEncountersTimeline = true
+        } label: {
             HStack(spacing: 6) {
-                Image(systemName: "clock")
+                Image(systemName: "person.2.crop.square.stack")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(String(localized: "Activity"))
+                Text(String(localized: "Recent Encounters"))
                     .font(.subheadline)
                     .fontWeight(.medium)
-            }
-            Spacer()
-            if !(person.encounters ?? []).isEmpty {
-                Button {
-                    showEncountersTimeline = true
-                } label: {
-                    Text(String(localized: "See All"))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                    .foregroundStyle(.primary)
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                Spacer()
             }
         }
+        .buttonStyle(.plain)
+        .disabled((person.encounters ?? []).isEmpty)
     }
 
     @ViewBuilder
@@ -582,7 +581,7 @@ struct PersonDetailView: View {
 
     @ViewBuilder
     private var encountersList: some View {
-        ForEach(Array((person.encounters ?? []).prefix(3))) { encounter in
+        ForEach(Array((person.encounters ?? []).sorted { $0.date > $1.date }.prefix(3))) { encounter in
             ActivityEncounterRow(encounter: encounter) {
                 selectedEncounter = encounter
             }
@@ -1599,20 +1598,6 @@ struct EditPersonSheet: View {
                                     }
                                 }
 
-                                // Add more faces button
-                                Button {
-                                    showFacePicker = true
-                                } label: {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(AppColors.teal.opacity(0.1))
-                                        .frame(width: 60, height: 60)
-                                        .overlay {
-                                            Image(systemName: "plus")
-                                                .font(.title3)
-                                                .foregroundStyle(AppColors.teal)
-                                        }
-                                }
-                                .buttonStyle(.plain)
                             }
                         }
                     }
