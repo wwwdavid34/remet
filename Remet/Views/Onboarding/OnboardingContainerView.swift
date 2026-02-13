@@ -5,6 +5,7 @@ struct OnboardingContainerView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var currentStep = 0
     @State private var createdMeProfile: Person?
+    @State private var showSkipProfileAlert = false
 
     /// Total onboarding steps (Welcome, Profile, LiveScan, Memory, Complete)
     private let totalSteps = 5
@@ -36,10 +37,7 @@ struct OnboardingContainerView: View {
                         }
                     },
                     onSkip: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            // Skip live scan if no profile created
-                            currentStep = 3
-                        }
+                        showSkipProfileAlert = true
                     }
                 )
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
@@ -92,6 +90,15 @@ struct OnboardingContainerView: View {
             }
         }
         .interactiveDismissDisabled()
+        .alert(String(localized: "Profile Skipped"), isPresented: $showSkipProfileAlert) {
+            Button(String(localized: "OK")) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    currentStep = 3
+                }
+            }
+        } message: {
+            Text(String(localized: "You can create your profile later from Account settings."))
+        }
     }
 
     private func completeOnboarding() {

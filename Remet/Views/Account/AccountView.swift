@@ -16,6 +16,11 @@ struct AccountView: View {
     @State private var showPaywall = false
     @State private var isRestoringPurchases = false
     @State private var showDeleteConfirmation = false
+    @State private var showCreateMeProfile = false
+
+    private var hasMeProfile: Bool {
+        people.contains { $0.isMe }
+    }
 
     var body: some View {
         NavigationStack {
@@ -23,6 +28,9 @@ struct AccountView: View {
                 subscriptionSection
                 if subscriptionManager.isPremium {
                     syncSection
+                }
+                if !hasMeProfile {
+                    myProfileSection
                 }
                 displaySection
                 photoStorageSection
@@ -47,6 +55,18 @@ struct AccountView: View {
                     },
                     onCancel: {
                         showDeleteConfirmation = false
+                    }
+                )
+            }
+            .sheet(isPresented: $showCreateMeProfile) {
+                OnboardingProfileView(
+                    currentStep: 0,
+                    totalSteps: 0,
+                    onComplete: { _ in
+                        showCreateMeProfile = false
+                    },
+                    onSkip: {
+                        showCreateMeProfile = false
                     }
                 )
             }
@@ -99,6 +119,34 @@ struct AccountView: View {
         case .synced: return String(localized: "All data synced")
         case .error: return String(localized: "Error")
         case .noAccount: return String(localized: "No iCloud account")
+        }
+    }
+
+    // MARK: - My Profile Section
+
+    @ViewBuilder
+    private var myProfileSection: some View {
+        Section {
+            Button {
+                showCreateMeProfile = true
+            } label: {
+                HStack {
+                    Image(systemName: "person.crop.circle.badge.plus")
+                        .foregroundStyle(AppColors.teal)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(String(localized: "Create My Profile"))
+                            .fontWeight(.medium)
+                            .foregroundStyle(.primary)
+                        Text(String(localized: "Take a selfie to exclude your face from quizzes"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Text(String(localized: "My Profile"))
         }
     }
 
