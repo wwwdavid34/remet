@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -62,15 +62,18 @@
 		94EECE7C4AEB9D1BACA898DF /* OnboardingLiveScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A993EA76D2CB5F07559084 /* OnboardingLiveScanView.swift */; };
 		98E1B40F8CB6DB617C143CE6 /* SpacedRepetitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8B109DE6A181FD8C19B88 /* SpacedRepetitionData.swift */; };
 		9CA2AD3D8EEFA24027A636DF /* FaceDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* PersonMergeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */; };
 		A2DB631ACFFE916BF7DA3A95 /* ImportedPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188EBF64EBB1BF37D37F181E /* ImportedPhoto.swift */; };
 		A4A2C3B109F65D52993277DF /* FaceMatchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */; };
 		A59B8432A6ACE31EF1D92711 /* InteractionNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B86348856F51C62121EC088 /* InteractionNote.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* ListEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF660011 /* ListEditorView.swift */; };
 		AA9EFF1A3178E1E8FCF6462B /* FaceReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48264597407375FD53C8B58 /* FaceReviewViewModel.swift */; };
 		AB3D51D8B51210D5615E1E48 /* FaceEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C28E7CAED511D78436A26E /* FaceEmbeddingService.swift */; };
 		ACAB121A58372FFDE8BBB977 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823AE1562193907DB7155DA8 /* HomeView.swift */; };
 		ACB1B92D181B9AE1DB5987AB /* PracticeHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30ED42B24103A43975FD067 /* PracticeHomeView.swift */; };
 		B0758D2B27D769F9FD2489E8 /* EncounterManagementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74FFB572E3E3A10F3ED4837 /* EncounterManagementService.swift */; };
 		B20FAC18C5AA5298D4C9B478 /* SubscriptionLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = B856B1DF9748538B71D376A8 /* SubscriptionLimits.swift */; };
+		B2C3D4E5F6A7B8C9D0E1F203 /* AllPeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C4B5A6978869705142F1 /* AllPeopleListView.swift */; };
 		B3E39E5070C63F5AA63CCBB9 /* ScanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC10DD22C57CC073F868814 /* ScanTabView.swift */; };
 		B652F1F91E5F7C56FE788B2C /* OnboardingFirstMemoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FEB62039EC82A7637BA56A /* OnboardingFirstMemoryView.swift */; };
 		B6D5C079A3ADF3E5955C9DAC /* QuickCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9E28301BCA0F763F5285CB /* QuickCaptureView.swift */; };
@@ -82,17 +85,24 @@
 		CB1973A4EA63A43353D48831 /* SyncSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238DE2A764731DE98E7D50AF /* SyncSettingsView.swift */; };
 		D362EA332267D1BAC1A7400C /* StatusBarFadeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */; };
 		D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* PersonMergeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */; };
-		B2C3D4E5F6A7B8C9D0E1F203 /* AllPeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C4B5A6978869705142F1 /* AllPeopleListView.swift */; };
 		E00EC07AADAEBE2072EA08D6 /* EncounterGroupReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2AC37A21CA31106498C6E2 /* EncounterGroupReviewView.swift */; };
 		E6FBB221BB4D06F4D2B5587F /* FaceEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */; };
 		E9A063887364C98257DFE000 /* QuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */; };
 		E9C6C7905A8ED501A5008486 /* DemoDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9490DFD03312D9AD01EB8896 /* DemoDataService.swift */; };
 		EB41B6B1018B498CF1B4907E /* FAQView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35F911994007229BE98D59A /* FAQView.swift */; };
-		AA11BB22CC33DD44EE55FF66 /* ListEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF660011 /* ListEditorView.swift */; };
 		ED3B8921E0936101437EC7A1 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E55E11E0F450C6CA3FB079 /* FloatingTabBar.swift */; };
 		FB3581F4CC2B608AFDA46857 /* Encounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8576CD80F811E34E5C08FA /* Encounter.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A7F893AB2F438F950048ADA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C7ADC13AF398C110B64637 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 27217AC6BEC03FBFB0FE8516;
+			remoteInfo = Remet;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
@@ -128,8 +138,6 @@
 		429F386BA20D6758F12C7C05 /* EncounterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterDetailView.swift; sourceTree = "<group>"; };
 		450F9A1A3B5B6AD0D184E282 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonDetailView.swift; sourceTree = "<group>"; };
-		E2D3C4B5A6978869705142F1 /* AllPeopleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPeopleListView.swift; sourceTree = "<group>"; };
-		F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMergeView.swift; sourceTree = "<group>"; };
 		49021AC39EB69B1086AA70A3 /* EncounterEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterEditView.swift; sourceTree = "<group>"; };
 		4B86348856F51C62121EC088 /* InteractionNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionNote.swift; sourceTree = "<group>"; };
 		4B8A6EB8EBB2A9D20B57FC52 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
@@ -157,11 +165,13 @@
 		A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
 		A745EC47673F2071CB294230 /* Remet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Remet.entitlements; sourceTree = "<group>"; };
 		A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizAttempt.swift; sourceTree = "<group>"; };
+		A7F893A72F438F950048ADA1 /* RemetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AED9DDEE8CB1F8D16356B40B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AF1C5BC4FFDE21726134D4BB /* OnboardingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerView.swift; sourceTree = "<group>"; };
 		B0512CDA3964ECC764E2D568 /* EncounterScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterScannerView.swift; sourceTree = "<group>"; };
 		B521FB26BC25023710F2EEB8 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		B856B1DF9748538B71D376A8 /* SubscriptionLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLimits.swift; sourceTree = "<group>"; };
+		BB22CC33DD44EE55FF660011 /* ListEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEditorView.swift; sourceTree = "<group>"; };
 		C0C28E7CAED511D78436A26E /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
 		C21964A4B54F1257DC9CE875 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		C4782D317377C335A7A208BD /* AddPersonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPersonView.swift; sourceTree = "<group>"; };
@@ -174,16 +184,31 @@
 		CC4125E85C7130E4F68A0627 /* OnboardingProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileView.swift; sourceTree = "<group>"; };
 		D320DB1EE8F564BEA6D0D785 /* OnboardingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompleteView.swift; sourceTree = "<group>"; };
 		D74FFB572E3E3A10F3ED4837 /* EncounterManagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterManagementService.swift; sourceTree = "<group>"; };
+		E2D3C4B5A6978869705142F1 /* AllPeopleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPeopleListView.swift; sourceTree = "<group>"; };
 		E30ED42B24103A43975FD067 /* PracticeHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHomeView.swift; sourceTree = "<group>"; };
 		E36DCBF646425C64EF72E8F7 /* EncounterReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterReviewView.swift; sourceTree = "<group>"; };
 		F0371D80B6C01257F13AA90F /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A6978869705142 /* PersonMergeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMergeView.swift; sourceTree = "<group>"; };
 		F35F911994007229BE98D59A /* FAQView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQView.swift; sourceTree = "<group>"; };
-		BB22CC33DD44EE55FF660011 /* ListEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEditorView.swift; sourceTree = "<group>"; };
 		F48264597407375FD53C8B58 /* FaceReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceReviewViewModel.swift; sourceTree = "<group>"; };
 		F91805FC28853BED76D5E325 /* PhotoLibraryScannerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScannerService.swift; sourceTree = "<group>"; };
 		FB6505A4C614E769EDF977BC /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		FD5D0231DA8A4A4C455EE11F /* MemoryScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A7F893A82F438F950048ADA1 /* RemetTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RemetTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7F893A42F438F950048ADA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		08064BCE561D2A78437A5456 /* Settings */ = {
@@ -199,6 +224,7 @@
 			isa = PBXGroup;
 			children = (
 				7DA9DA90D81F32B1AA3751DF /* Remet.app */,
+				A7F893A72F438F950048ADA1 /* RemetTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -235,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				A187ED7E86D142910A8139CC /* Remet */,
+				A7F893A82F438F950048ADA1 /* RemetTests */,
 				0CD1A151BD54E43F033AFC06 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -477,6 +504,29 @@
 			productReference = 7DA9DA90D81F32B1AA3751DF /* Remet.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A7F893A62F438F950048ADA1 /* RemetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7F893AF2F438F950048ADA1 /* Build configuration list for PBXNativeTarget "RemetTests" */;
+			buildPhases = (
+				A7F893A32F438F950048ADA1 /* Sources */,
+				A7F893A42F438F950048ADA1 /* Frameworks */,
+				A7F893A52F438F950048ADA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A7F893AC2F438F950048ADA1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A7F893A82F438F950048ADA1 /* RemetTests */,
+			);
+			name = RemetTests;
+			packageProductDependencies = (
+			);
+			productName = RemetTests;
+			productReference = A7F893A72F438F950048ADA1 /* RemetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -484,10 +534,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					27217AC6BEC03FBFB0FE8516 = {
 						ProvisioningStyle = Automatic;
+					};
+					A7F893A62F438F950048ADA1 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 27217AC6BEC03FBFB0FE8516;
 					};
 				};
 			};
@@ -508,6 +563,7 @@
 			projectRoot = "";
 			targets = (
 				27217AC6BEC03FBFB0FE8516 /* Remet */,
+				A7F893A62F438F950048ADA1 /* RemetTests */,
 			);
 		};
 /* End PBXProject section */
@@ -523,9 +579,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A7F893A52F438F950048ADA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A7F893A32F438F950048ADA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E333A61927ED57CFDECC0EF0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -617,6 +687,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A7F893AC2F438F950048ADA1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 27217AC6BEC03FBFB0FE8516 /* Remet */;
+			targetProxy = A7F893AB2F438F950048ADA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		9B5CB255B36B6781BD2526A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -641,6 +719,64 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		A7F893AD2F438F950048ADA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RX44K7NF89;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remet.RemetTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Remet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Remet";
+			};
+			name = Debug;
+		};
+		A7F893AE2F438F950048ADA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RX44K7NF89;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.remet.RemetTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Remet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Remet";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		AE3DDA71EFB69FF8BAB3607F /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -808,6 +944,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A7F893AF2F438F950048ADA1 /* Build configuration list for PBXNativeTarget "RemetTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7F893AD2F438F950048ADA1 /* Debug */,
+				A7F893AE2F438F950048ADA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		B3C32EFAC75D9DFA70C7A997 /* Build configuration list for PBXProject "Remet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
