@@ -82,6 +82,8 @@ struct RemetApp: App {
                 }
             }
             .task {
+                // Pre-load FaceNet model during splash so it's ready for scan/import
+                FaceEmbeddingService.shared.preload()
                 // Record first launch for grace period tracking
                 AppSettings.shared.recordFirstLaunchIfNeeded()
                 // Load subscription products

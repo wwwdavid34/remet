@@ -318,7 +318,7 @@ struct OnboardingProfileView: View {
                 person.isMe = true
 
                 // Generate face embedding
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
 
                 if let faceData = face.cropImage.jpegData(compressionQuality: 0.8) {

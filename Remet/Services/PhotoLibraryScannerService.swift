@@ -286,7 +286,7 @@ final class PhotoLibraryScannerService {
         autoAcceptThreshold: Float? = nil
     ) async -> [FaceBoundingBox] {
         let threshold = autoAcceptThreshold ?? AppSettings.shared.autoAcceptThreshold
-        let embeddingService = FaceEmbeddingService()
+        let embeddingService = FaceEmbeddingService.shared
         let matchingService = FaceMatchingService()
 
         var boundingBoxes: [FaceBoundingBox] = []
@@ -335,7 +335,7 @@ final class PhotoLibraryScannerService {
         autoAcceptThreshold: Float? = nil
     ) async -> [FaceBoundingBox] {
         let threshold = autoAcceptThreshold ?? AppSettings.shared.autoAcceptThreshold
-        let embeddingService = FaceEmbeddingService()
+        let embeddingService = FaceEmbeddingService.shared
         let matchingService = FaceMatchingService()
 
         var boundingBoxes: [FaceBoundingBox] = []

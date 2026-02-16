@@ -441,7 +441,7 @@ struct EncounterDetailView: View {
 
         Task {
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
@@ -572,7 +572,7 @@ struct EncounterDetailView: View {
         removeExistingEmbedding(for: boundingBoxId)
 
         Task {
-            let embeddingService = FaceEmbeddingService()
+            let embeddingService = FaceEmbeddingService.shared
             do {
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
                 let vectorData = embedding.withUnsafeBytes { Data($0) }
@@ -635,7 +635,7 @@ struct EncounterDetailView: View {
             }
 
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let propagationThreshold: Float = min(AppSettings.shared.autoAcceptThreshold, 0.85)
 
                 guard let sourceImage = UIImage(data: sourcePhoto.imageData) else { return }

@@ -671,7 +671,7 @@ struct EncounterEditView: View {
 
         Task {
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
@@ -736,7 +736,7 @@ struct EncounterEditView: View {
     private func createEmbeddingForPerson(_ person: Person, faceCrop: UIImage) {
         Task {
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let embedding = try await embeddingService.generateEmbedding(for: faceCrop)
 
                 guard let cropData = faceCrop.jpegData(compressionQuality: 0.8) else { return }

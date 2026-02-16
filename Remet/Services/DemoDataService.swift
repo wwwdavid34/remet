@@ -418,7 +418,7 @@ final class DemoDataService {
     @MainActor
     static func seedDemoData(modelContext: ModelContext) async {
         let faceDetectionService = FaceDetectionService()
-        let embeddingService = FaceEmbeddingService()
+        let embeddingService = FaceEmbeddingService.shared
 
         // First, create all tags (from profiles and encounters)
         var tagMap: [String: Tag] = [:]

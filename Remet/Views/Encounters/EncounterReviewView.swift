@@ -468,7 +468,7 @@ struct EncounterReviewView: View {
 
         Task {
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 let matchingService = FaceMatchingService()
 
                 let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
@@ -651,7 +651,7 @@ struct EncounterReviewView: View {
         let sourceFace = faces[sourceFaceIndex]
 
         Task {
-            let embeddingService = FaceEmbeddingService()
+            let embeddingService = FaceEmbeddingService.shared
 
             do {
                 // Generate embedding for the source face
@@ -712,7 +712,7 @@ struct EncounterReviewView: View {
 
     /// Add embedding to person asynchronously (for propagated faces)
     private func addEmbeddingToPersonAsync(_ person: Person, face: DetectedFace, boundingBoxId: UUID) async {
-        let embeddingService = FaceEmbeddingService()
+        let embeddingService = FaceEmbeddingService.shared
 
         do {
             let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
@@ -750,7 +750,7 @@ struct EncounterReviewView: View {
         let boxId = boundingBoxes[faceIndex].id
 
         Task {
-            let embeddingService = FaceEmbeddingService()
+            let embeddingService = FaceEmbeddingService.shared
             do {
                 let embedding = try await embeddingService.generateEmbedding(for: face.cropImage)
                 let vectorData = embedding.withUnsafeBytes { Data($0) }

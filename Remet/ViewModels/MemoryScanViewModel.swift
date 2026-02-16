@@ -109,7 +109,7 @@ final class MemoryScanViewModel {
     // MARK: - Private Properties
 
     private let faceDetectionService = FaceDetectionService()
-    private let faceEmbeddingService = FaceEmbeddingService()
+    private let faceEmbeddingService = FaceEmbeddingService.shared
     private let faceMatchingService = FaceMatchingService()
 
     /// Maximum number of match suggestions to return

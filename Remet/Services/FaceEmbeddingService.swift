@@ -3,30 +3,47 @@ import CoreML
 
 final class FaceEmbeddingService {
 
+    static let shared = FaceEmbeddingService()
+
     private var model: MLModel?
 
-    init() {
-        loadModel()
-    }
+    private init() {}
 
-    private func loadModel() {
-        do {
-            let config = MLModelConfiguration()
-            config.computeUnits = .cpuAndNeuralEngine
+    /// Pre-load the CoreML model on a background thread.
+    /// Call once at app startup so the model is ready when needed.
+    func preload() {
+        guard model == nil else { return }
 
-            // Load the compiled model bundle
-            guard let modelURL = Bundle.main.url(forResource: "FaceNet512", withExtension: "mlmodelc") else {
-                print("FaceNet512 model not found in bundle")
-                return
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            do {
+                let config = MLModelConfiguration()
+                config.computeUnits = .cpuAndNeuralEngine
+
+                guard let modelURL = Bundle.main.url(forResource: "FaceNet512", withExtension: "mlmodelc") else {
+                    print("FaceNet512 model not found in bundle")
+                    return
+                }
+
+                let loaded = try MLModel(contentsOf: modelURL, configuration: config)
+                DispatchQueue.main.async {
+                    self?.model = loaded
+                }
+            } catch {
+                print("Failed to load FaceNet512 model: \(error)")
             }
-
-            model = try MLModel(contentsOf: modelURL, configuration: config)
-        } catch {
-            print("Failed to load FaceNet512 model: \(error)")
         }
     }
 
     func generateEmbedding(for faceImage: UIImage) async throws -> [Float] {
+        // If model hasn't been pre-loaded yet, load synchronously as fallback
+        if model == nil {
+            let config = MLModelConfiguration()
+            config.computeUnits = .cpuAndNeuralEngine
+            if let modelURL = Bundle.main.url(forResource: "FaceNet512", withExtension: "mlmodelc") {
+                model = try MLModel(contentsOf: modelURL, configuration: config)
+            }
+        }
+
         guard let model = model else {
             throw EmbeddingError.modelNotLoaded
         }

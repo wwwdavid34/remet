@@ -464,7 +464,7 @@ struct OnboardingFaceReviewView: View {
     private func matchFacesAutomatically(faces: [DetectedFace]) async {
         guard !matchablePeople.isEmpty else { return }
 
-        let embeddingService = FaceEmbeddingService()
+        let embeddingService = FaceEmbeddingService.shared
         let matchingService = FaceMatchingService()
         let autoAcceptThreshold = AppSettings.shared.autoAcceptThreshold
 
@@ -522,7 +522,7 @@ struct OnboardingFaceReviewView: View {
                 )
 
                 // Process each face assignment
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 var boundingBoxes: [FaceBoundingBox] = []
 
                 for (index, face) in detectedFaces.enumerated() {

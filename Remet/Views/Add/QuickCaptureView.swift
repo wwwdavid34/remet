@@ -187,7 +187,7 @@ struct QuickCaptureView: View {
 
         Task {
             do {
-                let embeddingService = FaceEmbeddingService()
+                let embeddingService = FaceEmbeddingService.shared
                 var createdPeople: [(person: Person, faceAssignment: QuickCaptureFaceAssignment)] = []
                 var existingPeople: [(person: Person, faceAssignment: QuickCaptureFaceAssignment)] = []
 
@@ -450,7 +450,7 @@ struct QuickCaptureReviewView: View {
     @State private var lastAddedFaceIndex: Int?
 
     private let faceMatchingService = FaceMatchingService()
-    private let faceEmbeddingService = FaceEmbeddingService()
+    private let faceEmbeddingService = FaceEmbeddingService.shared
 
     private var assignedCount: Int {
         faceAssignments.filter(\.isAssigned).count

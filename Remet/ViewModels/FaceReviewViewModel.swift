@@ -21,7 +21,7 @@ final class FaceReviewViewModel {
     // Encounter creation
     var createdEncounter: Encounter?
 
-    private let embeddingService = FaceEmbeddingService()
+    private let embeddingService = FaceEmbeddingService.shared
     private let matchingService = FaceMatchingService()
 
     var currentFace: FaceForReview? {
