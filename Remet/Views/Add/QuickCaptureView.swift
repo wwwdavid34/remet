@@ -349,6 +349,16 @@ struct CameraPreviewView: View {
 
     @StateObject private var cameraManager = CameraManager()
     @State private var flashEnabled = false
+    @State private var deviceOrientation: UIDeviceOrientation = UIDevice.current.orientation
+
+    private var iconRotationAngle: Angle {
+        switch deviceOrientation {
+        case .landscapeLeft: return .degrees(90)
+        case .landscapeRight: return .degrees(-90)
+        case .portraitUpsideDown: return .degrees(180)
+        default: return .degrees(0)
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -365,6 +375,7 @@ struct CameraPreviewView: View {
                         Image(systemName: flashEnabled ? "bolt.fill" : "bolt.slash")
                             .font(.title2)
                             .foregroundStyle(.white)
+                            .rotationEffect(iconRotationAngle)
                             .padding()
                     }
 
@@ -392,6 +403,7 @@ struct CameraPreviewView: View {
                         Image(systemName: "camera.rotate")
                             .font(.title2)
                             .foregroundStyle(.white)
+                            .rotationEffect(iconRotationAngle)
                             .padding()
                     }
                 }
@@ -399,10 +411,19 @@ struct CameraPreviewView: View {
             }
         }
         .onAppear {
+            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
             cameraManager.startSession()
         }
         .onDisappear {
             cameraManager.stopSession()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            let orientation = UIDevice.current.orientation
+            if orientation.isValidInterfaceOrientation {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    deviceOrientation = orientation
+                }
+            }
         }
     }
 }
@@ -1247,6 +1268,22 @@ class CameraManager: NSObject, ObservableObject {
     func capturePhoto(completion: @escaping (UIImage?) -> Void) {
         captureCompletion = completion
         let settings = AVCapturePhotoSettings()
+
+        // Set orientation from physical device orientation so photos are tagged correctly
+        // even though the UI is locked to portrait
+        if let connection = photoOutput.connection(with: .video) {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                connection.videoRotationAngle = 0
+            case .landscapeRight:
+                connection.videoRotationAngle = 180
+            case .portraitUpsideDown:
+                connection.videoRotationAngle = 270
+            default:
+                connection.videoRotationAngle = 90
+            }
+        }
+
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
 }
