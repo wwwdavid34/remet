@@ -1246,7 +1246,10 @@ class CameraManager: NSObject, ObservableObject {
 
     func stopSession() {
         guard session.isRunning else { return }
-        session.stopRunning()
+        let session = self.session
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.stopRunning()
+        }
     }
 
     func flipCamera() {
@@ -1266,22 +1269,25 @@ class CameraManager: NSObject, ObservableObject {
     }
 
     func capturePhoto(completion: @escaping (UIImage?) -> Void) {
+        guard let connection = photoOutput.connection(with: .video) else {
+            completion(nil)
+            return
+        }
+
         captureCompletion = completion
         let settings = AVCapturePhotoSettings()
 
         // Set orientation from physical device orientation so photos are tagged correctly
         // even though the UI is locked to portrait
-        if let connection = photoOutput.connection(with: .video) {
-            switch UIDevice.current.orientation {
-            case .landscapeLeft:
-                connection.videoRotationAngle = 0
-            case .landscapeRight:
-                connection.videoRotationAngle = 180
-            case .portraitUpsideDown:
-                connection.videoRotationAngle = 270
-            default:
-                connection.videoRotationAngle = 90
-            }
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            connection.videoRotationAngle = 0
+        case .landscapeRight:
+            connection.videoRotationAngle = 180
+        case .portraitUpsideDown:
+            connection.videoRotationAngle = 270
+        default:
+            connection.videoRotationAngle = 90
         }
 
         photoOutput.capturePhoto(with: settings, delegate: self)

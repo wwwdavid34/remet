@@ -86,7 +86,10 @@ final class SilentScanCameraManager: NSObject, ObservableObject {
         clearFrameBuffer()
 
         guard session.isRunning else { return }
-        session.stopRunning()
+        let session = self.session
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.stopRunning()
+        }
 
         DispatchQueue.main.async { [weak self] in
             self?.isCameraReady = false

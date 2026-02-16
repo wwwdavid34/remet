@@ -68,10 +68,9 @@ struct OnboardingFirstMemoryView: View {
                 }
 
                 // Photo picker button
-                PhotosPicker(
-                    selection: $selectedItem,
-                    matching: .images
-                ) {
+                Button {
+                    showPhotosPicker = true
+                } label: {
                     HStack(spacing: 8) {
                         Image(systemName: selectedImage == nil ? "photo.badge.plus" : "arrow.triangle.2.circlepath")
                         Text(selectedImage == nil ? String(localized: "Choose Photo") : String(localized: "Choose Different"))
@@ -107,13 +106,16 @@ struct OnboardingFirstMemoryView: View {
                     Text(String(localized: "Skip for Now"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .frame(minHeight: 44)
                 }
+                .contentShape(Rectangle())
                 .padding(.top, selectedImage == nil ? 0 : 8)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
         }
         .background(AppColors.background)
+        .photosPicker(isPresented: $showPhotosPicker, selection: $selectedItem, matching: .images)
         .onChange(of: selectedItem) { _, newItem in
             loadImage(from: newItem)
         }

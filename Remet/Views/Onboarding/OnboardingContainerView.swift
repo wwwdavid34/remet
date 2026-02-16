@@ -91,13 +91,16 @@ struct OnboardingContainerView: View {
         }
         .interactiveDismissDisabled()
         .alert(String(localized: "Profile Skipped"), isPresented: $showSkipProfileAlert) {
-            Button(String(localized: "OK")) {
+            Button(String(localized: "OK")) { }
+        } message: {
+            Text(String(localized: "You can create your profile later from Account settings."))
+        }
+        .onChange(of: showSkipProfileAlert) { _, isPresented in
+            if !isPresented && currentStep == 1 {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     currentStep = 3
                 }
             }
-        } message: {
-            Text(String(localized: "You can create your profile later from Account settings."))
         }
     }
 

@@ -430,10 +430,17 @@ class OnboardingCameraManager: NSObject, ObservableObject, AVCapturePhotoCapture
 
     func stopSession() {
         guard session.isRunning else { return }
-        session.stopRunning()
+        let session = self.session
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.stopRunning()
+        }
     }
 
     func capturePhoto(completion: @escaping (UIImage?) -> Void) {
+        guard photoOutput.connection(with: .video) != nil else {
+            completion(nil)
+            return
+        }
         captureCompletion = completion
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
