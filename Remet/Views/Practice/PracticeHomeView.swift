@@ -47,6 +47,14 @@ struct PracticeHomeView: View {
     @State private var showingQuiz = false
     @State private var selectedMode: QuizMode = .spaced
 
+    // Custom group quiz filters
+    @State private var showCustomFilters = false
+    @State private var showingFilteredQuiz = false
+    @State private var customFilterFavoritesOnly = false
+    @State private var customFilterRelationship: String? = nil
+    @State private var customFilterContext: String? = nil
+    @State private var customFilterTagIds: Set<UUID> = []
+
     private var peopleWithFaces: [Person] {
         people.filter { !($0.embeddings ?? []).isEmpty && !$0.isMe }
     }
@@ -62,6 +70,55 @@ struct PracticeHomeView: View {
         }.sorted { p1, p2 in
             (p1.spacedRepetitionData?.accuracy ?? 1) < (p2.spacedRepetitionData?.accuracy ?? 1)
         }
+    }
+
+    private var filteredQuizPeople: [Person] {
+        var result = peopleWithFaces
+        if customFilterFavoritesOnly {
+            result = result.filter { $0.isFavorite }
+        }
+        if let rel = customFilterRelationship {
+            result = result.filter { $0.relationship == rel }
+        }
+        if let ctx = customFilterContext {
+            result = result.filter { $0.contextTag == ctx }
+        }
+        if !customFilterTagIds.isEmpty {
+            result = result.filter { person in
+                let personTagIds = Set((person.tags ?? []).map { $0.id })
+                return !customFilterTagIds.isDisjoint(with: personTagIds)
+            }
+        }
+        return result
+    }
+
+    private var hasCustomFilters: Bool {
+        customFilterFavoritesOnly || customFilterRelationship != nil || customFilterContext != nil || !customFilterTagIds.isEmpty
+    }
+
+    private var customFilterSummary: String {
+        var parts: [String] = []
+        if customFilterFavoritesOnly { parts.append(String(localized: "Favorites")) }
+        if let rel = customFilterRelationship { parts.append(rel) }
+        if let ctx = customFilterContext { parts.append(ctx) }
+        if !customFilterTagIds.isEmpty {
+            parts.append(String(localized: "\(customFilterTagIds.count) tags"))
+        }
+        return parts.isEmpty ? String(localized: "All People") : parts.joined(separator: " · ")
+    }
+
+    private var tagsInUse: [Tag] {
+        var seenIds = Set<UUID>()
+        var result: [Tag] = []
+        for person in peopleWithFaces {
+            for tag in person.tags ?? [] {
+                if !seenIds.contains(tag.id) {
+                    seenIds.insert(tag.id)
+                    result.append(tag)
+                }
+            }
+        }
+        return result.sorted { $0.name < $1.name }
     }
 
     private func peopleForMode(_ mode: QuizMode) -> [Person] {
@@ -218,6 +275,88 @@ struct PracticeHomeView: View {
                                 .padding(.horizontal)
                         }
 
+                        // Custom Group section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "person.2.crop.square.stack")
+                                        .foregroundStyle(AppColors.teal)
+                                    Text(String(localized: "Custom Group"))
+                                        .font(.headline)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+
+                            Button {
+                                showCustomFilters = true
+                            } label: {
+                                HStack(spacing: 14) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(AppColors.teal.opacity(0.15))
+                                            .frame(width: 44, height: 44)
+
+                                        Image(systemName: "line.3.horizontal.decrease.circle")
+                                            .font(.title3)
+                                            .foregroundStyle(AppColors.teal)
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(String(localized: "Set Filters"))
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(AppColors.textPrimary)
+
+                                        Text(customFilterSummary)
+                                            .font(.caption)
+                                            .foregroundStyle(AppColors.textSecondary)
+                                            .lineLimit(1)
+                                    }
+
+                                    Spacer()
+
+                                    Text("\(filteredQuizPeople.count)")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(AppColors.teal)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(AppColors.teal.opacity(0.1))
+                                        .clipShape(Capsule())
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(AppColors.textMuted)
+                                }
+                                .padding(12)
+                                .contentShape(Rectangle())
+                                .glassCard(intensity: .thin, cornerRadius: 14)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal)
+
+                            if hasCustomFilters {
+                                Button {
+                                    showingFilteredQuiz = true
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "play.fill")
+                                        Text(String(localized: "Start Quiz"))
+                                    }
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(filteredQuizPeople.isEmpty ? Color.gray : AppColors.teal)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+                                .disabled(filteredQuizPeople.isEmpty)
+                                .padding(.horizontal)
+                            }
+                        }
+
                         // Trouble Faces section - only shown when there are struggling faces
                         if !troubleFaces.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
@@ -339,6 +478,24 @@ struct PracticeHomeView: View {
                     mode: selectedMode
                 )
             }
+            .fullScreenCover(isPresented: $showingFilteredQuiz) {
+                FaceQuizView(
+                    people: filteredQuizPeople.shuffled(),
+                    allPeople: peopleWithFaces,
+                    mode: .random
+                )
+            }
+            .sheet(isPresented: $showCustomFilters) {
+                QuizFilterSheet(
+                    filterFavoritesOnly: $customFilterFavoritesOnly,
+                    selectedRelationship: $customFilterRelationship,
+                    selectedContext: $customFilterContext,
+                    selectedTagIds: $customFilterTagIds,
+                    availableTags: tagsInUse,
+                    matchCount: filteredQuizPeople.count
+                )
+                .presentationDetents([.medium, .large])
+            }
         }
     }
 
@@ -347,6 +504,166 @@ struct PracticeHomeView: View {
             guard let srData = person.spacedRepetitionData else { return false }
             return srData.accuracy >= 0.8 && srData.totalAttempts >= 3
         }.count
+    }
+}
+
+// MARK: - Quiz Filter Sheet
+
+struct QuizFilterSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var filterFavoritesOnly: Bool
+    @Binding var selectedRelationship: String?
+    @Binding var selectedContext: String?
+    @Binding var selectedTagIds: Set<UUID>
+
+    let availableTags: [Tag]
+    let matchCount: Int
+
+    private var relationships: [String] { AppSettings.shared.customRelationships }
+    private var contexts: [String] { AppSettings.shared.customContexts }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    Toggle(isOn: $filterFavoritesOnly) {
+                        Label(String(localized: "Favorites Only"), systemImage: "star.fill")
+                            .foregroundStyle(.primary)
+                    }
+                    .tint(.yellow)
+                }
+
+                Section {
+                    Button {
+                        selectedRelationship = nil
+                    } label: {
+                        HStack {
+                            Text(String(localized: "Any"))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if selectedRelationship == nil {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(AppColors.coral)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    }
+                    ForEach(relationships, id: \.self) { rel in
+                        Button {
+                            selectedRelationship = rel
+                        } label: {
+                            HStack {
+                                Text(rel)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedRelationship == rel {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(AppColors.coral)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text(String(localized: "Relationship"))
+                }
+
+                Section {
+                    Button {
+                        selectedContext = nil
+                    } label: {
+                        HStack {
+                            Text(String(localized: "Any"))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if selectedContext == nil {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(AppColors.coral)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    }
+                    ForEach(contexts, id: \.self) { ctx in
+                        Button {
+                            selectedContext = ctx
+                        } label: {
+                            HStack {
+                                Text(ctx)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedContext == ctx {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(AppColors.coral)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text(String(localized: "Context"))
+                }
+
+                if !availableTags.isEmpty {
+                    Section {
+                        ForEach(availableTags) { tag in
+                            Button {
+                                if selectedTagIds.contains(tag.id) {
+                                    selectedTagIds.remove(tag.id)
+                                } else {
+                                    selectedTagIds.insert(tag.id)
+                                }
+                            } label: {
+                                HStack {
+                                    Circle()
+                                        .fill(tag.color)
+                                        .frame(width: 12, height: 12)
+                                    Text(tag.name)
+                                        .foregroundStyle(.primary)
+                                    Spacer()
+                                    if selectedTagIds.contains(tag.id) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(AppColors.coral)
+                                            .fontWeight(.semibold)
+                                    }
+                                }
+                            }
+                        }
+                    } header: {
+                        Text(String(localized: "Tags"))
+                    }
+                }
+            }
+            .navigationTitle(String(localized: "Quiz Filters"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(String(localized: "Reset")) {
+                        filterFavoritesOnly = false
+                        selectedRelationship = nil
+                        selectedContext = nil
+                        selectedTagIds.removeAll()
+                    }
+                    .foregroundStyle(AppColors.coral)
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(String(localized: "Done")) {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                Text(String(localized: "\(matchCount) people match"))
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .foregroundStyle(matchCount > 0 ? AppColors.teal : AppColors.textMuted)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+            }
+        }
     }
 }
 

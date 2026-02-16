@@ -6,6 +6,7 @@ struct FaceQuizView: View {
     @Environment(\.modelContext) private var modelContext
 
     let people: [Person]
+    var allPeople: [Person]? = nil
     var mode: QuizMode = .spaced
 
     @State private var currentIndex = 0
@@ -202,7 +203,8 @@ struct FaceQuizView: View {
     private func generateOptions() {
         guard let correctPerson = currentPerson else { return }
 
-        var wrongAnswers = shuffledPeople
+        let namePool = allPeople ?? shuffledPeople
+        var wrongAnswers = namePool
             .filter { $0.id != correctPerson.id }
             .map { $0.name }
             .shuffled()
