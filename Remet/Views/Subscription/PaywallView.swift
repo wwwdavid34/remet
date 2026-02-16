@@ -87,20 +87,20 @@ struct PaywallView: View {
         VStack(alignment: .leading, spacing: 12) {
             PaywallFeatureRow(
                 icon: "infinity",
-                title: "Unlimited People",
-                description: "No limits on how many people you can save"
+                title: String(localized: "Unlimited People"),
+                description: String(localized: "No limits on how many people you can save")
             )
 
             PaywallFeatureRow(
                 icon: "icloud",
-                title: "Cloud Sync",
-                description: "Access your data across all your devices"
+                title: String(localized: "iCloud Sync & Backup"),
+                description: String(localized: "Sync across all your devices and keep your data safely backed up")
             )
 
             PaywallFeatureRow(
                 icon: "tag",
-                title: "Unlimited Tags",
-                description: "Organize without restrictions"
+                title: String(localized: "Unlimited Tags"),
+                description: String(localized: "Organize without restrictions")
             )
         }
         .padding()
