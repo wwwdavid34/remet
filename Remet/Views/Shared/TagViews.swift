@@ -426,70 +426,68 @@ struct TagFilterView: View {
     var onClear: () -> Void
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                // Clear filter button - more prominent when active
-                if !selectedTags.isEmpty {
-                    Button {
-                        onClear()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.caption)
-                            Text("Clear (\(selectedTags.count))")
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(AppColors.coral.opacity(0.15))
-                        .foregroundStyle(AppColors.coral)
-                        .clipShape(Capsule())
+        FlowLayout(spacing: 8) {
+            // Clear filter button - more prominent when active
+            if !selectedTags.isEmpty {
+                Button {
+                    onClear()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.caption)
+                        Text("Clear (\(selectedTags.count))")
+                            .font(.caption)
+                            .fontWeight(.medium)
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(AppColors.coral.opacity(0.15))
+                    .foregroundStyle(AppColors.coral)
+                    .clipShape(Capsule())
                 }
-
-                // Tag filters
-                ForEach(availableTags) { tag in
-                    let isSelected = selectedTags.contains(tag.id)
-                    Button {
-                        withAnimation {
-                            if isSelected {
-                                selectedTags.remove(tag.id)
-                            } else {
-                                selectedTags.insert(tag.id)
-                            }
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Circle()
-                                .fill(tag.color)
-                                .frame(width: 8, height: 8)
-
-                            Text(tag.name)
-                                .font(.caption)
-                                .fontWeight(isSelected ? .semibold : .regular)
-
-                            if isSelected {
-                                Image(systemName: "checkmark")
-                                    .font(.caption2)
-                            }
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(isSelected ? tag.color.opacity(0.2) : Color(.secondarySystemFill))
-                        .foregroundStyle(isSelected ? tag.color : .secondary)
-                        .clipShape(Capsule())
-                        .overlay(
-                            Capsule()
-                                .strokeBorder(isSelected ? tag.color.opacity(0.4) : Color.clear, lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal)
+
+            // Tag filters
+            ForEach(availableTags) { tag in
+                let isSelected = selectedTags.contains(tag.id)
+                Button {
+                    withAnimation {
+                        if isSelected {
+                            selectedTags.remove(tag.id)
+                        } else {
+                            selectedTags.insert(tag.id)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(tag.color)
+                            .frame(width: 8, height: 8)
+
+                        Text(tag.name)
+                            .font(.caption)
+                            .fontWeight(isSelected ? .semibold : .regular)
+
+                        if isSelected {
+                            Image(systemName: "checkmark")
+                                .font(.caption2)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(isSelected ? tag.color.opacity(0.2) : Color(.secondarySystemFill))
+                    .foregroundStyle(isSelected ? tag.color : .secondary)
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(isSelected ? tag.color.opacity(0.4) : Color.clear, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+            }
         }
+        .padding(.horizontal)
     }
 }
 
