@@ -78,6 +78,9 @@ enum TestHelpers {
         contextTag: String? = nil,
         company: String? = nil,
         isFavorite: Bool = false,
+        isMe: Bool = false,
+        notes: String? = nil,
+        createdAt: Date = Date(),
         embeddingSeed: Int? = nil,
         in context: ModelContext
     ) -> Person {
@@ -85,9 +88,12 @@ enum TestHelpers {
             name: name,
             relationship: relationship,
             contextTag: contextTag,
-            company: company
+            createdAt: createdAt,
+            company: company,
+            notes: notes
         )
         person.isFavorite = isFavorite
+        person.isMe = isMe
         context.insert(person)
 
         if let seed = embeddingSeed {
@@ -110,5 +116,75 @@ enum TestHelpers {
         let tag = Tag(name: name)
         context.insert(tag)
         return tag
+    }
+
+    // MARK: - Encounter Factory
+
+    /// Create an Encounter in the given context
+    @MainActor
+    static func makeEncounter(
+        occasion: String? = nil,
+        notes: String? = nil,
+        location: String? = nil,
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        date: Date = Date(),
+        isFavorite: Bool = false,
+        in context: ModelContext
+    ) -> Encounter {
+        let encounter = Encounter(
+            occasion: occasion,
+            notes: notes,
+            location: location,
+            latitude: latitude,
+            longitude: longitude,
+            date: date
+        )
+        encounter.isFavorite = isFavorite
+        context.insert(encounter)
+        return encounter
+    }
+
+    /// Create an EncounterPhoto in the given context
+    @MainActor
+    static func makeEncounterPhoto(
+        imageData: Data = Data([0xFF]),
+        date: Date = Date(),
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        assetIdentifier: String? = nil,
+        in context: ModelContext
+    ) -> EncounterPhoto {
+        let photo = EncounterPhoto(
+            imageData: imageData,
+            date: date,
+            latitude: latitude,
+            longitude: longitude,
+            assetIdentifier: assetIdentifier
+        )
+        context.insert(photo)
+        return photo
+    }
+
+    // MARK: - SpacedRepetitionData Factory
+
+    /// Create SpacedRepetitionData with specific stats for a person
+    @MainActor
+    static func makeSpacedRepetitionData(
+        totalAttempts: Int = 0,
+        correctAttempts: Int = 0,
+        nextReviewDate: Date = Date(),
+        for person: Person,
+        in context: ModelContext
+    ) -> SpacedRepetitionData {
+        let srData = SpacedRepetitionData(
+            nextReviewDate: nextReviewDate,
+            totalAttempts: totalAttempts,
+            correctAttempts: correctAttempts
+        )
+        srData.person = person
+        person.spacedRepetitionData = srData
+        context.insert(srData)
+        return srData
     }
 }
