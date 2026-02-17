@@ -477,12 +477,12 @@ struct TagFilterView: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(isSelected ? tag.color.opacity(0.3) : tag.color.opacity(0.15))
-                        .foregroundStyle(tag.color)
+                        .background(isSelected ? tag.color.opacity(0.2) : Color(.secondarySystemFill))
+                        .foregroundStyle(isSelected ? tag.color : .secondary)
                         .clipShape(Capsule())
                         .overlay(
                             Capsule()
-                                .strokeBorder(tag.color.opacity(isSelected ? 0.5 : 0.2), lineWidth: 1)
+                                .strokeBorder(isSelected ? tag.color.opacity(0.4) : Color.clear, lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)

@@ -447,18 +447,14 @@ struct EncounterRowView: View {
                 }
 
                 // Badges
-                HStack(spacing: 4) {
+                HStack(spacing: 6) {
                     if photoCount > 1 {
                         HStack(spacing: 2) {
                             Image(systemName: "photo.stack")
                             Text("\(photoCount)")
                         }
                         .font(.caption2)
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(AppColors.softPurple))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.secondary)
                     }
 
                     if personCount > 0 {
@@ -467,11 +463,7 @@ struct EncounterRowView: View {
                             Text("\(personCount)")
                         }
                         .font(.caption2)
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(AppColors.teal))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.secondary)
                     }
                 }
             }
@@ -506,13 +498,19 @@ struct EncounterRowView: View {
                 if !(encounter.tags ?? []).isEmpty {
                     HStack(spacing: 4) {
                         ForEach((encounter.tags ?? []).prefix(3)) { tag in
-                            Text(tag.name)
-                                .font(.caption2)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(tag.color.opacity(0.2))
-                                .foregroundStyle(tag.color)
-                                .clipShape(Capsule())
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(tag.color)
+                                    .frame(width: 6, height: 6)
+                                Text(tag.name)
+                                    .lineLimit(1)
+                            }
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color(.secondarySystemFill))
+                            .clipShape(Capsule())
                         }
                         if (encounter.tags ?? []).count > 3 {
                             Text("+\((encounter.tags ?? []).count - 3)")
@@ -525,7 +523,7 @@ struct EncounterRowView: View {
                 if let location = encounter.location, !location.isEmpty {
                     Label(location, systemImage: "mappin")
                         .font(.caption)
-                        .foregroundStyle(AppColors.teal)
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
 
