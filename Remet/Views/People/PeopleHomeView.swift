@@ -580,13 +580,11 @@ struct PeopleHomeView: View {
                                 Button {
                                     selectedEncounter = encounter
                                 } label: {
-                                    EncounterSearchRow(encounter: encounter, searchText: searchText)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 8)
+                                    EncounterRowView(encounter: encounter)
                                 }
                                 .buttonStyle(.plain)
-
-                                Divider().padding(.leading, 78)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
                             }
                         }
                     }

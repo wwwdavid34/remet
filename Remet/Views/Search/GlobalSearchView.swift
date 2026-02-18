@@ -9,6 +9,8 @@ struct GlobalSearchView: View {
     @State private var searchText = ""
     @State private var selectedTab: SearchTab = .all
 
+    @State private var selectedEncounter: Encounter?
+
     // Memory scan state
     @State private var showMemoryScan = false
     @State private var showImageMatch = false
@@ -224,10 +226,16 @@ struct GlobalSearchView: View {
                 if showEncounters && !filteredEncounters.isEmpty {
                     Section {
                         ForEach(filteredEncounters) { encounter in
-                            NavigationLink(value: encounter) {
-                                EncounterSearchRow(encounter: encounter, searchText: searchText)
+                            Button {
+                                selectedEncounter = encounter
+                            } label: {
+                                EncounterRowView(encounter: encounter)
                             }
+                            .buttonStyle(.plain)
                         }
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                     } header: {
                         if selectedTab == .all {
                             Label("Encounters (\(filteredEncounters.count))", systemImage: "person.2.crop.square.stack")
@@ -241,7 +249,7 @@ struct GlobalSearchView: View {
         .navigationDestination(for: Person.self) { person in
             PersonDetailView(person: person)
         }
-        .navigationDestination(for: Encounter.self) { encounter in
+        .navigationDestination(item: $selectedEncounter) { encounter in
             EncounterDetailView(encounter: encounter)
         }
     }
@@ -312,64 +320,6 @@ struct PersonSearchRow: View {
 
                 if let notes = person.notes, !notes.isEmpty {
                     Text(notes)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary)
-                        .lineLimit(1)
-                }
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-struct EncounterSearchRow: View {
-    let encounter: Encounter
-    let searchText: String
-
-    var body: some View {
-        HStack(spacing: 12) {
-            // Thumbnail
-            if let imageData = encounter.displayImageData ?? encounter.thumbnailData,
-               let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppColors.coral.opacity(0.2), AppColors.teal.opacity(0.2)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 50, height: 50)
-                    .overlay {
-                        Image(systemName: "person.2")
-                            .foregroundStyle(AppColors.teal)
-                    }
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(encounter.occasion ?? "Encounter")
-                    .font(.headline)
-                    .foregroundStyle(AppColors.textPrimary)
-
-                HStack(spacing: 8) {
-                    if let location = encounter.location, !location.isEmpty {
-                        Label(location, systemImage: "mappin")
-                            .foregroundStyle(AppColors.teal)
-                    }
-
-                    Text(encounter.date.formatted(date: .abbreviated, time: .omitted))
-                        .foregroundStyle(AppColors.textMuted)
-                }
-                .font(.caption)
-
-                if !(encounter.people ?? []).isEmpty {
-                    Text((encounter.people ?? []).map(\.name).joined(separator: ", "))
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
                         .lineLimit(1)
