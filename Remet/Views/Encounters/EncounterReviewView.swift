@@ -28,8 +28,11 @@ struct EncounterReviewView: View {
     @State private var selectedFaceCrop: UIImage?
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
-    @State private var isRedetecting = false
-    @State private var redetectAttempts = 0
+    // Locate face mode
+    @State private var locateFaceMode = false
+    @State private var locateFaceError: String?
+    @State private var isLocatingFace = false
+    @State private var lastAddedFaceIndex: Int?
     @State private var localDetectedFaces: [DetectedFace] = []
 
     // Focus state for name input
@@ -115,29 +118,38 @@ struct EncounterReviewView: View {
                     .font(.headline)
                 Spacer()
 
-                // Re-detect button
-                if !isProcessing && !isRedetecting {
+                // Missing faces button
+                if !isProcessing {
                     Button {
-                        redetectFaces()
+                        locateFaceMode.toggle()
+                        if !locateFaceMode {
+                            locateFaceError = nil
+                        }
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "arrow.clockwise")
-                            Text("Re-detect")
+                            if isLocatingFace {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            } else {
+                                Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
+                            }
+                            Text(locateFaceMode ? "Cancel" : "Missing?")
                         }
                         .font(.caption)
-                        .foregroundStyle(AppColors.teal)
+                        .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
                     }
+                    .disabled(isLocatingFace)
                 }
             }
 
-            if isProcessing || isRedetecting {
+            if isProcessing {
                 HStack {
                     ProgressView()
-                    Text(isRedetecting ? "Re-analyzing faces..." : "Analyzing faces...")
+                    Text("Analyzing faces...")
                         .foregroundStyle(AppColors.textSecondary)
                 }
             } else if boundingBoxes.isEmpty {
-                // No faces detected state
+                // No faces detected — prompt to use locate mode
                 VStack(spacing: 12) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle")
@@ -148,25 +160,13 @@ struct EncounterReviewView: View {
                             .foregroundStyle(AppColors.warning)
                     }
 
-                    Text("Try re-detecting with enhanced image processing.")
+                    Text("Tap \"Missing?\" above then tap a face in the photo.")
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
 
-                    Button {
-                        redetectFaces()
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                            Text(redetectAttempts == 0 ? "Re-detect Faces" : "Try Again")
-                        }
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(AppColors.teal)
-                        .clipShape(Capsule())
+                    if locateFaceMode {
+                        locateFaceModeIndicator
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -174,6 +174,10 @@ struct EncounterReviewView: View {
                 .background(AppColors.warning.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
+                if locateFaceMode {
+                    locateFaceModeIndicator
+                }
+
                 ForEach(Array(boundingBoxes.enumerated()), id: \.element.id) { index, box in
                     FaceRowView(
                         box: box,
@@ -193,6 +197,29 @@ struct EncounterReviewView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var locateFaceModeIndicator: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: "hand.tap")
+                Text("Tap where you see a face in the photo")
+            }
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundStyle(AppColors.coral)
+
+            if let error = locateFaceError {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.warning)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(AppColors.coral.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     @ViewBuilder
@@ -525,51 +552,6 @@ struct EncounterReviewView: View {
                 location = name
             }
             isProcessing = false
-        }
-    }
-
-    private func redetectFaces() {
-        guard let image = scannedPhoto.image else { return }
-
-        isRedetecting = true
-        redetectAttempts += 1
-
-        Task {
-            do {
-                // Use enhanced detection options
-                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
-
-                // Create new bounding boxes from detected faces
-                var newBoxes: [FaceBoundingBox] = []
-                for face in faces {
-                    let box = FaceBoundingBox(
-                        rect: face.normalizedBoundingBox,
-                        personId: nil,
-                        personName: nil,
-                        confidence: nil,
-                        isAutoAccepted: false
-                    )
-                    newBoxes.append(box)
-                }
-
-                // Try to match new faces to people
-                let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
-                    faces: faces,
-                    people: people,
-                    autoAcceptThreshold: autoAcceptThreshold
-                )
-
-                await MainActor.run {
-                    boundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
-                    localDetectedFaces = faces
-                    isRedetecting = false
-                }
-            } catch {
-                await MainActor.run {
-                    isRedetecting = false
-                }
-                print("Re-detection error: \(error)")
-            }
         }
     }
 
