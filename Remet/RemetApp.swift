@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UserNotifications
+import TipKit
 
 @Observable
 class AppState {
@@ -90,6 +91,8 @@ struct RemetApp: App {
                 AppSettings.shared.recordFirstLaunchIfNeeded()
                 // Request notification permission (needed for Share Extension import prompts)
                 let _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+                // Configure TipKit
+                try? Tips.configure([.displayFrequency(.immediate)])
                 // Load subscription products
                 await subscriptionManager.loadProducts()
 
