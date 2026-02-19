@@ -77,32 +77,34 @@ targets:
           - iCloud.com.remet.Remet
         com.apple.developer.icloud-services:
           - CloudKit
+        com.apple.security.application-groups:
+          - group.com.remet.shared
 
-  # ShareExtension:
-  #   type: app-extension
-  #   platform: iOS
-  #   sources:
-  #     - path: ShareExtension
-  #       excludes:
-  #         - "**/.DS_Store"
-  #   settings:
-  #     base:
-  #       PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
-  #       DEVELOPMENT_TEAM: ""
-  #       CODE_SIGN_STYLE: Automatic
-  #       SKIP_INSTALL: YES
-  #   info:
-  #     path: ShareExtension/Info.plist
-  #     properties:
-  #       CFBundleDisplayName: "Remet"
-  #       NSExtension:
-  #         NSExtensionAttributes:
-  #           NSExtensionActivationRule:
-  #             NSExtensionActivationSupportsImageWithMaxCount: 10
-  #         NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
-  #         NSExtensionPointIdentifier: "com.apple.share-services"
-  #   entitlements:
-  #     path: ShareExtension/ShareExtension.entitlements
-  #     properties:
-  #       com.apple.security.application-groups:
-  #         - group.com.remet.shared
+  ShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShareExtension
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+    info:
+      path: ShareExtension/Info.plist
+      properties:
+        CFBundleDisplayName: "Remet"
+        NSExtension:
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsImageWithMaxCount: 10
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
+          NSExtensionPointIdentifier: "com.apple.share-services"
+    entitlements:
+      path: ShareExtension/ShareExtension.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.remet.shared
