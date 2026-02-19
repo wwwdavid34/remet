@@ -34,6 +34,7 @@
 		36D96658ABC7433A1D56F799 /* EphemeralMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F477D72755869D35922982 /* EphemeralMatchView.swift */; };
 		3FA1923B4B59DC9E25887975 /* EncounterPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D9B65B81EAACA2C518D5A0 /* EncounterPhoto.swift */; };
 		416B6B6EF3FDA30B32BDBEB0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED9DDEE8CB1F8D16356B40B /* SettingsView.swift */; };
+		6CA1EE36BB16125436A7021A /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 977446AFA1A50753D60BAC0A /* ShareSheet.swift */; };
 		43719527A751C48B739F9253 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E37AF00F14424DAC516504 /* PaywallView.swift */; };
 		457C0CB01FC45D37EB6B5B59 /* PhotoLibraryScannerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91805FC28853BED76D5E325 /* PhotoLibraryScannerService.swift */; };
 		46998D26BEA1168689AA2F3C /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21964A4B54F1257DC9CE875 /* ContactsManager.swift */; };
@@ -161,6 +162,7 @@
 		910C743F3BC5471067CB643C /* AppLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogoView.swift; sourceTree = "<group>"; };
 		9157C1E917CFF24ECFC278A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9490DFD03312D9AD01EB8896 /* DemoDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoDataService.swift; sourceTree = "<group>"; };
+		977446AFA1A50753D60BAC0A /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		A34165AA81501FB69A901176 /* EncounterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterListView.swift; sourceTree = "<group>"; };
 		A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
 		A745EC47673F2071CB294230 /* Remet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Remet.entitlements; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				3B41544F52E67D4CB06C8D73 /* LiquidGlassStyle.swift */,
 				8CCD2F3F97CABFA17BDAAD1F /* NewPersonSheet.swift */,
 				750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */,
+				977446AFA1A50753D60BAC0A /* ShareSheet.swift */,
 				2E23F39895AF9B13A0FDC41D /* SplashView.swift */,
 				58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */,
 			);
@@ -673,6 +676,7 @@
 				B3E39E5070C63F5AA63CCBB9 /* ScanTabView.swift in Sources */,
 				6A6607518441A4E5A2499AE9 /* ScanningAnimationView.swift in Sources */,
 				416B6B6EF3FDA30B32BDBEB0 /* SettingsView.swift in Sources */,
+				6CA1EE36BB16125436A7021A /* ShareSheet.swift in Sources */,
 				0408127824C04E83890A2A05 /* SilentScanCameraManager.swift in Sources */,
 				98E1B40F8CB6DB617C143CE6 /* SpacedRepetitionData.swift in Sources */,
 				3391C66F32DEAE53B25A76EE /* SplashView.swift in Sources */,
