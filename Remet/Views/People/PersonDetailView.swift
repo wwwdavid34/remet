@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct PersonDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -19,6 +20,8 @@ struct PersonDetailView: View {
     @State private var showEncountersTimeline = false
     @State private var expandedSections: Set<String> = ["talkingPoints", "timeline"]
 
+    private let favoriteTip = FavoriteTip()
+    private let moreActionsTip = MoreActionsTip()
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 12)
     ]
@@ -82,6 +85,7 @@ struct PersonDetailView: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 16) {
                     Button {
+                        Task { await FavoriteTip.tapped.donate() }
                         withAnimation(.bouncy(duration: 0.3)) {
                             person.isFavorite.toggle()
                         }
@@ -89,15 +93,18 @@ struct PersonDetailView: View {
                         Image(systemName: person.isFavorite ? "star.fill" : "star")
                             .foregroundStyle(person.isFavorite ? .yellow : .secondary)
                     }
+                    .popoverTip(favoriteTip)
 
                     Menu {
                         Button {
+                            Task { await MoreActionsTip.tapped.donate() }
                             showEditSheet = true
                         } label: {
                             Label(String(localized: "Edit Details"), systemImage: "pencil")
                         }
 
                         Button {
+                            Task { await MoreActionsTip.tapped.donate() }
                             showMergeWithPicker = true
                         } label: {
                             Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
@@ -107,6 +114,7 @@ struct PersonDetailView: View {
                             Divider()
 
                             Button(role: .destructive) {
+                                Task { await MoreActionsTip.tapped.donate() }
                                 showDeleteConfirmation = true
                             } label: {
                                 Label(String(localized: "Delete Person"), systemImage: "trash")
@@ -115,6 +123,7 @@ struct PersonDetailView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                    .popoverTip(moreActionsTip)
                 }
             }
         }

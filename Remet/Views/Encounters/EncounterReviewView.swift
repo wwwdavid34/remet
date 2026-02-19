@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import TipKit
 
 struct EncounterReviewView: View {
     @Environment(\.modelContext) private var modelContext
@@ -44,6 +45,8 @@ struct EncounterReviewView: View {
     // Focus state for name input
 
 
+    private let faceBoxTip = FaceBoxTip()
+    private let redetectTip = RedetectTip()
     private let scannerService = PhotoLibraryScannerService()
     private let faceDetectionService = FaceDetectionService()
     private var autoAcceptThreshold: Float { AppSettings.shared.autoAcceptThreshold }
@@ -105,6 +108,7 @@ struct EncounterReviewView: View {
                                     viewSize: geometry.size
                                 )
                                 .onTapGesture {
+                                    Task { await FaceBoxTip.tapped.donate() }
                                     if !locateFaceMode {
                                         selectedBoxIndex = index
                                         showPersonPicker = true
@@ -195,6 +199,7 @@ struct EncounterReviewView: View {
                         }
                         Spacer()
                     }
+                        .popoverTip(faceBoxTip)
                 }
             }
         }
@@ -213,6 +218,7 @@ struct EncounterReviewView: View {
                 // Missing faces button
                 if !isProcessing {
                     Button {
+                        Task { await RedetectTip.tapped.donate() }
                         locateFaceMode.toggle()
                         if !locateFaceMode {
                             locateFaceError = nil
@@ -231,6 +237,7 @@ struct EncounterReviewView: View {
                         .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
                     }
                     .disabled(isLocatingFace)
+                    .popoverTip(redetectTip)
                 }
             }
 
