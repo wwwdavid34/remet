@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 // MARK: - Quiz Mode
 
@@ -46,6 +47,9 @@ struct PracticeHomeView: View {
     @Query private var people: [Person]
     @State private var showingQuiz = false
     @State private var selectedMode: QuizMode = .spaced
+
+    private let spacedReviewTip = SpacedReviewTip()
+    private let setFiltersTip = SetFiltersTip()
 
     // Custom group quiz filters
     @State private var showCustomFilters = false
@@ -252,9 +256,11 @@ struct PracticeHomeView: View {
                                     isDisabled: false,
                                     isRecommended: true
                                 ) {
+                                    Task { await SpacedReviewTip.tapped.donate() }
                                     selectedMode = .spaced
                                     showingQuiz = true
                                 }
+                                .popoverTip(spacedReviewTip)
 
                                 // Random mode
                                 QuizModeButton(
@@ -289,6 +295,7 @@ struct PracticeHomeView: View {
                             .padding(.horizontal)
 
                             Button {
+                                Task { await SetFiltersTip.tapped.donate() }
                                 showCustomFilters = true
                             } label: {
                                 HStack(spacing: 14) {
@@ -333,6 +340,7 @@ struct PracticeHomeView: View {
                                 .contentShape(Rectangle())
                                 .glassCard(intensity: .thin, cornerRadius: 14)
                             }
+                            .popoverTip(setFiltersTip)
                             .buttonStyle(.plain)
                             .padding(.horizontal)
 
