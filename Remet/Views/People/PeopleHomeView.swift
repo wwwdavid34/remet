@@ -658,8 +658,8 @@ struct CompactPersonCard: View {
         VStack(spacing: 8) {
             ZStack(alignment: .topTrailing) {
                 // Face thumbnail
-                if let embedding = person.embeddings?.first,
-                   let uiImage = UIImage(data: embedding.faceCropData) {
+                if let profileEmbedding = person.profileEmbedding,
+                   let uiImage = UIImage(data: profileEmbedding.faceCropData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
@@ -874,8 +874,8 @@ struct EnhancedPersonCard: View {
     var body: some View {
         VStack(spacing: 8) {
             // Face thumbnail
-            if let embedding = person.embeddings?.first,
-               let uiImage = UIImage(data: embedding.faceCropData) {
+            if let profileEmbedding = person.profileEmbedding,
+               let uiImage = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()

@@ -352,8 +352,8 @@ struct EncounterEditView: View {
                 } else {
                     ForEach(encounter.people ?? []) { person in
                         HStack {
-                            if let firstEmbedding = person.embeddings?.first,
-                               let image = UIImage(data: firstEmbedding.faceCropData) {
+                            if let profileEmbedding = person.profileEmbedding,
+                               let image = UIImage(data: profileEmbedding.faceCropData) {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
@@ -544,8 +544,8 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func matchRow(match: MatchResult) -> some View {
         HStack {
-            if let firstEmbedding = match.person.embeddings?.first,
-               let image = UIImage(data: firstEmbedding.faceCropData) {
+            if let profileEmbedding = match.person.profileEmbedding,
+               let image = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -579,8 +579,8 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func personRow(person: Person) -> some View {
         HStack {
-            if let firstEmbedding = person.embeddings?.first,
-               let image = UIImage(data: firstEmbedding.faceCropData) {
+            if let profileEmbedding = person.profileEmbedding,
+               let image = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
