@@ -1,10 +1,14 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 /// Scan tab for identifying people via camera or photo
 /// Core feature: "Who is this person?"
 struct ScanTabView: View {
     @Query private var people: [Person]
+
+    private let liveScanTip = LiveScanTip()
+    private let matchFromPhotoTip = MatchFromPhotoTip()
 
     @State private var showMemoryScan = false
     @State private var showImageMatch = false
@@ -102,6 +106,7 @@ struct ScanTabView: View {
         VStack(spacing: 16) {
             // Live Scan (Free)
             Button {
+                Task { await LiveScanTip.tapped.donate() }
                 showMemoryScan = true
             } label: {
                 HStack(spacing: 16) {
@@ -135,9 +140,11 @@ struct ScanTabView: View {
                 .tintedGlassBackground(AppColors.teal, tintOpacity: 0.05, cornerRadius: 16)
             }
             .buttonStyle(.plain)
+            .popoverTip(liveScanTip)
 
             // Photo Match (Premium or free photo import)
             Button {
+                Task { await MatchFromPhotoTip.tapped.donate() }
                 if subscriptionManager.isPremium {
                     showImageMatch = true
                 } else {
@@ -185,6 +192,7 @@ struct ScanTabView: View {
                 )
             }
             .buttonStyle(.plain)
+            .popoverTip(matchFromPhotoTip)
         }
     }
 

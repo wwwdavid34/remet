@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 /// Main app container with native tab bar + circle add button.
 /// Tapping (+) shows a Calculator-style glass popup menu above the tab bar.
@@ -12,6 +13,8 @@ struct ContentView: View {
     @State private var showQuickCapture = false
     @State private var showPhotoImport = false
     @Environment(AppState.self) private var appState: AppState?
+
+    private let addEncounterTip = AddEncounterTip()
 
     var body: some View {
         ZStack {
@@ -149,6 +152,7 @@ struct ContentView: View {
     private var menuContent: some View {
         VStack(spacing: 0) {
             menuRow(icon: "camera.fill", label: String(localized: "Take Photo")) {
+                Task { await AddEncounterTip.tapped.donate() }
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showQuickCapture = true
@@ -159,6 +163,7 @@ struct ContentView: View {
                 .padding(.leading, 52)
 
             menuRow(icon: "photo.on.rectangle", label: String(localized: "Import from Library")) {
+                Task { await AddEncounterTip.tapped.donate() }
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showPhotoImport = true
@@ -166,6 +171,7 @@ struct ContentView: View {
             }
         }
         .frame(width: 230)
+        .popoverTip(addEncounterTip)
     }
 
     private func menuRow(

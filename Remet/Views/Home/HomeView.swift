@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 import UIKit
 
 struct HomeView: View {
@@ -12,6 +13,9 @@ struct HomeView: View {
     @State private var showAccount = false
     @State private var selectedPerson: Person?
     @State private var selectedEncounter: Encounter?
+
+    private let newFaceTip = NewFaceTip()
+    private let practiceTip = PracticeTip()
 
     private var peopleNeedingReview: [Person] {
         people.filter { $0.needsReview }
@@ -89,8 +93,10 @@ struct HomeView: View {
                                 icon: "person.badge.plus",
                                 gradient: [AppColors.coral, AppColors.coral.opacity(0.7)]
                             ) {
+                                Task { await NewFaceTip.tapped.donate() }
                                 showQuickCapture = true
                             }
+                            .popoverTip(newFaceTip)
 
                             HomeActionButton(
                                 title: "Practice",
@@ -99,12 +105,14 @@ struct HomeView: View {
                                 gradient: [AppColors.teal, AppColors.teal.opacity(0.7)],
                                 isLocked: peopleWithFaces.isEmpty
                             ) {
+                                Task { await PracticeTip.tapped.donate() }
                                 if peopleWithFaces.isEmpty {
                                     showQuickCapture = true
                                 } else {
                                     showPractice = true
                                 }
                             }
+                            .popoverTip(practiceTip)
                         }
                         .padding(.horizontal)
                     }
