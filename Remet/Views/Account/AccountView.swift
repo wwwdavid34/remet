@@ -252,6 +252,7 @@ struct AccountView: View {
                         .first {
                         do {
                             try await AppStore.presentOfferCodeRedeemSheet(in: windowScene)
+                            await subscriptionManager.refreshPurchaseStatus()
                         } catch {
                             // User cancelled or error occurred - no action needed
                         }
