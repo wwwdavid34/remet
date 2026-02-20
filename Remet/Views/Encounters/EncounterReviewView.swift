@@ -112,6 +112,7 @@ struct EncounterReviewView: View {
                             }
                             .allowsHitTesting(!locateFaceMode)
                         }
+                        .drawingGroup() // Flatten to single GPU layer for smooth zoom
                         .scaleEffect(zoomScale)
                         .offset(zoomOffset)
                         .gesture(
