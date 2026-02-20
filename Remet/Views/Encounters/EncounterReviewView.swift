@@ -647,6 +647,27 @@ struct EncounterReviewView: View {
                         normalizedBoundingBox: translatedNormRect
                     )
 
+                    // Check for >60% overlap with existing bounding boxes
+                    let isDuplicate = await MainActor.run {
+                        boundingBoxes.contains { existing in
+                            let existingRect = existing.rect
+                            let intersection = existingRect.intersection(translatedNormRect)
+                            guard !intersection.isNull else { return false }
+                            let intersectionArea = intersection.width * intersection.height
+                            let unionArea = existingRect.width * existingRect.height + translatedNormRect.width * translatedNormRect.height - intersectionArea
+                            let iou = unionArea > 0 ? intersectionArea / unionArea : 0
+                            return iou > 0.6
+                        }
+                    }
+
+                    if isDuplicate {
+                        await MainActor.run {
+                            locateFaceError = "A face already exists at that location"
+                            isLocatingFace = false
+                        }
+                        return
+                    }
+
                     await MainActor.run {
                         boundingBoxes.append(newBox)
                         localDetectedFaces.append(newDetectedFace)
