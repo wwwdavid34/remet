@@ -17,6 +17,18 @@ class ShareViewController: UIViewController {
         }
 
         for attachment in attachments {
+            // Handle shared URLs (e.g. Facebook profile links)
+            if attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                attachment.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { [weak self] item, error in
+                    guard error == nil, let sharedURL = item as? URL else {
+                        self?.completeRequest()
+                        return
+                    }
+                    self?.openMainAppWithFacebookURL(sharedURL)
+                }
+                return
+            }
+
             if attachment.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 attachment.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { [weak self] item, error in
                     guard error == nil else {
@@ -43,6 +55,27 @@ class ShareViewController: UIViewController {
                 }
                 return
             }
+        }
+
+        completeRequest()
+    }
+
+    private func openMainAppWithFacebookURL(_ facebookURL: URL) {
+        guard let encoded = facebookURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "remet://facebook?url=\(encoded)") else {
+            completeRequest()
+            return
+        }
+
+        var responder: UIResponder? = self
+        while responder != nil {
+            if let application = responder as? UIApplication {
+                application.open(url, options: [:]) { [weak self] _ in
+                    self?.completeRequest()
+                }
+                return
+            }
+            responder = responder?.next
         }
 
         completeRequest()

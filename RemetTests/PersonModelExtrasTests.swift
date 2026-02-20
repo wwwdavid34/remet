@@ -248,4 +248,25 @@ final class PersonModelExtrasTests: XCTestCase {
         try ctx.save()
         XCTAssertEqual(person.recentNotes.count, 5)
     }
+
+    // MARK: - facebookURL
+
+    @MainActor
+    func testFacebookURL_defaultsNil() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+        let person = TestHelpers.makePerson(name: "Alice", in: ctx)
+        try ctx.save()
+        XCTAssertNil(person.facebookURL)
+    }
+
+    @MainActor
+    func testFacebookURL_canBeSetAndRead() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+        let person = TestHelpers.makePerson(name: "Alice", in: ctx)
+        person.facebookURL = "https://www.facebook.com/alice"
+        try ctx.save()
+        XCTAssertEqual(person.facebookURL, "https://www.facebook.com/alice")
+    }
 }

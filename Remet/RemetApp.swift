@@ -5,6 +5,7 @@ import SwiftData
 class AppState {
     var sharedImageURL: URL?
     var shouldProcessSharedImage = false
+    var sharedFacebookURL: URL?
 }
 
 @main
@@ -100,16 +101,20 @@ struct RemetApp: App {
     }
 
     private func handleIncomingURL(_ url: URL) {
-        // Handle remet://import?url=<encoded_url>
         guard url.scheme == "remet",
-              url.host == "import",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let urlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,
-              let imageURL = URL(string: urlParam) else {
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             return
         }
 
-        appState.sharedImageURL = imageURL
-        appState.shouldProcessSharedImage = true
+        if url.host == "import",
+           let urlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           let imageURL = URL(string: urlParam) {
+            appState.sharedImageURL = imageURL
+            appState.shouldProcessSharedImage = true
+        } else if url.host == "facebook",
+                  let urlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,
+                  let facebookURL = URL(string: urlParam) {
+            appState.sharedFacebookURL = facebookURL
+        }
     }
 }
