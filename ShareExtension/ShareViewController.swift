@@ -85,11 +85,26 @@ class ShareViewController: UIViewController {
         }
 
         DispatchQueue.main.async { [weak self] in
-            // Ask the host app to open our URL scheme, which launches Remet
-            self?.extensionContext?.open(url) { _ in
+            self?.openURL(url)
+
+            // Give the system a moment to process the URL open before tearing down
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self?.completeRequest()
             }
         }
+    }
+
+    /// Open a URL via the ObjC runtime, bypassing Swift's extension availability restrictions.
+    private func openURL(_ url: URL) {
+        guard let appClass = NSClassFromString("UIApplication") else { return }
+
+        // Cast to AnyObject to use ObjC dynamic dispatch for class methods
+        let cls: AnyObject = appClass
+        guard let shared = cls.perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue() else { return }
+
+        let openSel = NSSelectorFromString("openURL:")
+        guard (shared as AnyObject).responds(to: openSel) else { return }
+        _ = (shared as AnyObject).perform(openSel, with: url)
     }
 
     private func completeRequest() {
