@@ -132,9 +132,9 @@ struct EncounterReviewView: View {
                                     }
                                 }
                         )
-                        .highPriorityGesture(
+                        .simultaneousGesture(
                             zoomScale > 1.0 ?
-                            DragGesture()
+                            DragGesture(minimumDistance: 1)
                                 .onChanged { value in
                                     zoomOffset = CGSize(
                                         width: lastDragOffset.width + value.translation.width,
