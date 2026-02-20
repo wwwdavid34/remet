@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 @Observable
 class AppState {
@@ -87,6 +88,8 @@ struct RemetApp: App {
                 FaceEmbeddingService.shared.preload()
                 // Record first launch for grace period tracking
                 AppSettings.shared.recordFirstLaunchIfNeeded()
+                // Request notification permission (needed for Share Extension import prompts)
+                let _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
                 // Load subscription products
                 await subscriptionManager.loadProducts()
 

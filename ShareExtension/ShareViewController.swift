@@ -1,5 +1,6 @@
 import UIKit
 import UniformTypeIdentifiers
+import UserNotifications
 
 class ShareViewController: UIViewController {
 
@@ -28,7 +29,6 @@ class ShareViewController: UIViewController {
                     var savedURL: URL?
 
                     if let url = item as? URL, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                        // File URL from Photos — load and copy to shared container
                         savedURL = self.saveImageToSharedContainer(image)
                     } else if let image = item as? UIImage {
                         savedURL = self.saveImageToSharedContainer(image)
@@ -38,8 +38,9 @@ class ShareViewController: UIViewController {
 
                     if let savedURL {
                         self.flagPendingImport(savedURL)
+                        self.scheduleNotification()
                     }
-                    self.openContainingAppAndComplete()
+                    self.completeRequest()
                 }
                 return
             }
@@ -70,7 +71,6 @@ class ShareViewController: UIViewController {
         }
     }
 
-    /// Store the shared image path in shared UserDefaults so the main app picks it up on foreground.
     private func flagPendingImport(_ imageURL: URL) {
         guard let defaults = UserDefaults(suiteName: appGroupID) else { return }
         var pending = defaults.stringArray(forKey: "pendingSharedImages") ?? []
@@ -78,33 +78,27 @@ class ShareViewController: UIViewController {
         defaults.set(pending, forKey: "pendingSharedImages")
     }
 
-    private func openContainingAppAndComplete() {
-        guard let url = URL(string: "remet://import") else {
-            completeRequest()
-            return
+    private func scheduleNotification() {
+        let center = UNUserNotificationCenter.current()
+
+        // Request permission if not yet granted (main app should also request during onboarding)
+        center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
+            guard granted else { return }
+
+            let content = UNMutableNotificationContent()
+            content.title = "Photo Ready to Import"
+            content.body = "Tap to open Remet and process the shared photo."
+            content.sound = .default
+
+            // Deliver in 1 second (minimum for time-interval trigger)
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            let request = UNNotificationRequest(
+                identifier: "com.remet.shared-import-\(UUID().uuidString)",
+                content: content,
+                trigger: trigger
+            )
+            center.add(request)
         }
-
-        DispatchQueue.main.async { [weak self] in
-            self?.openURL(url)
-
-            // Give the system a moment to process the URL open before tearing down
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self?.completeRequest()
-            }
-        }
-    }
-
-    /// Open a URL via the ObjC runtime, bypassing Swift's extension availability restrictions.
-    private func openURL(_ url: URL) {
-        guard let appClass = NSClassFromString("UIApplication") else { return }
-
-        // Cast to AnyObject to use ObjC dynamic dispatch for class methods
-        let cls: AnyObject = appClass
-        guard let shared = cls.perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue() else { return }
-
-        let openSel = NSSelectorFromString("openURL:")
-        guard (shared as AnyObject).responds(to: openSel) else { return }
-        _ = (shared as AnyObject).perform(openSel, with: url)
     }
 
     private func completeRequest() {
