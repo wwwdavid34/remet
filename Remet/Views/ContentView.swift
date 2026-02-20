@@ -5,12 +5,14 @@ import SwiftData
 /// Tapping (+) shows a Calculator-style glass popup menu above the tab bar.
 struct ContentView: View {
     @Query private var people: [Person]
+    @Environment(AppState.self) private var appState: AppState?
 
     @State private var selectedTab = 0
     @State private var previousTab = 0
     @State private var showAddActions = false
     @State private var showQuickCapture = false
     @State private var showPhotoImport = false
+    @State private var showFacebookURLPicker = false
 
     var body: some View {
         ZStack {
@@ -23,6 +25,32 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showPhotoImport) {
             PhotoImportView()
+        }
+        .sheet(isPresented: $showFacebookURLPicker) {
+            if let url = appState?.pendingFacebookURL {
+                FacebookURLPickerView(facebookURL: url)
+                    .onDisappear {
+                        appState?.pendingFacebookURL = nil
+                    }
+            }
+        }
+        .onAppear {
+            if appState?.shouldProcessSharedImages == true {
+                showPhotoImport = true
+            }
+            if appState?.pendingFacebookURL != nil {
+                showFacebookURLPicker = true
+            }
+        }
+        .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
+            if shouldProcess == true {
+                showPhotoImport = true
+            }
+        }
+        .onChange(of: appState?.pendingFacebookURL) { _, newURL in
+            if newURL != nil {
+                showFacebookURLPicker = true
+            }
         }
     }
 

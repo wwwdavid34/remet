@@ -27,6 +27,7 @@ final class Person {
     // Social links
     var linkedIn: String?
     var twitter: String?
+    var facebookURL: String?
 
     // Contacts integration
     var contactIdentifier: String?  // CNContact.identifier for linked contact

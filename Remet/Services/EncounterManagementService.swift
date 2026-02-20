@@ -272,6 +272,7 @@ struct EncounterManagementService {
             if primary.birthday == nil { primary.birthday = secondary.birthday }
             if primary.linkedIn == nil { primary.linkedIn = secondary.linkedIn }
             if primary.twitter == nil { primary.twitter = secondary.twitter }
+            if primary.facebookURL == nil { primary.facebookURL = secondary.facebookURL }
             if primary.howWeMet == nil { primary.howWeMet = secondary.howWeMet }
             if primary.contactIdentifier == nil { primary.contactIdentifier = secondary.contactIdentifier }
 

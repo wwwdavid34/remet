@@ -627,6 +627,20 @@ struct PersonDetailView: View {
                 if let phone = person.phone {
                     DetailInfoRow(icon: "phone", label: String(localized: "Phone"), value: phone)
                 }
+                if let facebookURL = person.facebookURL, !facebookURL.isEmpty,
+                   let url = URL(string: facebookURL) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "link")
+                            .foregroundStyle(AppColors.teal)
+                            .frame(width: 20)
+                        Text(String(localized: "Facebook"))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Link(String(localized: "View Profile"), destination: url)
+                            .font(.subheadline)
+                    }
+                }
                 if let notes = person.notes, !notes.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(localized: "Notes"))
