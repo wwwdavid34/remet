@@ -334,13 +334,21 @@ struct ContactPickerView: UIViewControllerRepresentable {
     let onContactSelected: (CNContact) -> Void
     let onDismiss: () -> Void
 
-    func makeUIViewController(context: Context) -> CNContactPickerViewController {
-        let picker = CNContactPickerViewController()
-        picker.delegate = context.coordinator
-        return picker
+    // Use a plain container so CNContactPickerViewController's self-dismissal
+    // only removes itself from the container, not the entire navigation stack.
+    func makeUIViewController(context: Context) -> UIViewController {
+        let containerVC = UIViewController()
+        containerVC.view.backgroundColor = .clear
+        return containerVC
     }
 
-    func updateUIViewController(_ uiViewController: CNContactPickerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        // Only present the picker once; guard prevents re-presentation on SwiftUI view updates.
+        guard uiViewController.presentedViewController == nil else { return }
+        let picker = CNContactPickerViewController()
+        picker.delegate = context.coordinator
+        uiViewController.present(picker, animated: true)
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -355,14 +363,12 @@ struct ContactPickerView: UIViewControllerRepresentable {
 
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
             parent.onContactSelected(contact)
-            // CNContactPickerViewController dismisses itself, so just update SwiftUI state
             DispatchQueue.main.async {
                 self.parent.onDismiss()
             }
         }
 
         func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-            // CNContactPickerViewController dismisses itself
             DispatchQueue.main.async {
                 self.parent.onDismiss()
             }
