@@ -166,6 +166,31 @@ struct EncounterReviewView: View {
                             }
                         }
                 }
+
+                // Reset zoom button
+                if zoomScale > 1.0 {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    zoomScale = 1.0
+                                    lastZoomScale = 1.0
+                                    zoomOffset = .zero
+                                    lastDragOffset = .zero
+                                }
+                            } label: {
+                                Image(systemName: "arrow.down.right.and.arrow.up.left")
+                                    .font(.caption)
+                                    .padding(6)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(Circle())
+                            }
+                            .padding(8)
+                        }
+                        Spacer()
+                    }
+                }
             }
         }
         .aspectRatio(scannedPhoto.image?.size ?? CGSize(width: 1, height: 1), contentMode: .fit)
