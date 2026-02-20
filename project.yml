@@ -14,12 +14,14 @@ settings:
     INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
     INFOPLIST_KEY_UILaunchScreen_Generation: YES
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
 
 targets:
   Remet:
     type: application
     platform: iOS
+    scheme:
+      testTargets: []
     sources:
       - path: Remet
         excludes:
@@ -57,18 +59,21 @@ targets:
               - "remet"
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         UISupportedInterfaceOrientations~ipad:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        CFBundleShortVersionString: "1.1.0"
         CFBundleLocalizations:
           - en
           - zh-Hans
           - zh-Hant
           - ja
+        UIBackgroundModes:
+          - remote-notification
+    dependencies:
+      - target: ShareExtension
     entitlements:
       path: Remet/Remet.entitlements
       properties:
@@ -77,32 +82,35 @@ targets:
           - iCloud.com.remet.Remet
         com.apple.developer.icloud-services:
           - CloudKit
+        com.apple.security.application-groups:
+          - group.com.remet.shared
 
-  # ShareExtension:
-  #   type: app-extension
-  #   platform: iOS
-  #   sources:
-  #     - path: ShareExtension
-  #       excludes:
-  #         - "**/.DS_Store"
-  #   settings:
-  #     base:
-  #       PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
-  #       DEVELOPMENT_TEAM: ""
-  #       CODE_SIGN_STYLE: Automatic
-  #       SKIP_INSTALL: YES
-  #   info:
-  #     path: ShareExtension/Info.plist
-  #     properties:
-  #       CFBundleDisplayName: "Remet"
-  #       NSExtension:
-  #         NSExtensionAttributes:
-  #           NSExtensionActivationRule:
-  #             NSExtensionActivationSupportsImageWithMaxCount: 10
-  #         NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
-  #         NSExtensionPointIdentifier: "com.apple.share-services"
-  #   entitlements:
-  #     path: ShareExtension/ShareExtension.entitlements
-  #     properties:
-  #       com.apple.security.application-groups:
-  #         - group.com.remet.shared
+  ShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShareExtension
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: ShareExtension/Info.plist
+      properties:
+        CFBundleDisplayName: "Remet"
+        CFBundleShortVersionString: "1.1.0"
+        NSExtension:
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsImageWithMaxCount: 10
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
+          NSExtensionPointIdentifier: "com.apple.share-services"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+    entitlements:
+      path: ShareExtension/ShareExtension.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.remet.shared

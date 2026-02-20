@@ -123,39 +123,44 @@ struct PhotoImportView: View {
             .sheet(isPresented: $showScanner) {
                 EncounterScannerView()
             }
-            .onChange(of: appState?.shouldProcessSharedImage) { _, shouldProcess in
-                if shouldProcess == true, let imageURL = appState?.sharedImageURL {
-                    Task {
-                        await processSharedImage(from: imageURL)
-                    }
-                }
-            }
             .onAppear {
-                // Check for shared image on appear
-                if appState?.shouldProcessSharedImage == true, let imageURL = appState?.sharedImageURL {
-                    Task {
-                        await processSharedImage(from: imageURL)
-                    }
+                processAnyPendingSharedImages()
+            }
+            .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
+                if shouldProcess == true {
+                    processAnyPendingSharedImages()
                 }
             }
         }
     }
 
-    private func processSharedImage(from url: URL) async {
-        defer {
-            appState?.shouldProcessSharedImage = false
-            appState?.sharedImageURL = nil
-            // Clean up the shared file
-            try? FileManager.default.removeItem(at: url)
+    private func processAnyPendingSharedImages() {
+        guard let paths = appState?.pendingSharedImagePaths, !paths.isEmpty else { return }
+
+        // Take the first pending image; remaining will be processed after review
+        let path = paths[0]
+
+        appState?.pendingSharedImagePaths = Array(paths.dropFirst())
+        if appState?.pendingSharedImagePaths.isEmpty == true {
+            appState?.shouldProcessSharedImages = false
         }
 
-        guard let data = try? Data(contentsOf: url),
-              let image = UIImage(data: data) else {
-            viewModel.errorMessage = "Could not load shared image"
-            return
-        }
+        let url = URL(fileURLWithPath: path)
 
-        await viewModel.processPickedPhoto(image: image, assetIdentifier: nil, modelContext: modelContext)
+        Task {
+            defer {
+                // Clean up the shared file
+                try? FileManager.default.removeItem(at: url)
+            }
+
+            guard let data = try? Data(contentsOf: url),
+                  let image = UIImage(data: data) else {
+                viewModel.errorMessage = "Could not load shared image"
+                return
+            }
+
+            await viewModel.processPickedPhoto(image: image, assetIdentifier: nil, modelContext: modelContext)
+        }
     }
 }
 
