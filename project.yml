@@ -70,6 +70,8 @@ targets:
           - ja
         UIBackgroundModes:
           - remote-notification
+    dependencies:
+      - target: ShareExtension
     entitlements:
       path: Remet/Remet.entitlements
       properties:

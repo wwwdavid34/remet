@@ -65,6 +65,7 @@
 		94EECE7C4AEB9D1BACA898DF /* OnboardingLiveScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A993EA76D2CB5F07559084 /* OnboardingLiveScanView.swift */; };
 		98E1B40F8CB6DB617C143CE6 /* SpacedRepetitionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE8B109DE6A181FD8C19B88 /* SpacedRepetitionData.swift */; };
 		9CA2AD3D8EEFA24027A636DF /* FaceDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */; };
+		9E860B5FF507AF647DB7862D /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9A4B26E693892BC1F25FEB7 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A2DB631ACFFE916BF7DA3A95 /* ImportedPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188EBF64EBB1BF37D37F181E /* ImportedPhoto.swift */; };
 		A4A2C3B109F65D52993277DF /* FaceMatchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */; };
 		A59B8432A6ACE31EF1D92711 /* InteractionNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B86348856F51C62121EC088 /* InteractionNote.swift */; };
@@ -94,6 +95,30 @@
 		ED3B8921E0936101437EC7A1 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E55E11E0F450C6CA3FB079 /* FloatingTabBar.swift */; };
 		FB3581F4CC2B608AFDA46857 /* Encounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8576CD80F811E34E5C08FA /* Encounter.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DA620B1C12ADFEF8684C3AFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C7ADC13AF398C110B64637 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B671A7987202F63BC07022B;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1F0CF2669C703262D6060A82 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				9E860B5FF507AF647DB7862D /* ShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
@@ -482,10 +507,12 @@
 			buildPhases = (
 				E333A61927ED57CFDECC0EF0 /* Sources */,
 				421979BFF2B06162E7BE7CBD /* Resources */,
+				1F0CF2669C703262D6060A82 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				25304D782778EC4AC0BF6AA5 /* PBXTargetDependency */,
 			);
 			name = Remet;
 			packageProductDependencies = (
@@ -665,6 +692,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		25304D782778EC4AC0BF6AA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B671A7987202F63BC07022B /* ShareExtension */;
+			targetProxy = DA620B1C12ADFEF8684C3AFA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9B5CB255B36B6781BD2526A1 /* Debug */ = {
