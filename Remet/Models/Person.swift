@@ -30,6 +30,7 @@ final class Person {
 
     // Contacts integration
     var contactIdentifier: String?  // CNContact.identifier for linked contact
+    var contactPhotoSourceEmbeddingId: UUID?  // Tracks which embedding was last exported as contact photo
 
     // Profile photo selection
     var profileEmbeddingId: UUID?
