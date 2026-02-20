@@ -681,6 +681,10 @@ struct EncounterDetailView: View {
                     if hasChanges {
                         await MainActor.run {
                             photo.faceBoundingBoxes = updatedBoxes
+                            // Link person to encounter if not already
+                            if !(encounter.people ?? []).contains(where: { $0.id == person.id }) {
+                                encounter.people = (encounter.people ?? []) + [person]
+                            }
                         }
                     }
                 }
