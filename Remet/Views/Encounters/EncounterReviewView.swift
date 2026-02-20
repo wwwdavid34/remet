@@ -594,7 +594,9 @@ struct EncounterReviewView: View {
                 let imageX = (tapLocation.x - offsetX) / scale
                 let imageY = (tapLocation.y - offsetY) / scale
 
-                let cropSize = min(imageSize.width, imageSize.height) * 0.4
+                // Smaller crop for precision; shrinks further when zoomed in
+                let baseCropFraction: CGFloat = 0.2
+                let cropSize = min(imageSize.width, imageSize.height) * baseCropFraction / zoomScale
                 let cropRect = CGRect(
                     x: max(0, imageX - cropSize / 2),
                     y: max(0, imageY - cropSize / 2),
@@ -609,7 +611,16 @@ struct EncounterReviewView: View {
                     }
                     return
                 }
-                let croppedImage = UIImage(cgImage: cgImage)
+
+                // Upscale cropped region 3× for more confident face detection
+                let upscaleSize = CGSize(
+                    width: CGFloat(cgImage.width) * 3.0,
+                    height: CGFloat(cgImage.height) * 3.0
+                )
+                let renderer = UIGraphicsImageRenderer(size: upscaleSize)
+                let croppedImage = renderer.image { _ in
+                    UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: upscaleSize))
+                }
 
                 let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
 
