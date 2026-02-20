@@ -227,6 +227,25 @@ final class PersonModelExtrasTests: XCTestCase {
         XCTAssertEqual(person.profileEmbedding?.id, person.embeddings?.first?.id)
     }
 
+    // MARK: - Contact Photo Export (issue #2)
+
+    /// Regression test for issue #2: a person with a linked contact and a
+    /// profile embedding must have accessible faceCropData for photo export.
+    @MainActor
+    func testLinkedPerson_profileDataAvailableForExport() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+        let person = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        person.contactIdentifier = "test-contact-id"
+        try ctx.save()
+
+        // Linked person with embedding should have exportable data
+        XCTAssertNotNil(person.contactIdentifier)
+        XCTAssertNotNil(person.profileEmbedding)
+        XCTAssertNotNil(person.profileEmbedding?.faceCropData,
+                        "Linked person must have accessible faceCropData for contact photo export")
+    }
+
     // MARK: - recentNotes
 
     @MainActor

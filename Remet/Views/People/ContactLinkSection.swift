@@ -18,10 +18,43 @@ struct ContactLinkSection: View {
     @State private var showPhotoExportSuccess = false
     @State private var exportError: String?
 
+    /// Whether the contact photo differs from the current Remet profile
+    private var shouldShowExportButton: Bool {
+        guard person.profileEmbedding != nil else { return false }
+        return person.contactPhotoSourceEmbeddingId != person.profileEmbedding?.id
+    }
+
     var body: some View {
         Group {
             if let contact = linkedContact {
                 linkedContactView(contact)
+
+                if shouldShowExportButton {
+                    Button {
+                        showPhotoExportConfirmation = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "photo.badge.arrow.down")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.teal)
+
+                            Text("Set as Contact Photo")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.textPrimary)
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(AppColors.textMuted)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(AppColors.cardBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                }
             } else {
                 notLinkedView
             }
@@ -166,7 +199,7 @@ struct ContactLinkSection: View {
                 Label("Sync from Contact", systemImage: "arrow.triangle.2.circlepath")
             }
 
-            if person.profileEmbedding != nil {
+            if shouldShowExportButton {
                 Button {
                     showPhotoExportConfirmation = true
                 } label: {
@@ -260,6 +293,7 @@ struct ContactLinkSection: View {
 
     private func unlinkContact() {
         person.contactIdentifier = nil
+        person.contactPhotoSourceEmbeddingId = nil
         linkedContact = nil
     }
 
@@ -280,6 +314,7 @@ struct ContactLinkSection: View {
                     imageData: embedding.faceCropData
                 )
                 await MainActor.run {
+                    person.contactPhotoSourceEmbeddingId = person.profileEmbedding?.id
                     showPhotoExportSuccess = true
                     loadLinkedContact() // Refresh to show new thumbnail
                 }
