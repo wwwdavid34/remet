@@ -241,6 +241,7 @@ struct SettingsView: View {
             Button {
                 settings.hasCompletedOnboarding = false
                 try? Tips.resetDatastore()
+                RemetApp.configureTipKit()
             } label: {
                 HStack {
                     Label("Reset Onboarding", systemImage: "arrow.counterclockwise")

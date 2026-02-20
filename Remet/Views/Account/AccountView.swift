@@ -54,6 +54,7 @@ struct AccountView: View {
                         DemoDataService.clearAllData(modelContext: modelContext)
                         AppSettings.shared.hasCompletedOnboarding = false
                         try? Tips.resetDatastore()
+                        RemetApp.configureTipKit()
                         showDeleteConfirmation = false
                     },
                     onCancel: {
@@ -484,6 +485,7 @@ struct AccountView: View {
             Button {
                 settings.hasCompletedOnboarding = false
                 try? Tips.resetDatastore()
+                RemetApp.configureTipKit()
             } label: {
                 HStack {
                     Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
@@ -519,6 +521,7 @@ struct AccountView: View {
             Button {
                 DemoDataService.clearAllData(modelContext: modelContext)
                 try? Tips.resetDatastore()
+                RemetApp.configureTipKit()
             } label: {
                 Label("Clear All Data", systemImage: "trash")
             }

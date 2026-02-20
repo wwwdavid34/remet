@@ -17,6 +17,14 @@ struct RemetApp: App {
     @State private var showSplash = true
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        Self.configureTipKit()
+    }
+
+    static func configureTipKit() {
+        try? Tips.configure([.displayFrequency(.immediate)])
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Person.self,
@@ -91,8 +99,6 @@ struct RemetApp: App {
                 AppSettings.shared.recordFirstLaunchIfNeeded()
                 // Request notification permission (needed for Share Extension import prompts)
                 let _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
-                // Configure TipKit
-                try? Tips.configure([.displayFrequency(.immediate)])
                 // Load subscription products
                 await subscriptionManager.loadProducts()
 
