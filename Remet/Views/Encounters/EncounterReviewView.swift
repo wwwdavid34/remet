@@ -154,9 +154,12 @@ struct EncounterReviewView: View {
                         }
                         .onTapGesture { location in
                             if locateFaceMode {
+                                // Invert center-anchor scale + offset to get original view coordinates
+                                let cx = geometry.size.width / 2
+                                let cy = geometry.size.height / 2
                                 let adjustedLocation = CGPoint(
-                                    x: (location.x - zoomOffset.width) / zoomScale,
-                                    y: (location.y - zoomOffset.height) / zoomScale
+                                    x: (location.x - zoomOffset.width - cx) / zoomScale + cx,
+                                    y: (location.y - zoomOffset.height - cy) / zoomScale + cy
                                 )
                                 handleLocateFaceTap(
                                     at: adjustedLocation,
