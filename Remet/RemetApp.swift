@@ -22,16 +22,7 @@ struct RemetApp: App {
     }
 
     static func configureTipKit() {
-        do {
-            try Tips.configure([.displayFrequency(.immediate)])
-            print("=== TipKit configured successfully ===")
-        } catch {
-            print("=== TipKit configure error: \(error) ===")
-        }
-        #if DEBUG
-        Tips.showAllTipsForTesting()
-        print("=== TipKit: showAllTipsForTesting called ===")
-        #endif
+        try? Tips.configure([.displayFrequency(.immediate)])
     }
 
     var sharedModelContainer: ModelContainer = {

@@ -86,6 +86,11 @@ struct HomeView: View {
                             .font(.headline)
                             .padding(.horizontal)
 
+                        TipView(newFaceTip)
+                            .padding(.horizontal)
+                        TipView(practiceTip)
+                            .padding(.horizontal)
+
                         HStack(spacing: 12) {
                             HomeActionButton(
                                 title: "New Face",
@@ -96,7 +101,6 @@ struct HomeView: View {
                                 NewFaceTip().invalidate(reason: .actionPerformed)
                                 showQuickCapture = true
                             }
-                            .popoverTip(newFaceTip)
 
                             HomeActionButton(
                                 title: "Practice",
@@ -112,7 +116,6 @@ struct HomeView: View {
                                     showPractice = true
                                 }
                             }
-                            .popoverTip(practiceTip)
                         }
                         .padding(.horizontal)
                     }

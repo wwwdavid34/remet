@@ -104,6 +104,9 @@ struct ScanTabView: View {
     @ViewBuilder
     private var scanOptionsSection: some View {
         VStack(spacing: 16) {
+            TipView(liveScanTip)
+            TipView(matchFromPhotoTip)
+
             // Live Scan (Free)
             Button {
                 LiveScanTip().invalidate(reason: .actionPerformed)
@@ -140,7 +143,6 @@ struct ScanTabView: View {
                 .tintedGlassBackground(AppColors.teal, tintOpacity: 0.05, cornerRadius: 16)
             }
             .buttonStyle(.plain)
-            .popoverTip(liveScanTip)
 
             // Photo Match (Premium or free photo import)
             Button {
@@ -192,7 +194,6 @@ struct ScanTabView: View {
                 )
             }
             .buttonStyle(.plain)
-            .popoverTip(matchFromPhotoTip)
         }
     }
 

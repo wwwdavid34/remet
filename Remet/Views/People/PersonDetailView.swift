@@ -39,6 +39,9 @@ struct PersonDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                TipView(favoriteTip)
+                TipView(moreActionsTip)
+
                 // Hero section with photo, name, and quick actions
                 heroSection
 
@@ -93,7 +96,6 @@ struct PersonDetailView: View {
                         Image(systemName: person.isFavorite ? "star.fill" : "star")
                             .foregroundStyle(person.isFavorite ? .yellow : .secondary)
                     }
-                    .popoverTip(favoriteTip)
 
                     Menu {
                         Button {
@@ -123,7 +125,6 @@ struct PersonDetailView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
-                    .popoverTip(moreActionsTip)
                 }
             }
         }

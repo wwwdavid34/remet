@@ -171,7 +171,9 @@ struct ContentView: View {
             }
         }
         .frame(width: 230)
-        .popoverTip(addEncounterTip)
+        .safeAreaInset(edge: .top) {
+            TipView(addEncounterTip)
+        }
     }
 
     private func menuRow(

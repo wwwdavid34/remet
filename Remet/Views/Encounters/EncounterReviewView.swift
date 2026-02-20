@@ -199,7 +199,6 @@ struct EncounterReviewView: View {
                         }
                         Spacer()
                     }
-                        .popoverTip(faceBoxTip)
                 }
             }
         }
@@ -210,6 +209,8 @@ struct EncounterReviewView: View {
     @ViewBuilder
     private var facesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
+            TipView(faceBoxTip)
+            TipView(redetectTip)
             HStack {
                 Text("People in this photo")
                     .font(.headline)
@@ -237,7 +238,6 @@ struct EncounterReviewView: View {
                         .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
                     }
                     .disabled(isLocatingFace)
-                    .popoverTip(redetectTip)
                 }
             }
 
