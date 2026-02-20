@@ -106,7 +106,7 @@ struct ScanTabView: View {
         VStack(spacing: 16) {
             // Live Scan (Free)
             Button {
-                Task { await LiveScanTip.tapped.donate() }
+                LiveScanTip().invalidate(reason: .actionPerformed)
                 showMemoryScan = true
             } label: {
                 HStack(spacing: 16) {
@@ -144,7 +144,7 @@ struct ScanTabView: View {
 
             // Photo Match (Premium or free photo import)
             Button {
-                Task { await MatchFromPhotoTip.tapped.donate() }
+                MatchFromPhotoTip().invalidate(reason: .actionPerformed)
                 if subscriptionManager.isPremium {
                     showImageMatch = true
                 } else {

@@ -152,7 +152,7 @@ struct ContentView: View {
     private var menuContent: some View {
         VStack(spacing: 0) {
             menuRow(icon: "camera.fill", label: String(localized: "Take Photo")) {
-                Task { await AddEncounterTip.tapped.donate() }
+                AddEncounterTip().invalidate(reason: .actionPerformed)
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showQuickCapture = true
@@ -163,7 +163,7 @@ struct ContentView: View {
                 .padding(.leading, 52)
 
             menuRow(icon: "photo.on.rectangle", label: String(localized: "Import from Library")) {
-                Task { await AddEncounterTip.tapped.donate() }
+                AddEncounterTip().invalidate(reason: .actionPerformed)
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showPhotoImport = true

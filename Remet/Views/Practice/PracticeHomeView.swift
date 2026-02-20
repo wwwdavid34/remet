@@ -256,7 +256,7 @@ struct PracticeHomeView: View {
                                     isDisabled: false,
                                     isRecommended: true
                                 ) {
-                                    Task { await SpacedReviewTip.tapped.donate() }
+                                    SpacedReviewTip().invalidate(reason: .actionPerformed)
                                     selectedMode = .spaced
                                     showingQuiz = true
                                 }
@@ -295,7 +295,7 @@ struct PracticeHomeView: View {
                             .padding(.horizontal)
 
                             Button {
-                                Task { await SetFiltersTip.tapped.donate() }
+                                SetFiltersTip().invalidate(reason: .actionPerformed)
                                 showCustomFilters = true
                             } label: {
                                 HStack(spacing: 14) {

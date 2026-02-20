@@ -108,7 +108,7 @@ struct EncounterReviewView: View {
                                     viewSize: geometry.size
                                 )
                                 .onTapGesture {
-                                    Task { await FaceBoxTip.tapped.donate() }
+                                    FaceBoxTip().invalidate(reason: .actionPerformed)
                                     if !locateFaceMode {
                                         selectedBoxIndex = index
                                         showPersonPicker = true
@@ -218,7 +218,7 @@ struct EncounterReviewView: View {
                 // Missing faces button
                 if !isProcessing {
                     Button {
-                        Task { await RedetectTip.tapped.donate() }
+                        RedetectTip().invalidate(reason: .actionPerformed)
                         locateFaceMode.toggle()
                         if !locateFaceMode {
                             locateFaceError = nil

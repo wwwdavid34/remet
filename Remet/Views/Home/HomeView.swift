@@ -93,7 +93,7 @@ struct HomeView: View {
                                 icon: "person.badge.plus",
                                 gradient: [AppColors.coral, AppColors.coral.opacity(0.7)]
                             ) {
-                                Task { await NewFaceTip.tapped.donate() }
+                                NewFaceTip().invalidate(reason: .actionPerformed)
                                 showQuickCapture = true
                             }
                             .popoverTip(newFaceTip)
@@ -105,7 +105,7 @@ struct HomeView: View {
                                 gradient: [AppColors.teal, AppColors.teal.opacity(0.7)],
                                 isLocked: peopleWithFaces.isEmpty
                             ) {
-                                Task { await PracticeTip.tapped.donate() }
+                                PracticeTip().invalidate(reason: .actionPerformed)
                                 if peopleWithFaces.isEmpty {
                                     showQuickCapture = true
                                 } else {

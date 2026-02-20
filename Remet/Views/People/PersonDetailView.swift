@@ -85,7 +85,7 @@ struct PersonDetailView: View {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 16) {
                     Button {
-                        Task { await FavoriteTip.tapped.donate() }
+                        FavoriteTip().invalidate(reason: .actionPerformed)
                         withAnimation(.bouncy(duration: 0.3)) {
                             person.isFavorite.toggle()
                         }
@@ -97,14 +97,14 @@ struct PersonDetailView: View {
 
                     Menu {
                         Button {
-                            Task { await MoreActionsTip.tapped.donate() }
+                            MoreActionsTip().invalidate(reason: .actionPerformed)
                             showEditSheet = true
                         } label: {
                             Label(String(localized: "Edit Details"), systemImage: "pencil")
                         }
 
                         Button {
-                            Task { await MoreActionsTip.tapped.donate() }
+                            MoreActionsTip().invalidate(reason: .actionPerformed)
                             showMergeWithPicker = true
                         } label: {
                             Label(String(localized: "Merge with..."), systemImage: "arrow.triangle.merge")
@@ -114,7 +114,7 @@ struct PersonDetailView: View {
                             Divider()
 
                             Button(role: .destructive) {
-                                Task { await MoreActionsTip.tapped.donate() }
+                                MoreActionsTip().invalidate(reason: .actionPerformed)
                                 showDeleteConfirmation = true
                             } label: {
                                 Label(String(localized: "Delete Person"), systemImage: "trash")
