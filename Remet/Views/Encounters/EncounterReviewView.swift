@@ -58,6 +58,7 @@ struct EncounterReviewView: View {
                 }
                 .padding()
             }
+            .scrollDisabled(zoomScale > 1.0)
             .navigationTitle("Review Encounter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -115,7 +116,7 @@ struct EncounterReviewView: View {
                         .drawingGroup() // Flatten to single GPU layer for smooth zoom
                         .scaleEffect(zoomScale)
                         .offset(zoomOffset)
-                        .gesture(
+                        .simultaneousGesture(
                             MagnifyGesture()
                                 .onChanged { value in
                                     let newScale = lastZoomScale * value.magnification
@@ -131,7 +132,7 @@ struct EncounterReviewView: View {
                                     }
                                 }
                         )
-                        .gesture(
+                        .highPriorityGesture(
                             zoomScale > 1.0 ?
                             DragGesture()
                                 .onChanged { value in
