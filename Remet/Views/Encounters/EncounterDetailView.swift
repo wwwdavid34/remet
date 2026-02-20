@@ -56,6 +56,9 @@ struct EncounterDetailView: View {
     @State private var selectedTags: [Tag] = []
     @State private var tagRefreshId = UUID()
 
+    // Share photo state
+    @State private var showShareSheet = false
+
     // Delete encounter state
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteEncounterConfirmation = false
@@ -63,6 +66,17 @@ struct EncounterDetailView: View {
     // Check if this encounter has multiple photos
     private var hasMultiplePhotos: Bool {
         !(encounter.photos ?? []).isEmpty
+    }
+
+    /// Current visible photo as UIImage (carousel photo or legacy single photo)
+    private var currentPhotoImage: UIImage? {
+        if hasMultiplePhotos {
+            let photos = encounter.sortedPhotos
+            guard selectedPhotoIndex < photos.count else { return nil }
+            return UIImage(data: photos[selectedPhotoIndex].imageData)
+        } else {
+            return encounter.displayImageData.flatMap { UIImage(data: $0) }
+        }
     }
 
     var body: some View {
@@ -98,6 +112,14 @@ struct EncounterDetailView: View {
                             showEditView = true
                         } label: {
                             Label(String(localized: "Edit Details"), systemImage: "pencil")
+                        }
+
+                        if currentPhotoImage != nil {
+                            Button {
+                                showShareSheet = true
+                            } label: {
+                                Label(String(localized: "Share Photo"), systemImage: "square.and.arrow.up")
+                            }
                         }
 
                         Button {
@@ -207,6 +229,11 @@ struct EncounterDetailView: View {
             }
         } message: {
             Text("This encounter and its photos will be permanently deleted.")
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let image = currentPhotoImage {
+                ShareSheet(activityItems: [image])
+            }
         }
     }
 
@@ -1849,6 +1876,7 @@ struct FullPhotoView: View {
     let onSelectPerson: (Person) -> Void
 
     @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
+    @State private var showShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -1896,17 +1924,31 @@ struct FullPhotoView: View {
                 }
 
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showFaceBoxes.toggle()
+                    HStack(spacing: 16) {
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
                         }
-                    } label: {
-                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        .foregroundStyle(.white)
+
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showFaceBoxes.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        }
+                        .foregroundStyle(.white)
                     }
-                    .foregroundStyle(.white)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showShareSheet) {
+                if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
+                    ShareSheet(activityItems: [image])
+                }
+            }
         }
     }
 }
@@ -1920,6 +1962,7 @@ struct MultiPhotoFullView: View {
 
     @State private var currentIndex: Int = 0
     @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
+    @State private var showShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -1949,17 +1992,33 @@ struct MultiPhotoFullView: View {
                 }
 
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showFaceBoxes.toggle()
+                    HStack(spacing: 16) {
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
                         }
-                    } label: {
-                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        .foregroundStyle(.white)
+
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showFaceBoxes.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        }
+                        .foregroundStyle(.white)
                     }
-                    .foregroundStyle(.white)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showShareSheet) {
+                let photos = encounter.sortedPhotos
+                if currentIndex < photos.count,
+                   let image = UIImage(data: photos[currentIndex].imageData) {
+                    ShareSheet(activityItems: [image])
+                }
+            }
         }
         .onAppear {
             currentIndex = initialIndex
