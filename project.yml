@@ -90,22 +90,23 @@ targets:
       - path: ShareExtension
         excludes:
           - "**/.DS_Store"
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
-        DEVELOPMENT_TEAM: ""
-        CODE_SIGN_STYLE: Automatic
-        SKIP_INSTALL: YES
     info:
       path: ShareExtension/Info.plist
       properties:
         CFBundleDisplayName: "Remet"
+        CFBundleShortVersionString: "1.1.0"
         NSExtension:
           NSExtensionAttributes:
             NSExtensionActivationRule:
               NSExtensionActivationSupportsImageWithMaxCount: 10
           NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).ShareViewController"
           NSExtensionPointIdentifier: "com.apple.share-services"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.share
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
     entitlements:
       path: ShareExtension/ShareExtension.entitlements
       properties:

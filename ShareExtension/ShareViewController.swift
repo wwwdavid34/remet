@@ -1,8 +1,9 @@
 import UIKit
-import Social
 import UniformTypeIdentifiers
 
 class ShareViewController: UIViewController {
+
+    private let appGroupID = "group.com.remet.shared"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,27 +20,26 @@ class ShareViewController: UIViewController {
         for attachment in attachments {
             if attachment.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 attachment.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { [weak self] item, error in
-                    guard error == nil else {
+                    guard let self, error == nil else {
                         self?.completeRequest()
                         return
                     }
 
-                    var imageURL: URL?
+                    var savedURL: URL?
 
-                    if let url = item as? URL {
-                        imageURL = url
+                    if let url = item as? URL, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                        // File URL from Photos — load and copy to shared container
+                        savedURL = self.saveImageToSharedContainer(image)
                     } else if let image = item as? UIImage {
-                        // Save image to shared container
-                        imageURL = self?.saveImageToSharedContainer(image)
+                        savedURL = self.saveImageToSharedContainer(image)
                     } else if let data = item as? Data, let image = UIImage(data: data) {
-                        imageURL = self?.saveImageToSharedContainer(image)
+                        savedURL = self.saveImageToSharedContainer(image)
                     }
 
-                    if let url = imageURL {
-                        self?.openMainApp(with: url)
-                    } else {
-                        self?.completeRequest()
+                    if let savedURL {
+                        self.flagPendingImport(savedURL)
                     }
+                    self.completeRequest()
                 }
                 return
             }
@@ -50,7 +50,7 @@ class ShareViewController: UIViewController {
 
     private func saveImageToSharedContainer(_ image: UIImage) -> URL? {
         guard let containerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.remet.shared"
+            forSecurityApplicationGroupIdentifier: appGroupID
         ) else {
             return nil
         }
@@ -66,44 +66,16 @@ class ShareViewController: UIViewController {
             try data.write(to: fileURL)
             return fileURL
         } catch {
-            print("Failed to save image: \(error)")
             return nil
         }
     }
 
-    private func openMainApp(with imageURL: URL) {
-        // Use URL scheme to open main app with the shared image
-        let urlString = "remet://import?url=\(imageURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-
-        guard let url = URL(string: urlString) else {
-            completeRequest()
-            return
-        }
-
-        // Open the main app
-        var responder: UIResponder? = self
-        while responder != nil {
-            if let application = responder as? UIApplication {
-                application.open(url, options: [:]) { [weak self] _ in
-                    self?.completeRequest()
-                }
-                return
-            }
-            responder = responder?.next
-        }
-
-        // Fallback: use openURL selector
-        let selector = sel_registerName("openURL:")
-        responder = self
-        while responder != nil {
-            if responder?.responds(to: selector) == true {
-                responder?.perform(selector, with: url)
-                break
-            }
-            responder = responder?.next
-        }
-
-        completeRequest()
+    /// Store the shared image path in shared UserDefaults so the main app picks it up on foreground.
+    private func flagPendingImport(_ imageURL: URL) {
+        guard let defaults = UserDefaults(suiteName: appGroupID) else { return }
+        var pending = defaults.stringArray(forKey: "pendingSharedImages") ?? []
+        pending.append(imageURL.path)
+        defaults.set(pending, forKey: "pendingSharedImages")
     }
 
     private func completeRequest() {

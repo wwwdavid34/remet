@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showAddActions = false
     @State private var showQuickCapture = false
     @State private var showPhotoImport = false
+    @Environment(AppState.self) private var appState: AppState?
 
     var body: some View {
         ZStack {
@@ -23,6 +24,11 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showPhotoImport) {
             PhotoImportView()
+        }
+        .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
+            if shouldProcess == true {
+                showPhotoImport = true
+            }
         }
     }
 

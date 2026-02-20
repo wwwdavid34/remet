@@ -3,8 +3,8 @@ import SwiftData
 
 @Observable
 class AppState {
-    var sharedImageURL: URL?
-    var shouldProcessSharedImage = false
+    var pendingSharedImagePaths: [String] = []
+    var shouldProcessSharedImages = false
 }
 
 @main
@@ -13,6 +13,7 @@ struct RemetApp: App {
     @State private var subscriptionManager = SubscriptionManager.shared
     @State private var cloudSyncManager = CloudSyncManager.shared
     @State private var showSplash = true
+    @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -76,9 +77,6 @@ struct RemetApp: App {
                         .environment(appState)
                         .environment(subscriptionManager)
                         .environment(cloudSyncManager)
-                        .onOpenURL { url in
-                            handleIncomingURL(url)
-                        }
                 }
             }
             .task {
@@ -95,21 +93,23 @@ struct RemetApp: App {
                     showSplash = false
                 }
             }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    checkForPendingSharedImages()
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }
 
-    private func handleIncomingURL(_ url: URL) {
-        // Handle remet://import?url=<encoded_url>
-        guard url.scheme == "remet",
-              url.host == "import",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let urlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,
-              let imageURL = URL(string: urlParam) else {
-            return
-        }
+    private func checkForPendingSharedImages() {
+        guard let defaults = UserDefaults(suiteName: "group.com.remet.shared") else { return }
+        guard let pending = defaults.stringArray(forKey: "pendingSharedImages"), !pending.isEmpty else { return }
 
-        appState.sharedImageURL = imageURL
-        appState.shouldProcessSharedImage = true
+        // Clear the flag immediately to avoid re-processing
+        defaults.removeObject(forKey: "pendingSharedImages")
+
+        appState.pendingSharedImagePaths = pending
+        appState.shouldProcessSharedImages = true
     }
 }
