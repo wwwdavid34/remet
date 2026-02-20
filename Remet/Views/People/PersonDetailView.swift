@@ -637,9 +637,8 @@ struct PersonDetailView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Link(facebookURL, destination: url)
+                        Link(String(localized: "View Profile"), destination: url)
                             .font(.subheadline)
-                            .lineLimit(1)
                     }
                 }
                 if let notes = person.notes, !notes.isEmpty {

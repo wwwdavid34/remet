@@ -27,14 +27,27 @@ struct ContentView: View {
             PhotoImportView()
         }
         .sheet(isPresented: $showFacebookURLPicker) {
-            if let url = appState?.sharedFacebookURL {
+            if let url = appState?.pendingFacebookURL {
                 FacebookURLPickerView(facebookURL: url)
                     .onDisappear {
-                        appState?.sharedFacebookURL = nil
+                        appState?.pendingFacebookURL = nil
                     }
             }
         }
-        .onChange(of: appState?.sharedFacebookURL) { _, newURL in
+        .onAppear {
+            if appState?.shouldProcessSharedImages == true {
+                showPhotoImport = true
+            }
+            if appState?.pendingFacebookURL != nil {
+                showFacebookURLPicker = true
+            }
+        }
+        .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
+            if shouldProcess == true {
+                showPhotoImport = true
+            }
+        }
+        .onChange(of: appState?.pendingFacebookURL) { _, newURL in
             if newURL != nil {
                 showFacebookURLPicker = true
             }
