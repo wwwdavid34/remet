@@ -647,16 +647,19 @@ struct EncounterReviewView: View {
                         normalizedBoundingBox: translatedNormRect
                     )
 
-                    // Check for >60% overlap with existing bounding boxes
+                    // Reject if >60% of either box's area is overlapped
                     let isDuplicate = await MainActor.run {
                         boundingBoxes.contains { existing in
                             let existingRect = existing.rect
                             let intersection = existingRect.intersection(translatedNormRect)
                             guard !intersection.isNull else { return false }
                             let intersectionArea = intersection.width * intersection.height
-                            let unionArea = existingRect.width * existingRect.height + translatedNormRect.width * translatedNormRect.height - intersectionArea
-                            let iou = unionArea > 0 ? intersectionArea / unionArea : 0
-                            return iou > 0.6
+                            let newArea = translatedNormRect.width * translatedNormRect.height
+                            let existingArea = existingRect.width * existingRect.height
+                            guard newArea > 0, existingArea > 0 else { return false }
+                            let overlapOfNew = intersectionArea / newArea
+                            let overlapOfExisting = intersectionArea / existingArea
+                            return max(overlapOfNew, overlapOfExisting) > 0.6
                         }
                     }
 
