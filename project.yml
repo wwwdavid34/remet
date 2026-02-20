@@ -20,6 +20,8 @@ targets:
   Remet:
     type: application
     platform: iOS
+    scheme:
+      testTargets: []
     sources:
       - path: Remet
         excludes:
