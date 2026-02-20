@@ -55,6 +55,7 @@
 		81AB8030C5DC0249205DCC6F /* CloudSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F14B1EA9E63595970546F8 /* CloudSyncManager.swift */; };
 		828E4087E1F24C0621CD8622 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B46C31F66EEF6265FC61C67 /* AppTheme.swift */; };
 		850080AEEE42F81F45F3862F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 08D42FE113F8837656ABC3BA /* Localizable.xcstrings */; };
+		C3D4E5F6A7B8901234567DEF /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F6E5D4C3B2A19876543210AB /* InfoPlist.xcstrings */; };
 		895EE803C1F62178054A268D /* NewPersonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CCD2F3F97CABFA17BDAAD1F /* NewPersonSheet.swift */; };
 		898810411417DD9F8C0B083C /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B41544F52E67D4CB06C8D73 /* LiquidGlassStyle.swift */; };
 		8A5C05D4911037CABE9389AA /* MovePhotosDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0A7AA33B94802BE85E716E /* MovePhotosDestinationView.swift */; };
@@ -108,6 +109,7 @@
 		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
 		06694C451E6DDB1A90961B56 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
 		08D42FE113F8837656ABC3BA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F6E5D4C3B2A19876543210AB /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0B4D145FE5DAFAAE416DCADC /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
 		0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbedding.swift; sourceTree = "<group>"; };
 		1312149A710348153F055F78 /* OnboardingProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProgressIndicator.swift; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 			children = (
 				9157C1E917CFF24ECFC278A1 /* Assets.xcassets */,
 				3BFD7031C9E6FE562EE6AD1C /* Info.plist */,
+				F6E5D4C3B2A19876543210AB /* InfoPlist.xcstrings */,
 				08D42FE113F8837656ABC3BA /* Localizable.xcstrings */,
 				A745EC47673F2071CB294230 /* Remet.entitlements */,
 				C5D7A7FA0DD4D205F36C96BE /* RemetApp.swift */,
@@ -576,6 +579,7 @@
 				33C1884D24DD37D46D479D03 /* Assets.xcassets in Resources */,
 				5A7383B36339409396DD811E /* DemoAssets.xcassets in Resources */,
 				850080AEEE42F81F45F3862F /* Localizable.xcstrings in Resources */,
+				C3D4E5F6A7B8901234567DEF /* InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
