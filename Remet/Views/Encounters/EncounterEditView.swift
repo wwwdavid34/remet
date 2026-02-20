@@ -352,8 +352,8 @@ struct EncounterEditView: View {
                 } else {
                     ForEach(encounter.people ?? []) { person in
                         HStack {
-                            if let firstEmbedding = person.embeddings?.first,
-                               let image = UIImage(data: firstEmbedding.faceCropData) {
+                            if let profileEmbedding = person.profileEmbedding,
+                               let image = UIImage(data: profileEmbedding.faceCropData) {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
@@ -544,8 +544,8 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func matchRow(match: MatchResult) -> some View {
         HStack {
-            if let firstEmbedding = match.person.embeddings?.first,
-               let image = UIImage(data: firstEmbedding.faceCropData) {
+            if let profileEmbedding = match.person.profileEmbedding,
+               let image = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -579,8 +579,8 @@ struct EncounterEditView: View {
     @ViewBuilder
     private func personRow(person: Person) -> some View {
         HStack {
-            if let firstEmbedding = person.embeddings?.first,
-               let image = UIImage(data: firstEmbedding.faceCropData) {
+            if let profileEmbedding = person.profileEmbedding,
+               let image = UIImage(data: profileEmbedding.faceCropData) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -817,7 +817,8 @@ struct EncounterEditView: View {
                 let imageX = (tapLocation.x - offsetX) / scale
                 let imageY = (tapLocation.y - offsetY) / scale
 
-                let cropSize = min(imageSize.width, imageSize.height) * 0.4
+                let minCropPixels: CGFloat = 300
+                let cropSize = max(min(imageSize.width, imageSize.height) * 0.2, minCropPixels)
                 let cropRect = CGRect(
                     x: max(0, imageX - cropSize / 2),
                     y: max(0, imageY - cropSize / 2),
@@ -832,7 +833,12 @@ struct EncounterEditView: View {
                     }
                     return
                 }
-                let croppedImage = UIImage(cgImage: cgImage)
+
+                let upscaleSize = CGSize(width: CGFloat(cgImage.width) * 3.0, height: CGFloat(cgImage.height) * 3.0)
+                let renderer = UIGraphicsImageRenderer(size: upscaleSize)
+                let croppedImage = renderer.image { _ in
+                    UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: upscaleSize))
+                }
 
                 let faceDetectionService = FaceDetectionService()
                 let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
@@ -855,6 +861,29 @@ struct EncounterEditView: View {
                         confidence: nil,
                         isAutoAccepted: false
                     )
+
+                    let translatedNormRect = newBox.rect
+                    let isDuplicate = await MainActor.run {
+                        let existingBoxes = photo?.faceBoundingBoxes ?? encounter.faceBoundingBoxes
+                        return existingBoxes.contains { existing in
+                            let existingRect = existing.rect
+                            let intersection = existingRect.intersection(translatedNormRect)
+                            guard !intersection.isNull else { return false }
+                            let intersectionArea = intersection.width * intersection.height
+                            let newArea = translatedNormRect.width * translatedNormRect.height
+                            let existingArea = existingRect.width * existingRect.height
+                            guard newArea > 0, existingArea > 0 else { return false }
+                            return max(intersectionArea / newArea, intersectionArea / existingArea) > 0.6
+                        }
+                    }
+
+                    if isDuplicate {
+                        await MainActor.run {
+                            locateFaceError = "A face already exists at that location"
+                            isLocatingFace = false
+                        }
+                        return
+                    }
 
                     await MainActor.run {
                         if let photo = photo {

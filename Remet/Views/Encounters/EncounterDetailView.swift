@@ -56,6 +56,9 @@ struct EncounterDetailView: View {
     @State private var selectedTags: [Tag] = []
     @State private var tagRefreshId = UUID()
 
+    // Share photo state
+    @State private var showShareSheet = false
+
     // Delete encounter state
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteEncounterConfirmation = false
@@ -63,6 +66,17 @@ struct EncounterDetailView: View {
     // Check if this encounter has multiple photos
     private var hasMultiplePhotos: Bool {
         !(encounter.photos ?? []).isEmpty
+    }
+
+    /// Current visible photo as UIImage (carousel photo or legacy single photo)
+    private var currentPhotoImage: UIImage? {
+        if hasMultiplePhotos {
+            let photos = encounter.sortedPhotos
+            guard selectedPhotoIndex < photos.count else { return nil }
+            return UIImage(data: photos[selectedPhotoIndex].imageData)
+        } else {
+            return encounter.displayImageData.flatMap { UIImage(data: $0) }
+        }
     }
 
     var body: some View {
@@ -98,6 +112,14 @@ struct EncounterDetailView: View {
                             showEditView = true
                         } label: {
                             Label(String(localized: "Edit Details"), systemImage: "pencil")
+                        }
+
+                        if currentPhotoImage != nil {
+                            Button {
+                                showShareSheet = true
+                            } label: {
+                                Label(String(localized: "Share Photo"), systemImage: "square.and.arrow.up")
+                            }
                         }
 
                         Button {
@@ -208,6 +230,11 @@ struct EncounterDetailView: View {
         } message: {
             Text("This encounter and its photos will be permanently deleted.")
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let image = currentPhotoImage {
+                ShareSheet(activityItems: [image])
+            }
+        }
     }
 
     // MARK: - Face Label Picker Sheet
@@ -259,8 +286,8 @@ struct EncounterDetailView: View {
                                 assignPersonToFace(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = match.person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -326,8 +353,8 @@ struct EncounterDetailView: View {
                                 assignPersonToFace(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -1157,8 +1184,8 @@ struct EncounterDetailView: View {
                             }
                         } label: {
                             HStack {
-                                if let firstEmbedding = person.embeddings?.first,
-                                   let image = UIImage(data: firstEmbedding.faceCropData) {
+                                if let profileEmbedding = person.profileEmbedding,
+                                   let image = UIImage(data: profileEmbedding.faceCropData) {
                                     Image(uiImage: image)
                                         .resizable()
                                         .scaledToFill()
@@ -1357,7 +1384,8 @@ struct EncounterDetailView: View {
                 let imageY = (tapLocation.y - offsetY) / scale
 
                 // Define crop region (centered on tap, sized relative to image)
-                let cropSize = min(imageSize.width, imageSize.height) * 0.4 // 40% of smaller dimension
+                let minCropPixels: CGFloat = 300
+                let cropSize = max(min(imageSize.width, imageSize.height) * 0.2, minCropPixels)
                 let cropRect = CGRect(
                     x: max(0, imageX - cropSize / 2),
                     y: max(0, imageY - cropSize / 2),
@@ -1365,7 +1393,6 @@ struct EncounterDetailView: View {
                     height: min(cropSize, imageSize.height - max(0, imageY - cropSize / 2))
                 )
 
-                // Crop the image
                 guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
                     await MainActor.run {
                         locateFaceError = "Could not crop image region"
@@ -1373,7 +1400,12 @@ struct EncounterDetailView: View {
                     }
                     return
                 }
-                let croppedImage = UIImage(cgImage: cgImage)
+
+                let upscaleSize = CGSize(width: CGFloat(cgImage.width) * 3.0, height: CGFloat(cgImage.height) * 3.0)
+                let renderer = UIGraphicsImageRenderer(size: upscaleSize)
+                let croppedImage = renderer.image { _ in
+                    UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: upscaleSize))
+                }
 
                 // Run face detection on cropped region
                 let faceDetectionService = FaceDetectionService()
@@ -1403,6 +1435,29 @@ struct EncounterDetailView: View {
                         confidence: nil,
                         isAutoAccepted: false
                     )
+
+                    let translatedNormRect = newBox.rect
+                    let isDuplicate = await MainActor.run {
+                        let existingBoxes = photo?.faceBoundingBoxes ?? encounter.faceBoundingBoxes
+                        return existingBoxes.contains { existing in
+                            let existingRect = existing.rect
+                            let intersection = existingRect.intersection(translatedNormRect)
+                            guard !intersection.isNull else { return false }
+                            let intersectionArea = intersection.width * intersection.height
+                            let newArea = translatedNormRect.width * translatedNormRect.height
+                            let existingArea = existingRect.width * existingRect.height
+                            guard newArea > 0, existingArea > 0 else { return false }
+                            return max(intersectionArea / newArea, intersectionArea / existingArea) > 0.6
+                        }
+                    }
+
+                    if isDuplicate {
+                        await MainActor.run {
+                            locateFaceError = "A face already exists at that location"
+                            isLocatingFace = false
+                        }
+                        return
+                    }
 
                     await MainActor.run {
                         if let photo = photo {
@@ -1821,6 +1876,7 @@ struct FullPhotoView: View {
     let onSelectPerson: (Person) -> Void
 
     @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
+    @State private var showShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -1868,17 +1924,31 @@ struct FullPhotoView: View {
                 }
 
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showFaceBoxes.toggle()
+                    HStack(spacing: 16) {
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
                         }
-                    } label: {
-                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        .foregroundStyle(.white)
+
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showFaceBoxes.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        }
+                        .foregroundStyle(.white)
                     }
-                    .foregroundStyle(.white)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showShareSheet) {
+                if let imageData = encounter.displayImageData, let image = UIImage(data: imageData) {
+                    ShareSheet(activityItems: [image])
+                }
+            }
         }
     }
 }
@@ -1892,6 +1962,7 @@ struct MultiPhotoFullView: View {
 
     @State private var currentIndex: Int = 0
     @State private var showFaceBoxes = AppSettings.shared.showBoundingBoxes
+    @State private var showShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -1921,17 +1992,33 @@ struct MultiPhotoFullView: View {
                 }
 
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showFaceBoxes.toggle()
+                    HStack(spacing: 16) {
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
                         }
-                    } label: {
-                        Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        .foregroundStyle(.white)
+
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showFaceBoxes.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showFaceBoxes ? "eye" : "eye.slash")
+                        }
+                        .foregroundStyle(.white)
                     }
-                    .foregroundStyle(.white)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showShareSheet) {
+                let photos = encounter.sortedPhotos
+                if currentIndex < photos.count,
+                   let image = UIImage(data: photos[currentIndex].imageData) {
+                    ShareSheet(activityItems: [image])
+                }
+            }
         }
         .onAppear {
             currentIndex = initialIndex

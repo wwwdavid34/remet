@@ -28,9 +28,18 @@ struct EncounterReviewView: View {
     @State private var selectedFaceCrop: UIImage?
     @State private var potentialMatches: [MatchResult] = []
     @State private var isLoadingMatches = false
-    @State private var isRedetecting = false
-    @State private var redetectAttempts = 0
+    // Locate face mode
+    @State private var locateFaceMode = false
+    @State private var locateFaceError: String?
+    @State private var isLocatingFace = false
+    @State private var lastAddedFaceIndex: Int?
     @State private var localDetectedFaces: [DetectedFace] = []
+
+    // Zoom state
+    @State private var zoomScale: CGFloat = 1.0
+    @State private var lastZoomScale: CGFloat = 1.0
+    @State private var zoomOffset: CGSize = .zero
+    @State private var lastDragOffset: CGSize = .zero
 
     // Focus state for name input
 
@@ -49,6 +58,7 @@ struct EncounterReviewView: View {
                 }
                 .padding()
             }
+            .scrollDisabled(zoomScale > 1.0)
             .navigationTitle("Review Encounter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -95,11 +105,96 @@ struct EncounterReviewView: View {
                                     viewSize: geometry.size
                                 )
                                 .onTapGesture {
-                                    selectedBoxIndex = index
-                                    showPersonPicker = true
+                                    if !locateFaceMode {
+                                        selectedBoxIndex = index
+                                        showPersonPicker = true
+                                    }
                                 }
                             }
+                            .allowsHitTesting(!locateFaceMode)
                         }
+                        .drawingGroup() // Flatten to single GPU layer for smooth zoom
+                        .scaleEffect(zoomScale)
+                        .offset(zoomOffset)
+                        .simultaneousGesture(
+                            MagnifyGesture()
+                                .onChanged { value in
+                                    let newScale = lastZoomScale * value.magnification
+                                    zoomScale = min(max(newScale, 1.0), 5.0)
+                                }
+                                .onEnded { _ in
+                                    lastZoomScale = zoomScale
+                                    if zoomScale <= 1.0 {
+                                        withAnimation(.spring(duration: 0.3)) {
+                                            zoomOffset = .zero
+                                            lastDragOffset = .zero
+                                        }
+                                    }
+                                }
+                        )
+                        .simultaneousGesture(
+                            zoomScale > 1.0 ?
+                            DragGesture(minimumDistance: 1)
+                                .onChanged { value in
+                                    zoomOffset = CGSize(
+                                        width: lastDragOffset.width + value.translation.width,
+                                        height: lastDragOffset.height + value.translation.height
+                                    )
+                                }
+                                .onEnded { _ in
+                                    lastDragOffset = zoomOffset
+                                }
+                            : nil
+                        )
+                        .onTapGesture(count: 2) {
+                            withAnimation(.spring(duration: 0.3)) {
+                                zoomScale = 1.0
+                                lastZoomScale = 1.0
+                                zoomOffset = .zero
+                                lastDragOffset = .zero
+                            }
+                        }
+                        .onTapGesture { location in
+                            if locateFaceMode {
+                                // Invert center-anchor scale + offset to get original view coordinates
+                                let cx = geometry.size.width / 2
+                                let cy = geometry.size.height / 2
+                                let adjustedLocation = CGPoint(
+                                    x: (location.x - zoomOffset.width - cx) / zoomScale + cx,
+                                    y: (location.y - zoomOffset.height - cy) / zoomScale + cy
+                                )
+                                handleLocateFaceTap(
+                                    at: adjustedLocation,
+                                    in: geometry.size,
+                                    imageSize: image.size
+                                )
+                            }
+                        }
+                }
+
+                // Reset zoom button
+                if zoomScale > 1.0 {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    zoomScale = 1.0
+                                    lastZoomScale = 1.0
+                                    zoomOffset = .zero
+                                    lastDragOffset = .zero
+                                }
+                            } label: {
+                                Image(systemName: "arrow.down.right.and.arrow.up.left")
+                                    .font(.caption)
+                                    .padding(6)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(Circle())
+                            }
+                            .padding(8)
+                        }
+                        Spacer()
+                    }
                 }
             }
         }
@@ -115,29 +210,38 @@ struct EncounterReviewView: View {
                     .font(.headline)
                 Spacer()
 
-                // Re-detect button
-                if !isProcessing && !isRedetecting {
+                // Missing faces button
+                if !isProcessing {
                     Button {
-                        redetectFaces()
+                        locateFaceMode.toggle()
+                        if !locateFaceMode {
+                            locateFaceError = nil
+                        }
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "arrow.clockwise")
-                            Text("Re-detect")
+                            if isLocatingFace {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            } else {
+                                Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
+                            }
+                            Text(locateFaceMode ? "Cancel" : "Missing?")
                         }
                         .font(.caption)
-                        .foregroundStyle(AppColors.teal)
+                        .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
                     }
+                    .disabled(isLocatingFace)
                 }
             }
 
-            if isProcessing || isRedetecting {
+            if isProcessing {
                 HStack {
                     ProgressView()
-                    Text(isRedetecting ? "Re-analyzing faces..." : "Analyzing faces...")
+                    Text("Analyzing faces...")
                         .foregroundStyle(AppColors.textSecondary)
                 }
             } else if boundingBoxes.isEmpty {
-                // No faces detected state
+                // No faces detected — prompt to use locate mode
                 VStack(spacing: 12) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle")
@@ -148,25 +252,13 @@ struct EncounterReviewView: View {
                             .foregroundStyle(AppColors.warning)
                     }
 
-                    Text("Try re-detecting with enhanced image processing.")
+                    Text("Tap \"Missing?\" above then tap a face in the photo.")
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
 
-                    Button {
-                        redetectFaces()
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                            Text(redetectAttempts == 0 ? "Re-detect Faces" : "Try Again")
-                        }
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(AppColors.teal)
-                        .clipShape(Capsule())
+                    if locateFaceMode {
+                        locateFaceModeIndicator
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -174,6 +266,10 @@ struct EncounterReviewView: View {
                 .background(AppColors.warning.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
+                if locateFaceMode {
+                    locateFaceModeIndicator
+                }
+
                 ForEach(Array(boundingBoxes.enumerated()), id: \.element.id) { index, box in
                     FaceRowView(
                         box: box,
@@ -193,6 +289,29 @@ struct EncounterReviewView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var locateFaceModeIndicator: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: "hand.tap")
+                Text("Tap where you see a face in the photo")
+            }
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundStyle(AppColors.coral)
+
+            if let error = locateFaceError {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.warning)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(AppColors.coral.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     @ViewBuilder
@@ -289,8 +408,8 @@ struct EncounterReviewView: View {
                                 assignPerson(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = match.person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -356,8 +475,8 @@ struct EncounterReviewView: View {
                                 assignPerson(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -489,6 +608,142 @@ struct EncounterReviewView: View {
         }
     }
 
+    private func handleLocateFaceTap(at tapLocation: CGPoint, in viewSize: CGSize, imageSize: CGSize) {
+        guard let image = scannedPhoto.image else { return }
+        isLocatingFace = true
+        locateFaceError = nil
+
+        Task {
+            do {
+                let scale = min(viewSize.width / imageSize.width, viewSize.height / imageSize.height)
+                let scaledWidth = imageSize.width * scale
+                let scaledHeight = imageSize.height * scale
+                let offsetX = (viewSize.width - scaledWidth) / 2
+                let offsetY = (viewSize.height - scaledHeight) / 2
+
+                let imageX = (tapLocation.x - offsetX) / scale
+                let imageY = (tapLocation.y - offsetY) / scale
+
+                // Crop shrinks with zoom for precision, but floors at 300px to ensure
+                // Vision has enough context (face + surrounding area) for detection
+                let baseCropFraction: CGFloat = 0.2
+                let minCropPixels: CGFloat = 300
+                let cropSize = max(
+                    min(imageSize.width, imageSize.height) * baseCropFraction / zoomScale,
+                    minCropPixels
+                )
+                let cropRect = CGRect(
+                    x: max(0, imageX - cropSize / 2),
+                    y: max(0, imageY - cropSize / 2),
+                    width: min(cropSize, imageSize.width - max(0, imageX - cropSize / 2)),
+                    height: min(cropSize, imageSize.height - max(0, imageY - cropSize / 2))
+                )
+
+                guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
+                    await MainActor.run {
+                        locateFaceError = "Could not crop image region"
+                        isLocatingFace = false
+                    }
+                    return
+                }
+
+                // Upscale cropped region 3× for more confident face detection
+                let upscaleSize = CGSize(
+                    width: CGFloat(cgImage.width) * 3.0,
+                    height: CGFloat(cgImage.height) * 3.0
+                )
+                let renderer = UIGraphicsImageRenderer(size: upscaleSize)
+                let croppedImage = renderer.image { _ in
+                    UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: upscaleSize))
+                }
+
+                let faces = try await faceDetectionService.detectFaces(in: croppedImage, options: .enhanced)
+
+                if let face = faces.first {
+                    let cropNormRect = face.normalizedBoundingBox
+                    let originalX = (cropRect.origin.x + cropNormRect.origin.x * cropRect.width) / imageSize.width
+                    let originalWidth = (cropNormRect.width * cropRect.width) / imageSize.width
+                    let cropBottomNorm = 1.0 - (cropRect.origin.y + cropRect.height) / imageSize.height
+                    let cropHeightNorm = cropRect.height / imageSize.height
+                    let originalY = cropBottomNorm + cropNormRect.origin.y * cropHeightNorm
+                    let originalHeight = cropNormRect.height * cropHeightNorm
+
+                    let translatedNormRect = CGRect(
+                        x: originalX, y: originalY,
+                        width: originalWidth, height: originalHeight
+                    )
+
+                    let newBox = FaceBoundingBox(
+                        rect: translatedNormRect,
+                        personId: nil,
+                        personName: nil,
+                        confidence: nil,
+                        isAutoAccepted: false
+                    )
+
+                    let translatedPixelRect = CGRect(
+                        x: originalX * imageSize.width,
+                        y: (1.0 - originalY - originalHeight) * imageSize.height,
+                        width: originalWidth * imageSize.width,
+                        height: originalHeight * imageSize.height
+                    )
+                    let newDetectedFace = DetectedFace(
+                        boundingBox: translatedPixelRect,
+                        cropImage: face.cropImage,
+                        normalizedBoundingBox: translatedNormRect
+                    )
+
+                    // Reject if >60% of either box's area is overlapped
+                    let isDuplicate = await MainActor.run {
+                        boundingBoxes.contains { existing in
+                            let existingRect = existing.rect
+                            let intersection = existingRect.intersection(translatedNormRect)
+                            guard !intersection.isNull else { return false }
+                            let intersectionArea = intersection.width * intersection.height
+                            let newArea = translatedNormRect.width * translatedNormRect.height
+                            let existingArea = existingRect.width * existingRect.height
+                            guard newArea > 0, existingArea > 0 else { return false }
+                            let overlapOfNew = intersectionArea / newArea
+                            let overlapOfExisting = intersectionArea / existingArea
+                            return max(overlapOfNew, overlapOfExisting) > 0.6
+                        }
+                    }
+
+                    if isDuplicate {
+                        await MainActor.run {
+                            locateFaceError = "A face already exists at that location"
+                            isLocatingFace = false
+                        }
+                        return
+                    }
+
+                    await MainActor.run {
+                        boundingBoxes.append(newBox)
+                        localDetectedFaces.append(newDetectedFace)
+                        let newIndex = boundingBoxes.count - 1
+                        lastAddedFaceIndex = newIndex
+                        locateFaceMode = false
+                        isLocatingFace = false
+
+                        selectedBoxIndex = newIndex
+                        loadFaceCropAndMatches()
+                        showPersonPicker = true
+                    }
+                } else {
+                    await MainActor.run {
+                        locateFaceError = "No face found at that location"
+                        isLocatingFace = false
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    locateFaceError = "Detection failed: \(error.localizedDescription)"
+                    isLocatingFace = false
+                }
+            }
+        }
+    }
+
     @ViewBuilder
     private var newPersonSheet: some View {
         let faces = localDetectedFaces.isEmpty ? scannedPhoto.detectedFaces : localDetectedFaces
@@ -525,51 +780,6 @@ struct EncounterReviewView: View {
                 location = name
             }
             isProcessing = false
-        }
-    }
-
-    private func redetectFaces() {
-        guard let image = scannedPhoto.image else { return }
-
-        isRedetecting = true
-        redetectAttempts += 1
-
-        Task {
-            do {
-                // Use enhanced detection options
-                let faces = try await faceDetectionService.detectFaces(in: image, options: .enhanced)
-
-                // Create new bounding boxes from detected faces
-                var newBoxes: [FaceBoundingBox] = []
-                for face in faces {
-                    let box = FaceBoundingBox(
-                        rect: face.normalizedBoundingBox,
-                        personId: nil,
-                        personName: nil,
-                        confidence: nil,
-                        isAutoAccepted: false
-                    )
-                    newBoxes.append(box)
-                }
-
-                // Try to match new faces to people
-                let matchedBoxes = await scannerService.matchFacesToPeopleWithFaces(
-                    faces: faces,
-                    people: people,
-                    autoAcceptThreshold: autoAcceptThreshold
-                )
-
-                await MainActor.run {
-                    boundingBoxes = matchedBoxes.isEmpty ? newBoxes : matchedBoxes
-                    localDetectedFaces = faces
-                    isRedetecting = false
-                }
-            } catch {
-                await MainActor.run {
-                    isRedetecting = false
-                }
-                print("Re-detection error: \(error)")
-            }
         }
     }
 
