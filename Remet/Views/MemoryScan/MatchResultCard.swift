@@ -56,8 +56,8 @@ struct MatchResultCard: View {
 
     @ViewBuilder
     private var personThumbnail: some View {
-        if let embedding = suggestion.person.embeddings?.first,
-           let image = UIImage(data: embedding.faceCropData) {
+        if let profileEmbedding = suggestion.person.profileEmbedding,
+           let image = UIImage(data: profileEmbedding.faceCropData) {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()

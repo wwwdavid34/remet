@@ -250,8 +250,8 @@ struct FaceReviewView: View {
                     showPeoplePicker = false
                 } label: {
                     HStack {
-                        if let firstEmbedding = person.embeddings?.first,
-                           let image = UIImage(data: firstEmbedding.faceCropData) {
+                        if let profileEmbedding = person.profileEmbedding,
+                           let image = UIImage(data: profileEmbedding.faceCropData) {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFill()

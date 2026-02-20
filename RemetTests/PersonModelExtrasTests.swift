@@ -181,6 +181,40 @@ final class PersonModelExtrasTests: XCTestCase {
         XCTAssertEqual(person.profileEmbedding?.id, embedding2.id)
     }
 
+    /// Regression test for issue #1: profileEmbedding must always respect
+    /// profileEmbeddingId regardless of array ordering. Views must use
+    /// profileEmbedding (not embeddings?.first) to display thumbnails.
+    @MainActor
+    func testProfileEmbedding_alwaysRespectsSelection() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+        let person = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let embedding1 = person.embeddings!.first!
+
+        // Add a second embedding with distinct faceCropData
+        let vector2 = TestHelpers.makeEmbeddingVector(seed: 2)
+        let embedding2 = FaceEmbedding(
+            vector: TestHelpers.vectorToData(vector2),
+            faceCropData: Data([0x02])
+        )
+        embedding2.person = person
+        person.embeddings = (person.embeddings ?? []) + [embedding2]
+        ctx.insert(embedding2)
+        try ctx.save()
+
+        // Select embedding1 → profileEmbedding returns embedding1
+        person.profileEmbeddingId = embedding1.id
+        XCTAssertEqual(person.profileEmbedding?.id, embedding1.id)
+
+        // Select embedding2 → profileEmbedding returns embedding2
+        person.profileEmbeddingId = embedding2.id
+        XCTAssertEqual(person.profileEmbedding?.id, embedding2.id)
+
+        // The selected embedding's data must match what we set
+        XCTAssertEqual(person.profileEmbedding?.faceCropData, Data([0x02]),
+                       "profileEmbedding must return the selected embedding's data")
+    }
+
     @MainActor
     func testProfileEmbedding_profileIdNotFound_fallsBackToFirst() throws {
         let container = try TestHelpers.makeModelContainer()

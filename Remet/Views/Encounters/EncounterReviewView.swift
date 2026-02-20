@@ -289,8 +289,8 @@ struct EncounterReviewView: View {
                                 assignPerson(match.person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = match.person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = match.person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()
@@ -356,8 +356,8 @@ struct EncounterReviewView: View {
                                 assignPerson(person)
                             } label: {
                                 HStack {
-                                    if let firstEmbedding = person.embeddings?.first,
-                                       let image = UIImage(data: firstEmbedding.faceCropData) {
+                                    if let profileEmbedding = person.profileEmbedding,
+                                       let image = UIImage(data: profileEmbedding.faceCropData) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .scaledToFill()

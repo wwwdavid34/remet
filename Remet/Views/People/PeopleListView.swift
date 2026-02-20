@@ -249,8 +249,8 @@ struct PersonRow: View {
 
     @ViewBuilder
     private var personThumbnail: some View {
-        if let firstEmbedding = person.embeddings?.first,
-           let image = UIImage(data: firstEmbedding.faceCropData) {
+        if let profileEmbedding = person.profileEmbedding,
+           let image = UIImage(data: profileEmbedding.faceCropData) {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
