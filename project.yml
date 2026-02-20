@@ -64,7 +64,7 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        CFBundleShortVersionString: "1.1.0"
+        CFBundleShortVersionString: "1.1.1"
         CFBundleLocalizations:
           - en
           - zh-Hans
@@ -96,7 +96,7 @@ targets:
       path: ShareExtension/Info.plist
       properties:
         CFBundleDisplayName: "Remet"
-        CFBundleShortVersionString: "1.1.0"
+        CFBundleShortVersionString: "1.1.1"
         NSExtension:
           NSExtensionAttributes:
             NSExtensionActivationRule:
