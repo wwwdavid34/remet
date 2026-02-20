@@ -622,9 +622,14 @@ struct EncounterReviewView: View {
                 let imageX = (tapLocation.x - offsetX) / scale
                 let imageY = (tapLocation.y - offsetY) / scale
 
-                // Smaller crop for precision; shrinks further when zoomed in
+                // Crop shrinks with zoom for precision, but floors at 300px to ensure
+                // Vision has enough context (face + surrounding area) for detection
                 let baseCropFraction: CGFloat = 0.2
-                let cropSize = min(imageSize.width, imageSize.height) * baseCropFraction / zoomScale
+                let minCropPixels: CGFloat = 300
+                let cropSize = max(
+                    min(imageSize.width, imageSize.height) * baseCropFraction / zoomScale,
+                    minCropPixels
+                )
                 let cropRect = CGRect(
                     x: max(0, imageX - cropSize / 2),
                     y: max(0, imageY - cropSize / 2),
