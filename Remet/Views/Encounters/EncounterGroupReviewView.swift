@@ -654,7 +654,8 @@ struct EncounterGroupReviewView: View {
                 let imageY = (tapLocation.y - offsetY) / scale
 
                 // Define crop region (centered on tap, sized relative to image)
-                let cropSize = min(imageSize.width, imageSize.height) * 0.4
+                let minCropPixels: CGFloat = 300
+                let cropSize = max(min(imageSize.width, imageSize.height) * 0.2, minCropPixels)
                 let cropRect = CGRect(
                     x: max(0, imageX - cropSize / 2),
                     y: max(0, imageY - cropSize / 2),
@@ -662,7 +663,6 @@ struct EncounterGroupReviewView: View {
                     height: min(cropSize, imageSize.height - max(0, imageY - cropSize / 2))
                 )
 
-                // Crop the image
                 guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
                     await MainActor.run {
                         locateFaceError = "Could not crop image region"
@@ -670,7 +670,12 @@ struct EncounterGroupReviewView: View {
                     }
                     return
                 }
-                let croppedImage = UIImage(cgImage: cgImage)
+
+                let upscaleSize = CGSize(width: CGFloat(cgImage.width) * 3.0, height: CGFloat(cgImage.height) * 3.0)
+                let renderer = UIGraphicsImageRenderer(size: upscaleSize)
+                let croppedImage = renderer.image { _ in
+                    UIImage(cgImage: cgImage).draw(in: CGRect(origin: .zero, size: upscaleSize))
+                }
 
                 // Run face detection on cropped region
                 let faceDetectionService = FaceDetectionService()
@@ -698,6 +703,29 @@ struct EncounterGroupReviewView: View {
                         confidence: nil,
                         isAutoAccepted: false
                     )
+
+                    let translatedNormRect = newBox.rect
+                    let isDuplicate = await MainActor.run {
+                        let existingBoxes = photoFaceData[photo.id] ?? []
+                        return existingBoxes.contains { existing in
+                            let existingRect = existing.rect
+                            let intersection = existingRect.intersection(translatedNormRect)
+                            guard !intersection.isNull else { return false }
+                            let intersectionArea = intersection.width * intersection.height
+                            let newArea = translatedNormRect.width * translatedNormRect.height
+                            let existingArea = existingRect.width * existingRect.height
+                            guard newArea > 0, existingArea > 0 else { return false }
+                            return max(intersectionArea / newArea, intersectionArea / existingArea) > 0.6
+                        }
+                    }
+
+                    if isDuplicate {
+                        await MainActor.run {
+                            locateFaceError = "A face already exists at that location"
+                            isLocatingFace = false
+                        }
+                        return
+                    }
 
                     await MainActor.run {
                         var boxes = photoFaceData[photo.id] ?? []
