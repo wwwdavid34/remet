@@ -79,6 +79,9 @@ struct RemetApp: App {
                         .environment(cloudSyncManager)
                 }
             }
+            .onOpenURL { url in
+                handleIncomingURL(url)
+            }
             .task {
                 // Pre-load FaceNet model during splash so it's ready for scan/import
                 FaceEmbeddingService.shared.preload()
@@ -100,6 +103,12 @@ struct RemetApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    private func handleIncomingURL(_ url: URL) {
+        guard url.scheme == "remet", url.host == "import" else { return }
+        // URL scheme is just a signal — actual image paths are in shared UserDefaults
+        checkForPendingSharedImages()
     }
 
     private func checkForPendingSharedImages() {

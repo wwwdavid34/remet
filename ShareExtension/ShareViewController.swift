@@ -39,7 +39,7 @@ class ShareViewController: UIViewController {
                     if let savedURL {
                         self.flagPendingImport(savedURL)
                     }
-                    self.completeRequest()
+                    self.openContainingAppAndComplete()
                 }
                 return
             }
@@ -76,6 +76,27 @@ class ShareViewController: UIViewController {
         var pending = defaults.stringArray(forKey: "pendingSharedImages") ?? []
         pending.append(imageURL.path)
         defaults.set(pending, forKey: "pendingSharedImages")
+    }
+
+    private func openContainingAppAndComplete() {
+        guard let url = URL(string: "remet://import") else {
+            completeRequest()
+            return
+        }
+
+        // Attempt to open the main app via the responder chain.
+        // UIApplication.open is unavailable in extensions, but the ObjC selector works.
+        let selector = sel_registerName("openURL:")
+        var responder: UIResponder? = self
+        while let r = responder {
+            if r.responds(to: selector) {
+                r.perform(selector, with: url)
+                break
+            }
+            responder = r.next
+        }
+
+        completeRequest()
     }
 
     private func completeRequest() {

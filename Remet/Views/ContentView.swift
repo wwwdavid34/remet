@@ -25,6 +25,11 @@ struct ContentView: View {
         .sheet(isPresented: $showPhotoImport) {
             PhotoImportView()
         }
+        .onAppear {
+            if appState?.shouldProcessSharedImages == true {
+                showPhotoImport = true
+            }
+        }
         .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
             if shouldProcess == true {
                 showPhotoImport = true
