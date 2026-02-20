@@ -84,19 +84,12 @@ class ShareViewController: UIViewController {
             return
         }
 
-        // Attempt to open the main app via the responder chain.
-        // UIApplication.open is unavailable in extensions, but the ObjC selector works.
-        let selector = sel_registerName("openURL:")
-        var responder: UIResponder? = self
-        while let r = responder {
-            if r.responds(to: selector) {
-                r.perform(selector, with: url)
-                break
+        DispatchQueue.main.async { [weak self] in
+            // Ask the host app to open our URL scheme, which launches Remet
+            self?.extensionContext?.open(url) { _ in
+                self?.completeRequest()
             }
-            responder = r.next
         }
-
-        completeRequest()
     }
 
     private func completeRequest() {
