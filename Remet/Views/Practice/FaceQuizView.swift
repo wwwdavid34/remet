@@ -195,7 +195,14 @@ struct FaceQuizView: View {
     }
 
     private func setupQuiz() {
-        shuffledPeople = people.shuffled()
+        let (cleanPeople, result) = EmbeddingIntegrityService.cleanAndFilter(
+            people: people,
+            using: modelContext
+        )
+        if result.orphansRemoved > 0 {
+            print("=== Quiz cleanup: removed \(result.orphansRemoved) orphaned embedding(s) from \(result.peopleAffected) person(s) ===")
+        }
+        shuffledPeople = cleanPeople.shuffled()
         quizStartTime = Date()
         generateOptions()
     }
@@ -203,7 +210,8 @@ struct FaceQuizView: View {
     private func generateOptions() {
         guard let correctPerson = currentPerson else { return }
 
-        let namePool = allPeople ?? shuffledPeople
+        let namePool = (allPeople ?? shuffledPeople)
+            .filter { !($0.embeddings ?? []).isEmpty }
         var wrongAnswers = namePool
             .filter { $0.id != correctPerson.id }
             .map { $0.name }
