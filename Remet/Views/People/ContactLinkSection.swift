@@ -82,7 +82,7 @@ struct ContactLinkSection: View {
                 unlinkContact()
             }
         } message: {
-            Text("This will remove the link to this contact. Your contact's data won't be affected.")
+            Text("This will remove the link and clear synced details (phone, email, etc.). Your iOS contact won't be affected.")
         }
         .alert("Update Contact Photo", isPresented: $showPhotoExportConfirmation) {
             Button("Cancel", role: .cancel) {}
@@ -277,11 +277,9 @@ struct ContactLinkSection: View {
 
         if let contact = contactsManager.fetchContact(identifier: identifier) {
             linkedContact = LinkedContactInfo(from: contact)
-        } else {
-            // Can't fetch full contact (limited access or deleted).
-            // Keep the identifier — only clear if user explicitly unlinks.
-            linkedContact = nil
         }
+        // If fetch fails (limited access or deleted contact), keep whatever
+        // linkedContact we have — it may have been set directly from the picker.
     }
 
     private func linkContact(_ contact: CNContact) {
@@ -306,6 +304,12 @@ struct ContactLinkSection: View {
     private func unlinkContact() {
         person.contactIdentifier = nil
         person.contactPhotoSourceEmbeddingId = nil
+        // Clear fields that were synced from the contact
+        person.phone = nil
+        person.email = nil
+        person.company = nil
+        person.jobTitle = nil
+        person.birthday = nil
         linkedContact = nil
         try? modelContext.save()
     }
