@@ -21,7 +21,8 @@ targets:
     type: application
     platform: iOS
     scheme:
-      testTargets: []
+      testTargets:
+        - RemetTests
     sources:
       - path: Remet
         excludes:
@@ -84,6 +85,20 @@ targets:
           - CloudKit
         com.apple.security.application-groups:
           - group.com.remet.shared
+
+  RemetTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: RemetTests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: Remet
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.remet.app.tests
+        GENERATE_INFOPLIST_FILE: YES
 
   ShareExtension:
     type: app-extension
