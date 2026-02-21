@@ -202,6 +202,18 @@ struct LinkedContactInfo {
     let jobTitle: String?
     let thumbnailData: Data?
 
+    /// Fallback initializer when the contact can't be fetched (limited access / deleted)
+    init(identifier: String, fallbackName: String) {
+        self.identifier = identifier
+        self.fullName = fallbackName
+        self.phoneNumbers = []
+        self.emailAddresses = []
+        self.birthday = nil
+        self.organization = nil
+        self.jobTitle = nil
+        self.thumbnailData = nil
+    }
+
     init(from contact: CNContact) {
         self.identifier = contact.identifier
 

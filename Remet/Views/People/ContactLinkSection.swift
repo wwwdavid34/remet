@@ -298,9 +298,11 @@ struct ContactLinkSection: View {
 
         if let contact = contactsManager.fetchContact(identifier: identifier) {
             linkedContact = LinkedContactInfo(from: contact)
+        } else if linkedContact == nil {
+            // Can't fetch (limited access or deleted) but link exists —
+            // show fallback so the linked view renders with context menu.
+            linkedContact = LinkedContactInfo(identifier: identifier, fallbackName: person.name)
         }
-        // If fetch fails (limited access or deleted contact), keep whatever
-        // linkedContact we have — it may have been set directly from the picker.
     }
 
     private func linkContact(_ contact: CNContact) {
