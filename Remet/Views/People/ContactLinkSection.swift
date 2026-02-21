@@ -267,8 +267,8 @@ struct ContactLinkSection: View {
         if let contact = contactsManager.fetchContact(identifier: identifier) {
             linkedContact = LinkedContactInfo(from: contact)
         } else {
-            // Contact was deleted - clear the link
-            person.contactIdentifier = nil
+            // Can't fetch full contact (limited access or deleted).
+            // Keep the identifier — only clear if user explicitly unlinks.
             linkedContact = nil
         }
     }
@@ -277,13 +277,14 @@ struct ContactLinkSection: View {
         let contactId = contact.identifier
         person.contactIdentifier = contactId
 
-        // Fetch full contact with all keys since picker returns minimal data
+        // Use the picker's contact directly for immediate UI update,
+        // then try to enrich with a full fetch (may fail under limited access).
+        linkedContact = LinkedContactInfo(from: contact)
+
         Task { @MainActor in
             if let fullContact = contactsManager.fetchContact(identifier: contactId) {
                 linkedContact = LinkedContactInfo(from: fullContact)
                 contactsManager.syncContactData(from: contactId, to: person)
-            } else {
-                loadLinkedContact()
             }
             try? modelContext.save()
         }
