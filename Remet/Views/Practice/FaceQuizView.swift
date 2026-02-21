@@ -195,7 +195,7 @@ struct FaceQuizView: View {
     }
 
     private func setupQuiz() {
-        shuffledPeople = people.shuffled()
+        shuffledPeople = people.filter { !($0.embeddings ?? []).isEmpty }.shuffled()
         quizStartTime = Date()
         generateOptions()
     }
@@ -203,7 +203,7 @@ struct FaceQuizView: View {
     private func generateOptions() {
         guard let correctPerson = currentPerson else { return }
 
-        let namePool = allPeople ?? shuffledPeople
+        let namePool = (allPeople ?? shuffledPeople).filter { !($0.embeddings ?? []).isEmpty }
         var wrongAnswers = namePool
             .filter { $0.id != correctPerson.id }
             .map { $0.name }

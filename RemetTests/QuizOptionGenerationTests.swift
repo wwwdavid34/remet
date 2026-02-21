@@ -12,7 +12,8 @@ final class QuizOptionGenerationTests: XCTestCase {
         allPeople: [Person],
         quizPeople: [Person]
     ) -> [String] {
-        let namePool = allPeople.isEmpty ? quizPeople : allPeople
+        let namePool = (allPeople.isEmpty ? quizPeople : allPeople)
+            .filter { !($0.embeddings ?? []).isEmpty }
         var wrongAnswers = namePool
             .filter { $0.id != correctPerson.id }
             .map { $0.name }
@@ -156,5 +157,62 @@ final class QuizOptionGenerationTests: XCTestCase {
 
         XCTAssertTrue(options.contains("Alice"))
         XCTAssertTrue(options.contains("Bob"))
+    }
+
+    // MARK: - Removed Face Embeddings
+
+    @MainActor
+    func testOptions_personWithNoEmbeddings_excludedFromNamePool() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let bob = TestHelpers.makePerson(name: "Bob", embeddingSeed: 2, in: ctx)
+        // Dave has no embeddings (face removed)
+        let dave = TestHelpers.makePerson(name: "Dave", embeddingSeed: nil, in: ctx)
+        try ctx.save()
+
+        let allPeople = [alice, bob, dave]
+        let options = generateOptions(correctPerson: alice, allPeople: allPeople, quizPeople: allPeople)
+
+        XCTAssertFalse(options.contains("Dave"), "Person with no face embeddings must not appear as a quiz option")
+    }
+
+    @MainActor
+    func testOptions_correctPersonEmbeddingsRemoved_stillAppearsAsAnswer() throws {
+        // Even if the correct person's embeddings were removed mid-session, their name
+        // is always appended as the correct answer regardless of embedding state.
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let bob = TestHelpers.makePerson(name: "Bob", embeddingSeed: 2, in: ctx)
+        try ctx.save()
+
+        // Simulate Alice's embedding being removed
+        alice.embeddings = []
+
+        let allPeople = [alice, bob]
+        let options = generateOptions(correctPerson: alice, allPeople: allPeople, quizPeople: allPeople)
+
+        // Alice is always appended as the correct answer in generateOptions
+        XCTAssertTrue(options.contains("Alice"))
+    }
+
+    @MainActor
+    func testOptions_allWrongAnswersHaveNoEmbeddings_onlyCorrectAnswerReturned() throws {
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        // Bob and Carol have no embeddings (faces removed)
+        let bob = TestHelpers.makePerson(name: "Bob", embeddingSeed: nil, in: ctx)
+        let carol = TestHelpers.makePerson(name: "Carol", embeddingSeed: nil, in: ctx)
+        try ctx.save()
+
+        let allPeople = [alice, bob, carol]
+        let options = generateOptions(correctPerson: alice, allPeople: allPeople, quizPeople: allPeople)
+
+        XCTAssertEqual(options, ["Alice"], "With all wrong-answer candidates removed, only the correct answer should remain")
     }
 }
