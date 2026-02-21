@@ -31,32 +31,6 @@ struct ContactLinkSection: View {
             if let contact = linkedContact {
                 linkedContactView(contact)
 
-                if shouldShowExportButton {
-                    Button {
-                        showPhotoExportConfirmation = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "photo.badge.arrow.down")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.teal)
-
-                            Text("Set as Contact Photo")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.textPrimary)
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textMuted)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(AppColors.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    .buttonStyle(.plain)
-                }
             } else {
                 notLinkedView
             }
