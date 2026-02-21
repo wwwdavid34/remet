@@ -174,7 +174,7 @@ struct FaceQuizView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        if sessionStats.totalAttempts > 0 {
+                        if !showingSessionComplete && sessionStats.totalAttempts > 0 {
                             showingSessionComplete = true
                         } else {
                             dismiss()
