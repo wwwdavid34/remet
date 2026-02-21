@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 /// Unified view combining Home dashboard and People list
 /// Primary tab for browsing and managing people
@@ -30,6 +31,10 @@ struct PeopleHomeView: View {
 
     // Cached computed values for performance
     @State private var cachedPeopleNeedingReview: [Person] = []
+
+    // Tips
+    private let newFaceTip = NewFaceTip()
+    private let practiceTip = PracticeTip()
 
     // Header fade threshold
     private let headerFadeThreshold: CGFloat = 60
@@ -333,6 +338,7 @@ struct PeopleHomeView: View {
                 )
             }
             .buttonStyle(.plain)
+            .popoverTip(newFaceTip)
 
             Button {
                 showAllEncounters = true
@@ -347,6 +353,7 @@ struct PeopleHomeView: View {
             .buttonStyle(.plain)
 
             Button {
+                PracticeTip().invalidate(reason: .actionPerformed)
                 showPractice = true
             } label: {
                 DashboardStatCard(
@@ -357,6 +364,7 @@ struct PeopleHomeView: View {
                 )
             }
             .buttonStyle(.plain)
+            .popoverTip(practiceTip)
         }
     }
 
@@ -612,6 +620,9 @@ struct PeopleHomeView: View {
     @ViewBuilder
     private var emptyState: some View {
         VStack(spacing: 24) {
+            TipView(newFaceTip)
+                .padding(.horizontal)
+
             Spacer()
 
             ZStack {

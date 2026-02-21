@@ -22,7 +22,17 @@ struct RemetApp: App {
     }
 
     static func configureTipKit() {
+        // Reset must happen BEFORE configure (TipKit won't allow reset after)
+        if UserDefaults.standard.bool(forKey: "pendingTipKitReset") {
+            try? Tips.resetDatastore()
+            UserDefaults.standard.removeObject(forKey: "pendingTipKitReset")
+        }
         try? Tips.configure([.displayFrequency(.immediate)])
+    }
+
+    /// Schedule a TipKit datastore reset for next launch (can't reset after configure)
+    static func scheduleTipKitReset() {
+        UserDefaults.standard.set(true, forKey: "pendingTipKitReset")
     }
 
     var sharedModelContainer: ModelContainer = {

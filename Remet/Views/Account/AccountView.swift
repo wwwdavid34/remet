@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 import StoreKit
-import TipKit
 
 struct AccountView: View {
     @Environment(\.modelContext) private var modelContext
@@ -53,8 +52,7 @@ struct AccountView: View {
                     onConfirm: {
                         DemoDataService.clearAllData(modelContext: modelContext)
                         AppSettings.shared.hasCompletedOnboarding = false
-                        try? Tips.resetDatastore()
-                        RemetApp.configureTipKit()
+                        RemetApp.scheduleTipKitReset()
                         showDeleteConfirmation = false
                     },
                     onCancel: {
@@ -484,8 +482,7 @@ struct AccountView: View {
         Section {
             Button {
                 settings.hasCompletedOnboarding = false
-                try? Tips.resetDatastore()
-                RemetApp.configureTipKit()
+                RemetApp.scheduleTipKitReset()
             } label: {
                 HStack {
                     Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
@@ -520,8 +517,7 @@ struct AccountView: View {
 
             Button {
                 DemoDataService.clearAllData(modelContext: modelContext)
-                try? Tips.resetDatastore()
-                RemetApp.configureTipKit()
+                RemetApp.scheduleTipKitReset()
             } label: {
                 Label("Clear All Data", systemImage: "trash")
             }

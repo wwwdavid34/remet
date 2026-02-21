@@ -248,9 +248,6 @@ struct PracticeHomeView: View {
                                 .font(.headline)
                                 .padding(.horizontal)
 
-                            TipView(spacedReviewTip)
-                                .padding(.horizontal)
-
                             VStack(spacing: 10) {
                                 // Spaced Review with Recommended badge
                                 QuizModeButton(
@@ -263,6 +260,7 @@ struct PracticeHomeView: View {
                                     selectedMode = .spaced
                                     showingQuiz = true
                                 }
+                                .popoverTip(spacedReviewTip)
 
                                 // Random mode
                                 QuizModeButton(
@@ -295,9 +293,6 @@ struct PracticeHomeView: View {
                                 Spacer()
                             }
                             .padding(.horizontal)
-
-                            TipView(setFiltersTip)
-                                .padding(.horizontal)
 
                             Button {
                                 SetFiltersTip().invalidate(reason: .actionPerformed)
@@ -346,6 +341,7 @@ struct PracticeHomeView: View {
                                 .glassCard(intensity: .thin, cornerRadius: 14)
                             }
                             .buttonStyle(.plain)
+                            .popoverTip(setFiltersTip)
                             .padding(.horizontal)
 
                             if hasCustomFilters {

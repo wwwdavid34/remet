@@ -153,6 +153,7 @@ struct ContentView: View {
         VStack(spacing: 0) {
             menuRow(icon: "camera.fill", label: String(localized: "Take Photo")) {
                 AddEncounterTip().invalidate(reason: .actionPerformed)
+                NewFaceTip().invalidate(reason: .actionPerformed)
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showQuickCapture = true
@@ -164,6 +165,7 @@ struct ContentView: View {
 
             menuRow(icon: "photo.on.rectangle", label: String(localized: "Import from Library")) {
                 AddEncounterTip().invalidate(reason: .actionPerformed)
+                NewFaceTip().invalidate(reason: .actionPerformed)
                 dismissAddActions()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showPhotoImport = true

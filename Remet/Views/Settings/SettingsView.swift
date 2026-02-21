@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import TipKit
 
 struct SettingsView: View {
     @Query private var encounters: [Encounter]
@@ -240,8 +239,7 @@ struct SettingsView: View {
         Section {
             Button {
                 settings.hasCompletedOnboarding = false
-                try? Tips.resetDatastore()
-                RemetApp.configureTipKit()
+                RemetApp.scheduleTipKitReset()
             } label: {
                 HStack {
                     Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
