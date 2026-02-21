@@ -18,6 +18,8 @@ struct FaceQuizView: View {
     @State private var quizStartTime = Date()
     @State private var sessionStats = QuizSessionStats()
     @State private var showingSessionComplete = false
+    @State private var currentFaceImage: UIImage?
+    @State private var resultMessage: String = ""
 
     var body: some View {
         NavigationStack {
@@ -67,8 +69,7 @@ struct FaceQuizView: View {
                                 )
                                 .frame(width: 200, height: 200)
 
-                            if let embedding = (currentPerson.embeddings ?? []).randomElement(),
-                               let uiImage = UIImage(data: embedding.faceCropData) {
+                            if let uiImage = currentFaceImage {
                                 Image(uiImage: uiImage)
                                     .resizable()
                                     .scaledToFill()
@@ -100,7 +101,8 @@ struct FaceQuizView: View {
                             QuizResultView(
                                 person: currentPerson,
                                 wasCorrect: wasCorrect,
-                                userGuess: selectedAnswer ?? ""
+                                userGuess: selectedAnswer ?? "",
+                                resultMessage: resultMessage
                             )
 
                             Button {
@@ -221,6 +223,14 @@ struct FaceQuizView: View {
         wrongAnswers = Array(wrongAnswers.prefix(wrongCount))
 
         currentOptions = (wrongAnswers + [correctPerson.name]).shuffled()
+
+        // Capture face image once so it doesn't change on re-render
+        if let embedding = (correctPerson.embeddings ?? []).randomElement(),
+           let uiImage = UIImage(data: embedding.faceCropData) {
+            currentFaceImage = uiImage
+        } else {
+            currentFaceImage = nil
+        }
     }
 
     private func selectAnswer(_ answer: String?) {
@@ -245,6 +255,10 @@ struct FaceQuizView: View {
         modelContext.insert(attempt)
 
         updateSpacedRepetition(for: person, wasCorrect: wasCorrect)
+
+        resultMessage = wasCorrect
+            ? WittyCopy.random(from: WittyCopy.quizCorrect)
+            : WittyCopy.random(from: WittyCopy.quizIncorrect)
 
         try? modelContext.save()
         showingResult = true
@@ -300,11 +314,12 @@ struct QuizResultView: View {
     let person: Person
     let wasCorrect: Bool
     let userGuess: String
+    let resultMessage: String
 
     var body: some View {
         VStack(spacing: 12) {
-            // Witty feedback
-            Text(wasCorrect ? WittyCopy.random(from: WittyCopy.quizCorrect) : WittyCopy.random(from: WittyCopy.quizIncorrect))
+            // Witty feedback (pre-computed to avoid jumping on re-render)
+            Text(resultMessage)
                 .font(.headline)
                 .foregroundStyle(wasCorrect ? AppColors.success : AppColors.coral)
 
