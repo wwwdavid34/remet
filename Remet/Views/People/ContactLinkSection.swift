@@ -10,28 +10,15 @@ struct ContactLinkSection: View {
 
     private let contactsManager = ContactsManager.shared
 
-    private enum ActiveAlert {
-        case unlinkConfirmation
-        case photoExportConfirmation
-        case photoExportSuccess
-        case exportError(String)
-        case limitedAccess
-
-        var title: String {
-            switch self {
-            case .unlinkConfirmation: "Unlink Contact"
-            case .photoExportConfirmation: "Update Contact Photo"
-            case .photoExportSuccess: "Photo Updated"
-            case .exportError: "Error"
-            case .limitedAccess: "Limited Contacts Access"
-            }
-        }
-    }
-
     @State private var linkedContact: LinkedContactInfo?
     @State private var showContactPicker = false
     @State private var showPaywall = false
-    @State private var activeAlert: ActiveAlert?
+    @State private var showUnlinkConfirmation = false
+    @State private var showPhotoExportConfirmation = false
+    @State private var showPhotoExportSuccess = false
+    @State private var showExportError = false
+    @State private var showLimitedAccessAlert = false
+    @State private var exportError: String?
 
     /// Whether the contact photo differs from the current Remet profile
     private var shouldShowExportButton: Bool {
@@ -46,7 +33,7 @@ struct ContactLinkSection: View {
 
                 if shouldShowExportButton {
                     Button {
-                        activeAlert = .photoExportConfirmation
+                        showPhotoExportConfirmation = true
                     } label: {
                         HStack(spacing: 10) {
                             Image(systemName: "photo.badge.arrow.down")
@@ -90,50 +77,41 @@ struct ContactLinkSection: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
-        .alert(
-            activeAlert?.title ?? "",
-            isPresented: Binding(
-                get: { activeAlert != nil },
-                set: { if !$0 { activeAlert = nil } }
-            ),
-            presenting: activeAlert
-        ) { alert in
-            switch alert {
-            case .unlinkConfirmation:
-                Button("Cancel", role: .cancel) {}
-                Button("Unlink", role: .destructive) {
-                    unlinkContact()
-                }
-            case .photoExportConfirmation:
-                Button("Cancel", role: .cancel) {}
-                Button("Update") {
-                    exportPhotoToContact()
-                }
-            case .photoExportSuccess:
-                Button("OK", role: .cancel) {}
-            case .exportError:
-                Button("OK") {}
-            case .limitedAccess:
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-                Button("Not Now", role: .cancel) {}
+        .alert("Unlink Contact", isPresented: $showUnlinkConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Unlink", role: .destructive) {
+                unlinkContact()
             }
-        } message: { alert in
-            switch alert {
-            case .unlinkConfirmation:
-                Text("This will remove the link and clear synced details (phone, email, etc.). Your iOS contact won't be affected.")
-            case .photoExportConfirmation:
-                Text("This will replace \(linkedContact?.fullName ?? "the contact")'s photo with the face from Remet.")
-            case .photoExportSuccess:
-                Text("Contact photo has been updated successfully.")
-            case .exportError(let error):
-                Text(error)
-            case .limitedAccess:
-                Text("Remet has limited access to your contacts. Grant full access in Settings to sync contact details like phone numbers, emails, and photos.")
+        } message: {
+            Text("This will remove the link and clear synced details (phone, email, etc.). Your iOS contact won't be affected.")
+        }
+        .alert("Update Contact Photo", isPresented: $showPhotoExportConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Update") {
+                exportPhotoToContact()
             }
+        } message: {
+            Text("This will replace \(linkedContact?.fullName ?? "the contact")'s photo with the face from Remet.")
+        }
+        .alert("Photo Updated", isPresented: $showPhotoExportSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Contact photo has been updated successfully.")
+        }
+        .alert("Error", isPresented: $showExportError) {
+            Button("OK") {}
+        } message: {
+            Text(exportError ?? "An error occurred")
+        }
+        .alert("Limited Contacts Access", isPresented: $showLimitedAccessAlert) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Not Now", role: .cancel) {}
+        } message: {
+            Text("Remet has limited access to your contacts. Grant full access in Settings to sync contact details like phone numbers, emails, and photos.")
         }
     }
 
@@ -230,7 +208,7 @@ struct ContactLinkSection: View {
 
             if shouldShowExportButton {
                 Button {
-                    activeAlert = .photoExportConfirmation
+                    showPhotoExportConfirmation = true
                 } label: {
                     Label("Set Contact Photo", systemImage: "photo.badge.arrow.down")
                 }
@@ -239,7 +217,7 @@ struct ContactLinkSection: View {
             Divider()
 
             Button(role: .destructive) {
-                activeAlert = .unlinkConfirmation
+                showUnlinkConfirmation = true
             } label: {
                 Label("Unlink Contact", systemImage: "link.badge.minus")
             }
@@ -317,10 +295,16 @@ struct ContactLinkSection: View {
             if let fullContact = contactsManager.fetchContact(identifier: contactId) {
                 linkedContact = LinkedContactInfo(from: fullContact)
                 contactsManager.syncContactData(from: contactId, to: person)
-            } else if !contactsManager.isFullAccess {
-                activeAlert = .limitedAccess
             }
             try? modelContext.save()
+
+            // Show limited access nudge AFTER save and sheet dismissal settle.
+            // Presenting an alert while the picker sheet is still animating
+            // causes SwiftUI to silently drop it.
+            if !contactsManager.isFullAccess {
+                try? await Task.sleep(for: .milliseconds(800))
+                showLimitedAccessAlert = true
+            }
         }
     }
 
@@ -355,12 +339,13 @@ struct ContactLinkSection: View {
                 )
                 await MainActor.run {
                     person.contactPhotoSourceEmbeddingId = person.profileEmbedding?.id
-                    activeAlert = .photoExportSuccess
+                    showPhotoExportSuccess = true
                     loadLinkedContact() // Refresh to show new thumbnail
                 }
             } catch {
                 await MainActor.run {
-                    activeAlert = .exportError(error.localizedDescription)
+                    exportError = error.localizedDescription
+                    showExportError = true
                 }
             }
         }
