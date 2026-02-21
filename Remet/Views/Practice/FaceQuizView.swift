@@ -195,9 +195,48 @@ struct FaceQuizView: View {
     }
 
     private func setupQuiz() {
+        removeOrphanedEmbeddings()
         shuffledPeople = people.filter { !($0.embeddings ?? []).isEmpty }.shuffled()
         quizStartTime = Date()
         generateOptions()
+    }
+
+    /// Deletes embeddings whose bounding box has been reassigned to a different person.
+    /// This cleans up residual pollution from re-labeling faces on saved encounters.
+    private func removeOrphanedEmbeddings() {
+        // Fetch failure is non-fatal: if encounters cannot be loaded, skip cleanup silently.
+        let allEncounters = (try? modelContext.fetch(FetchDescriptor<Encounter>())) ?? []
+
+        // Build a lookup: boundingBoxId → current personId from all encounter bounding boxes
+        var boxOwnership: [UUID: UUID] = [:]
+        for encounter in allEncounters {
+            for photo in encounter.photos ?? [] {
+                for box in photo.faceBoundingBoxes where box.personId != nil {
+                    boxOwnership[box.id] = box.personId!
+                }
+            }
+            for box in encounter.faceBoundingBoxes where box.personId != nil {
+                boxOwnership[box.id] = box.personId!
+            }
+        }
+
+        guard !boxOwnership.isEmpty else { return }
+
+        var didDelete = false
+        for person in people {
+            for embedding in person.embeddings ?? [] {
+                guard let boxId = embedding.boundingBoxId,
+                      let currentOwner = boxOwnership[boxId],
+                      currentOwner != person.id else { continue }
+                modelContext.delete(embedding)
+                didDelete = true
+            }
+        }
+
+        if didDelete {
+            // Save failure is non-fatal: orphaned embeddings will be cleaned up again on the next quiz start.
+            try? modelContext.save()
+        }
     }
 
     private func generateOptions() {

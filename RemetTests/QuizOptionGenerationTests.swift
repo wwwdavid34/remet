@@ -215,4 +215,143 @@ final class QuizOptionGenerationTests: XCTestCase {
 
         XCTAssertEqual(options, ["Alice"], "With all wrong-answer candidates removed, only the correct answer should remain")
     }
+
+    // MARK: - Orphaned Embedding Cleanup
+
+    /// Replicates the removeOrphanedEmbeddings() logic from FaceQuizView.
+    private func removeOrphanedEmbeddings(for people: [Person], encounters: [Encounter], in ctx: ModelContext) {
+        var boxOwnership: [UUID: UUID] = [:]
+        for encounter in encounters {
+            for photo in encounter.photos ?? [] {
+                for box in photo.faceBoundingBoxes where box.personId != nil {
+                    boxOwnership[box.id] = box.personId!
+                }
+            }
+            for box in encounter.faceBoundingBoxes where box.personId != nil {
+                boxOwnership[box.id] = box.personId!
+            }
+        }
+        guard !boxOwnership.isEmpty else { return }
+        var didDelete = false
+        for person in people {
+            for embedding in person.embeddings ?? [] {
+                guard let boxId = embedding.boundingBoxId,
+                      let currentOwner = boxOwnership[boxId],
+                      currentOwner != person.id else { continue }
+                ctx.delete(embedding)
+                didDelete = true
+            }
+        }
+        if didDelete { try? ctx.save() }
+    }
+
+    @MainActor
+    func testOrphanCleanup_reassignedEmbedding_isDeleted() throws {
+        // Simulate pre-v1.1.0 pollution: Face was assigned to Alice, then re-labeled to Bob.
+        // Alice still has the orphaned embedding (boundingBoxId points to a box now owned by Bob).
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let bob = TestHelpers.makePerson(name: "Bob", embeddingSeed: 2, in: ctx)
+
+        let boxId = UUID()
+
+        // Alice has an orphaned embedding whose bounding box was re-labeled to Bob
+        let orphanedEmbedding = FaceEmbedding(
+            vector: TestHelpers.vectorToData(TestHelpers.makeEmbeddingVector(seed: 99)),
+            faceCropData: Data(),
+            boundingBoxId: boxId
+        )
+        orphanedEmbedding.person = alice
+        alice.embeddings = (alice.embeddings ?? []) + [orphanedEmbedding]
+        ctx.insert(orphanedEmbedding)
+
+        // Encounter with bounding box now owned by Bob
+        let encounter = TestHelpers.makeEncounter(in: ctx)
+        let box = FaceBoundingBox(id: boxId, rect: .zero, personId: bob.id)
+        encounter.faceBoundingBoxes = [box]
+
+        try ctx.save()
+
+        XCTAssertEqual((alice.embeddings ?? []).count, 2, "Alice starts with 2 embeddings (1 correct + 1 orphaned)")
+
+        removeOrphanedEmbeddings(for: [alice, bob], encounters: [encounter], in: ctx)
+
+        // Re-fetch to confirm orphaned embedding was removed from the store
+        let allEmbeddings = try ctx.fetch(FetchDescriptor<FaceEmbedding>())
+        let aliceEmbeddings = allEmbeddings.filter { $0.person?.id == alice.id }
+        XCTAssertEqual(aliceEmbeddings.count, 1, "Orphaned embedding should be deleted; Alice should keep only her correct embedding")
+        XCTAssertNil(aliceEmbeddings.first?.boundingBoxId, "Remaining embedding should be the one without a boundingBoxId (her own face)")
+    }
+
+    @MainActor
+    func testOrphanCleanup_correctEmbedding_isKept() throws {
+        // An embedding whose bounding box still belongs to the same person should NOT be deleted.
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let boxId = UUID()
+
+        let embedding = FaceEmbedding(
+            vector: TestHelpers.vectorToData(TestHelpers.makeEmbeddingVector(seed: 1)),
+            faceCropData: Data(),
+            boundingBoxId: boxId
+        )
+        embedding.person = alice
+        alice.embeddings = [embedding]
+        ctx.insert(embedding)
+
+        let encounter = TestHelpers.makeEncounter(in: ctx)
+        let box = FaceBoundingBox(id: boxId, rect: .zero, personId: alice.id)
+        encounter.faceBoundingBoxes = [box]
+
+        try ctx.save()
+
+        removeOrphanedEmbeddings(for: [alice], encounters: [encounter], in: ctx)
+
+        let allEmbeddings = try ctx.fetch(FetchDescriptor<FaceEmbedding>())
+        let aliceEmbeddings = allEmbeddings.filter { $0.person?.id == alice.id }
+        XCTAssertEqual(aliceEmbeddings.count, 1, "Correctly owned embedding must not be deleted")
+    }
+
+    @MainActor
+    func testOrphanCleanup_noEncounters_noDeletion() throws {
+        // When there are no encounters (empty boxOwnership), nothing should be deleted.
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        try ctx.save()
+
+        removeOrphanedEmbeddings(for: [alice], encounters: [], in: ctx)
+
+        let allEmbeddings = try ctx.fetch(FetchDescriptor<FaceEmbedding>())
+        let aliceEmbeddings = allEmbeddings.filter { $0.person?.id == alice.id }
+        XCTAssertEqual(aliceEmbeddings.count, 1, "No encounters means no orphan detection; embedding should be kept")
+    }
+
+    @MainActor
+    func testOrphanCleanup_embeddingWithoutBoxId_isKept() throws {
+        // Embeddings without a boundingBoxId (e.g. from QuickCapture) must never be treated as orphaned.
+        let container = try TestHelpers.makeModelContainer()
+        let ctx = container.mainContext
+
+        let alice = TestHelpers.makePerson(name: "Alice", embeddingSeed: 1, in: ctx)
+        let bob = TestHelpers.makePerson(name: "Bob", embeddingSeed: 2, in: ctx)
+
+        // Encounter with a box owned by Bob — but Alice's embedding has no boundingBoxId
+        let encounter = TestHelpers.makeEncounter(in: ctx)
+        let box = FaceBoundingBox(id: UUID(), rect: .zero, personId: bob.id)
+        encounter.faceBoundingBoxes = [box]
+
+        try ctx.save()
+
+        removeOrphanedEmbeddings(for: [alice], encounters: [encounter], in: ctx)
+
+        let allEmbeddings = try ctx.fetch(FetchDescriptor<FaceEmbedding>())
+        let aliceEmbeddings = allEmbeddings.filter { $0.person?.id == alice.id }
+        XCTAssertEqual(aliceEmbeddings.count, 1, "Embedding with no boundingBoxId must not be deleted")
+    }
 }
