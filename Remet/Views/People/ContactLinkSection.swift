@@ -5,10 +5,10 @@ import ContactsUI
 /// Section for linking a Person to an iOS Contact (Premium feature)
 struct ContactLinkSection: View {
     @Bindable var person: Person
+    var isPremium: Bool
     @Environment(\.modelContext) private var modelContext
 
     private let contactsManager = ContactsManager.shared
-    private let subscriptionManager = SubscriptionManager.shared
 
     @State private var linkedContact: LinkedContactInfo?
     @State private var showContactPicker = false
@@ -59,10 +59,7 @@ struct ContactLinkSection: View {
                 notLinkedView
             }
         }
-        .onAppear {
-            loadLinkedContact()
-        }
-        .onChange(of: person.contactIdentifier) { _, _ in
+        .task(id: person.contactIdentifier) {
             loadLinkedContact()
         }
         .sheet(isPresented: $showContactPicker) {
@@ -126,7 +123,7 @@ struct ContactLinkSection: View {
 
                 Spacer()
 
-                if !subscriptionManager.isPremium {
+                if !isPremium {
                     PremiumBadge()
                 }
 
@@ -243,7 +240,7 @@ struct ContactLinkSection: View {
     // MARK: - Actions
 
     private func handleLinkTap() {
-        if subscriptionManager.isPremium {
+        if isPremium {
             requestContactsAccessAndShowPicker()
         } else {
             showPaywall = true
@@ -288,6 +285,7 @@ struct ContactLinkSection: View {
             } else {
                 loadLinkedContact()
             }
+            try? modelContext.save()
         }
     }
 
@@ -295,6 +293,7 @@ struct ContactLinkSection: View {
         person.contactIdentifier = nil
         person.contactPhotoSourceEmbeddingId = nil
         linkedContact = nil
+        try? modelContext.save()
     }
 
     private func syncFromContact() {
@@ -387,7 +386,7 @@ extension UINavigationController {
 #Preview {
     ScrollView {
         VStack(spacing: 20) {
-            ContactLinkSection(person: Person(name: "John Doe"))
+            ContactLinkSection(person: Person(name: "John Doe"), isPremium: false)
         }
         .padding()
     }

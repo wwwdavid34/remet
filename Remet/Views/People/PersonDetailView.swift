@@ -4,6 +4,7 @@ import SwiftData
 struct PersonDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(SubscriptionManager.self) private var subscriptionManager
     @Query private var allEncounters: [Encounter]
     @Query(sort: \Person.name) private var allPeople: [Person]
     @Bindable var person: Person
@@ -618,7 +619,7 @@ struct PersonDetailView: View {
         ) {
             VStack(alignment: .leading, spacing: 10) {
                 // Contact linking (Premium feature)
-                ContactLinkSection(person: person)
+                ContactLinkSection(person: person, isPremium: subscriptionManager.isPremium)
                     .padding(.bottom, 4)
 
                 if let email = person.email {
@@ -1495,6 +1496,7 @@ struct EncountersTimelineSheet: View {
 struct EditPersonSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(SubscriptionManager.self) private var subscriptionManager
     @Bindable var person: Person
     @Query private var allEncounters: [Encounter]
 
@@ -1702,7 +1704,7 @@ struct EditPersonSheet: View {
                 // Contact Section
                 Section {
                     // Link to iOS Contacts (Premium)
-                    ContactLinkSection(person: person)
+                    ContactLinkSection(person: person, isPremium: subscriptionManager.isPremium)
 
                     HStack(spacing: 12) {
                         Image(systemName: "envelope.fill")
