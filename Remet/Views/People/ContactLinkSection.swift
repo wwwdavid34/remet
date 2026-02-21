@@ -17,6 +17,7 @@ struct ContactLinkSection: View {
     @State private var showPhotoExportConfirmation = false
     @State private var showPhotoExportSuccess = false
     @State private var showLimitedAccessAlert = false
+    @State private var showExportError = false
     @State private var exportError: String?
 
     /// Whether the contact photo differs from the current Remet profile
@@ -97,7 +98,7 @@ struct ContactLinkSection: View {
         } message: {
             Text("Contact photo has been updated successfully.")
         }
-        .alert("Error", isPresented: .constant(exportError != nil)) {
+        .alert("Error", isPresented: $showExportError) {
             Button("OK") {
                 exportError = nil
             }
@@ -338,6 +339,7 @@ struct ContactLinkSection: View {
             } catch {
                 await MainActor.run {
                     exportError = error.localizedDescription
+                    showExportError = true
                 }
             }
         }

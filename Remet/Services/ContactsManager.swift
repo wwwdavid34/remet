@@ -123,7 +123,7 @@ final class ContactsManager {
 
     /// Set the contact's photo from image data
     func setContactPhoto(contactIdentifier: String, imageData: Data) async throws {
-        guard authorizationStatus == .authorized else {
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             throw ContactPhotoError.notAuthorized
         }
 
