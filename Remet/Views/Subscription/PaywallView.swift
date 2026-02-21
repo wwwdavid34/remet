@@ -176,7 +176,12 @@ struct PaywallView: View {
 
                 // Restore purchases
                 Button("Restore Purchases") {
-                    Task { await subscriptionManager.restorePurchases() }
+                    Task {
+                        await subscriptionManager.restorePurchases()
+                        if subscriptionManager.purchaseError != nil {
+                            showError = true
+                        }
+                    }
                 }
                 .font(.subheadline)
                 .foregroundStyle(AppColors.teal)

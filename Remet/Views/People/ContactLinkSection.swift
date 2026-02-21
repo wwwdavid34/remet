@@ -5,10 +5,10 @@ import ContactsUI
 /// Section for linking a Person to an iOS Contact (Premium feature)
 struct ContactLinkSection: View {
     @Bindable var person: Person
+    var isPremium: Bool
     @Environment(\.modelContext) private var modelContext
 
     private let contactsManager = ContactsManager.shared
-    private let subscriptionManager = SubscriptionManager.shared
 
     @State private var linkedContact: LinkedContactInfo?
     @State private var showContactPicker = false
@@ -16,6 +16,8 @@ struct ContactLinkSection: View {
     @State private var showUnlinkConfirmation = false
     @State private var showPhotoExportConfirmation = false
     @State private var showPhotoExportSuccess = false
+    @State private var showExportError = false
+    @State private var showLimitedAccessAlert = false
     @State private var exportError: String?
 
     /// Whether the contact photo differs from the current Remet profile
@@ -29,40 +31,11 @@ struct ContactLinkSection: View {
             if let contact = linkedContact {
                 linkedContactView(contact)
 
-                if shouldShowExportButton {
-                    Button {
-                        showPhotoExportConfirmation = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "photo.badge.arrow.down")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.teal)
-
-                            Text("Set as Contact Photo")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.textPrimary)
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.textMuted)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .background(AppColors.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    .buttonStyle(.plain)
-                }
             } else {
                 notLinkedView
             }
         }
-        .onAppear {
-            loadLinkedContact()
-        }
-        .onChange(of: person.contactIdentifier) { _, _ in
+        .task(id: person.contactIdentifier) {
             loadLinkedContact()
         }
         .sheet(isPresented: $showContactPicker) {
@@ -84,7 +57,7 @@ struct ContactLinkSection: View {
                 unlinkContact()
             }
         } message: {
-            Text("This will remove the link to this contact. Your contact's data won't be affected.")
+            Text("This will remove the link and clear synced details (phone, email, etc.). Your iOS contact won't be affected.")
         }
         .alert("Update Contact Photo", isPresented: $showPhotoExportConfirmation) {
             Button("Cancel", role: .cancel) {}
@@ -99,12 +72,20 @@ struct ContactLinkSection: View {
         } message: {
             Text("Contact photo has been updated successfully.")
         }
-        .alert("Error", isPresented: .constant(exportError != nil)) {
-            Button("OK") {
-                exportError = nil
-            }
+        .alert("Error", isPresented: $showExportError) {
+            Button("OK") {}
         } message: {
             Text(exportError ?? "An error occurred")
+        }
+        .alert("Limited Contacts Access", isPresented: $showLimitedAccessAlert) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Not Now", role: .cancel) {}
+        } message: {
+            Text("Remet has limited access to your contacts. Grant full access in Settings to sync contact details like phone numbers, emails, and photos.")
         }
     }
 
@@ -126,7 +107,7 @@ struct ContactLinkSection: View {
 
                 Spacer()
 
-                if !subscriptionManager.isPremium {
+                if !isPremium {
                     PremiumBadge()
                 }
 
@@ -243,7 +224,7 @@ struct ContactLinkSection: View {
     // MARK: - Actions
 
     private func handleLinkTap() {
-        if subscriptionManager.isPremium {
+        if isPremium {
             requestContactsAccessAndShowPicker()
         } else {
             showPaywall = true
@@ -269,10 +250,10 @@ struct ContactLinkSection: View {
 
         if let contact = contactsManager.fetchContact(identifier: identifier) {
             linkedContact = LinkedContactInfo(from: contact)
-        } else {
-            // Contact was deleted - clear the link
-            person.contactIdentifier = nil
-            linkedContact = nil
+        } else if linkedContact == nil {
+            // Can't fetch (limited access or deleted) but link exists —
+            // show fallback so the linked view renders with context menu.
+            linkedContact = LinkedContactInfo(identifier: identifier, fallbackName: person.name)
         }
     }
 
@@ -280,13 +261,23 @@ struct ContactLinkSection: View {
         let contactId = contact.identifier
         person.contactIdentifier = contactId
 
-        // Fetch full contact with all keys since picker returns minimal data
+        // Use the picker's contact directly for immediate UI update,
+        // then try to enrich with a full fetch (may fail under limited access).
+        linkedContact = LinkedContactInfo(from: contact)
+
         Task { @MainActor in
             if let fullContact = contactsManager.fetchContact(identifier: contactId) {
                 linkedContact = LinkedContactInfo(from: fullContact)
                 contactsManager.syncContactData(from: contactId, to: person)
-            } else {
-                loadLinkedContact()
+            }
+            try? modelContext.save()
+
+            // Show limited access nudge AFTER save and sheet dismissal settle.
+            // Presenting an alert while the picker sheet is still animating
+            // causes SwiftUI to silently drop it.
+            if !contactsManager.isFullAccess {
+                try? await Task.sleep(for: .milliseconds(800))
+                showLimitedAccessAlert = true
             }
         }
     }
@@ -294,7 +285,14 @@ struct ContactLinkSection: View {
     private func unlinkContact() {
         person.contactIdentifier = nil
         person.contactPhotoSourceEmbeddingId = nil
+        // Clear fields that were synced from the contact
+        person.phone = nil
+        person.email = nil
+        person.company = nil
+        person.jobTitle = nil
+        person.birthday = nil
         linkedContact = nil
+        try? modelContext.save()
     }
 
     private func syncFromContact() {
@@ -321,6 +319,7 @@ struct ContactLinkSection: View {
             } catch {
                 await MainActor.run {
                     exportError = error.localizedDescription
+                    showExportError = true
                 }
             }
         }
@@ -387,7 +386,7 @@ extension UINavigationController {
 #Preview {
     ScrollView {
         VStack(spacing: 20) {
-            ContactLinkSection(person: Person(name: "John Doe"))
+            ContactLinkSection(person: Person(name: "John Doe"), isPremium: false)
         }
         .padding()
     }

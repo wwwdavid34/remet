@@ -15,6 +15,7 @@ final class ContactsManager {
     enum AuthorizationStatus {
         case notDetermined
         case authorized
+        case limited
         case denied
         case restricted
     }
@@ -30,10 +31,14 @@ final class ContactsManager {
         case .restricted:
             return .restricted
         case .limited:
-            return .authorized  // Treat limited as authorized
+            return .limited
         @unknown default:
             return .denied
         }
+    }
+
+    var isFullAccess: Bool {
+        authorizationStatus == .authorized
     }
 
     /// Request access to contacts
@@ -118,7 +123,7 @@ final class ContactsManager {
 
     /// Set the contact's photo from image data
     func setContactPhoto(contactIdentifier: String, imageData: Data) async throws {
-        guard authorizationStatus == .authorized else {
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             throw ContactPhotoError.notAuthorized
         }
 
@@ -196,6 +201,18 @@ struct LinkedContactInfo {
     let organization: String?
     let jobTitle: String?
     let thumbnailData: Data?
+
+    /// Fallback initializer when the contact can't be fetched (limited access / deleted)
+    init(identifier: String, fallbackName: String) {
+        self.identifier = identifier
+        self.fullName = fallbackName
+        self.phoneNumbers = []
+        self.emailAddresses = []
+        self.birthday = nil
+        self.organization = nil
+        self.jobTitle = nil
+        self.thumbnailData = nil
+    }
 
     init(from contact: CNContact) {
         self.identifier = contact.identifier
