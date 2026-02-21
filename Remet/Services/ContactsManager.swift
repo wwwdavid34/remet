@@ -15,6 +15,7 @@ final class ContactsManager {
     enum AuthorizationStatus {
         case notDetermined
         case authorized
+        case limited
         case denied
         case restricted
     }
@@ -30,10 +31,14 @@ final class ContactsManager {
         case .restricted:
             return .restricted
         case .limited:
-            return .authorized  // Treat limited as authorized
+            return .limited
         @unknown default:
             return .denied
         }
+    }
+
+    var isFullAccess: Bool {
+        authorizationStatus == .authorized
     }
 
     /// Request access to contacts

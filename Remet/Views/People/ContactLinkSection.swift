@@ -16,6 +16,7 @@ struct ContactLinkSection: View {
     @State private var showUnlinkConfirmation = false
     @State private var showPhotoExportConfirmation = false
     @State private var showPhotoExportSuccess = false
+    @State private var showLimitedAccessAlert = false
     @State private var exportError: String?
 
     /// Whether the contact photo differs from the current Remet profile
@@ -102,6 +103,16 @@ struct ContactLinkSection: View {
             }
         } message: {
             Text(exportError ?? "An error occurred")
+        }
+        .alert("Limited Contacts Access", isPresented: $showLimitedAccessAlert) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Not Now", role: .cancel) {}
+        } message: {
+            Text("Remet has limited access to your contacts. Grant full access in Settings to sync contact details like phone numbers, emails, and photos.")
         }
     }
 
@@ -285,6 +296,8 @@ struct ContactLinkSection: View {
             if let fullContact = contactsManager.fetchContact(identifier: contactId) {
                 linkedContact = LinkedContactInfo(from: fullContact)
                 contactsManager.syncContactData(from: contactId, to: person)
+            } else if !contactsManager.isFullAccess {
+                showLimitedAccessAlert = true
             }
             try? modelContext.save()
         }
