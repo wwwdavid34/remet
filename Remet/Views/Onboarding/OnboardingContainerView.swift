@@ -7,8 +7,8 @@ struct OnboardingContainerView: View {
     @State private var createdMeProfile: Person?
     @State private var showSkipProfileAlert = false
 
-    /// Total onboarding steps (Welcome, Profile, LiveScan, Memory, Complete)
-    private let totalSteps = 5
+    /// Total onboarding steps (Welcome, Profile, Memory, Complete)
+    private let totalSteps = 4
 
     var body: some View {
         ZStack {
@@ -32,7 +32,6 @@ struct OnboardingContainerView: View {
                     onComplete: { person in
                         createdMeProfile = person
                         withAnimation(.easeInOut(duration: 0.3)) {
-                            // Go to live scan if profile was created
                             currentStep = 2
                         }
                     },
@@ -43,8 +42,7 @@ struct OnboardingContainerView: View {
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 2:
-                // Live Scan demo - only shown if profile was created
-                OnboardingLiveScanView(
+                OnboardingFirstMemoryView(
                     currentStep: currentStep,
                     totalSteps: totalSteps,
                     onComplete: {
@@ -61,23 +59,6 @@ struct OnboardingContainerView: View {
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
 
             case 3:
-                OnboardingFirstMemoryView(
-                    currentStep: currentStep,
-                    totalSteps: totalSteps,
-                    onComplete: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            currentStep = 4
-                        }
-                    },
-                    onSkip: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            currentStep = 4
-                        }
-                    }
-                )
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-
-            case 4:
                 OnboardingCompleteView(
                     currentStep: currentStep,
                     totalSteps: totalSteps,
@@ -98,7 +79,7 @@ struct OnboardingContainerView: View {
         .onChange(of: showSkipProfileAlert) { _, isPresented in
             if !isPresented && currentStep == 1 {
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    currentStep = 3
+                    currentStep = 2
                 }
             }
         }
