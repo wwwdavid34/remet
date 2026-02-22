@@ -6,6 +6,7 @@ import UserNotifications
 class AppState {
     var pendingSharedImagePaths: [String] = []
     var shouldProcessSharedImages = false
+    var pendingProfileImportURL: URL?
 }
 
 @main
@@ -109,8 +110,14 @@ struct RemetApp: App {
     }
 
     private func handleIncomingURL(_ url: URL) {
+        // Handle .remet profile files
+        if url.pathExtension.lowercased() == "remet" {
+            appState.pendingProfileImportURL = url
+            return
+        }
+
+        // Existing URL scheme handling
         guard url.scheme == "remet", url.host == "import" else { return }
-        // URL scheme is just a signal — actual image paths are in shared UserDefaults
         checkForPendingSharedImages()
     }
 

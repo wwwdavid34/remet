@@ -99,6 +99,7 @@
 		B957D837F98F1A7AB5C7F01E /* RemetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D7A7FA0DD4D205F36C96BE /* RemetApp.swift */; };
 		BAC8B84266B0B07848E45901 /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA755CBE9A5A00609FC2D156 /* AppSettingsTests.swift */; };
 		BD7E54D0A7B38467EE4F2CD5 /* PersonMergeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */; };
+		391EE956F8C771C2B1218FC1 /* ProfileImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */; };
 		BE01D1814E4D2AFAADF77D59 /* ModelRelationshipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B937C59C661D26A66A6056 /* ModelRelationshipTests.swift */; };
 		C30F9E41870DF68EB50DEC93 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450F9A1A3B5B6AD0D184E282 /* Person.swift */; };
 		C4CA14631D70FBBE1A9EB210 /* MemoryScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D0231DA8A4A4C455EE11F /* MemoryScanView.swift */; };
@@ -244,6 +245,7 @@
 		C4782D317377C335A7A208BD /* AddPersonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPersonView.swift; sourceTree = "<group>"; };
 		C5115D265811AE22010673D1 /* MemoryScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanViewModel.swift; sourceTree = "<group>"; };
 		C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMergeView.swift; sourceTree = "<group>"; };
+		B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImportView.swift; sourceTree = "<group>"; };
 		C5B49D07A46E42BAF6686182 /* PersonFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonFilterTests.swift; sourceTree = "<group>"; };
 		C5D7A7FA0DD4D205F36C96BE /* RemetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemetApp.swift; sourceTree = "<group>"; };
 		C68DFCAA52134F4AC268ED82 /* MatchResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchResultCard.swift; sourceTree = "<group>"; };
@@ -574,6 +576,7 @@
 				8506C97A0F1D2A3A3C3BDD51 /* PeopleListView.swift */,
 				4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */,
 				C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */,
+				B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */,
 			);
 			path = People;
 			sourceTree = "<group>";
@@ -804,6 +807,7 @@
 				C30F9E41870DF68EB50DEC93 /* Person.swift in Sources */,
 				D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */,
 				BD7E54D0A7B38467EE4F2CD5 /* PersonMergeView.swift in Sources */,
+				391EE956F8C771C2B1218FC1 /* ProfileImportView.swift in Sources */,
 				60126316EDBE2CB1FEF6EB6C /* PhotoImportView.swift in Sources */,
 				09C25603D1D5B39E492CE4DD /* PhotoImportViewModel.swift in Sources */,
 				457C0CB01FC45D37EB6B5B59 /* PhotoLibraryScannerService.swift in Sources */,
