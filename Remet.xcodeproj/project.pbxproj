@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E072960EA47A28DD669706C /* ProfileSharingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA7D1B39C839737DA368B82 /* ProfileSharingService.swift */; };
 		00155301BE7E302429DE4058 /* LimitChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06694C451E6DDB1A90961B56 /* LimitChecker.swift */; };
 		03B50051A96CA35C700C2A76 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B8A6EB8EBB2A9D20B57FC52 /* AddView.swift */; };
 		0408127824C04E83890A2A05 /* SilentScanCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DC5026712FFB5F28A9702A /* SilentScanCameraManager.swift */; };
@@ -98,6 +99,7 @@
 		B957D837F98F1A7AB5C7F01E /* RemetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D7A7FA0DD4D205F36C96BE /* RemetApp.swift */; };
 		BAC8B84266B0B07848E45901 /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA755CBE9A5A00609FC2D156 /* AppSettingsTests.swift */; };
 		BD7E54D0A7B38467EE4F2CD5 /* PersonMergeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */; };
+		391EE956F8C771C2B1218FC1 /* ProfileImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */; };
 		BE01D1814E4D2AFAADF77D59 /* ModelRelationshipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B937C59C661D26A66A6056 /* ModelRelationshipTests.swift */; };
 		C30F9E41870DF68EB50DEC93 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450F9A1A3B5B6AD0D184E282 /* Person.swift */; };
 		C4CA14631D70FBBE1A9EB210 /* MemoryScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D0231DA8A4A4C455EE11F /* MemoryScanView.swift */; };
@@ -151,8 +153,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
+		04C02A8C9CD8F2E41209A5EA /* FaceNet512.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FaceNet512.mlpackage; sourceTree = "<group>"; };
 		06694C451E6DDB1A90961B56 /* LimitChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitChecker.swift; sourceTree = "<group>"; };
+		6FA7D1B39C839737DA368B82 /* ProfileSharingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSharingService.swift; sourceTree = "<group>"; };
 		08D42FE113F8837656ABC3BA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0B4D145FE5DAFAAE416DCADC /* FaceQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceQuizView.swift; sourceTree = "<group>"; };
 		0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbedding.swift; sourceTree = "<group>"; };
@@ -207,7 +210,7 @@
 		73B1C5AC0126ABEFC13CD0F1 /* FloatingActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingActionButton.swift; sourceTree = "<group>"; };
 		750EDFD272CEE8D914FADCC6 /* ScanningAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningAnimationView.swift; sourceTree = "<group>"; };
 		7C624FF51D94F2EE5A16911D /* FaceMatchingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceMatchingServiceTests.swift; sourceTree = "<group>"; };
-		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DA9DA90D81F32B1AA3751DF /* Remet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F8576CD80F811E34E5C08FA /* Encounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encounter.swift; sourceTree = "<group>"; };
 		81519E76E6A5B949AD7B2340 /* FaceDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceDetectionService.swift; sourceTree = "<group>"; };
 		823AE1562193907DB7155DA8 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -235,13 +238,14 @@
 		B521FB26BC25023710F2EEB8 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		B7A9B64402DA029A390B3202 /* FaceEmbeddingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingServiceTests.swift; sourceTree = "<group>"; };
 		B856B1DF9748538B71D376A8 /* SubscriptionLimits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionLimits.swift; sourceTree = "<group>"; };
-		B9A4B26E693892BC1F25FEB7 /* ShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B9A4B26E693892BC1F25FEB7 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA755CBE9A5A00609FC2D156 /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
 		C0C28E7CAED511D78436A26E /* FaceEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEmbeddingService.swift; sourceTree = "<group>"; };
 		C21964A4B54F1257DC9CE875 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		C4782D317377C335A7A208BD /* AddPersonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPersonView.swift; sourceTree = "<group>"; };
 		C5115D265811AE22010673D1 /* MemoryScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryScanViewModel.swift; sourceTree = "<group>"; };
 		C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonMergeView.swift; sourceTree = "<group>"; };
+		B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImportView.swift; sourceTree = "<group>"; };
 		C5B49D07A46E42BAF6686182 /* PersonFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonFilterTests.swift; sourceTree = "<group>"; };
 		C5D7A7FA0DD4D205F36C96BE /* RemetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemetApp.swift; sourceTree = "<group>"; };
 		C68DFCAA52134F4AC268ED82 /* MatchResultCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchResultCard.swift; sourceTree = "<group>"; };
@@ -251,7 +255,7 @@
 		CC4125E85C7130E4F68A0627 /* OnboardingProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileView.swift; sourceTree = "<group>"; };
 		D320DB1EE8F564BEA6D0D785 /* OnboardingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompleteView.swift; sourceTree = "<group>"; };
 		D74FFB572E3E3A10F3ED4837 /* EncounterManagementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterManagementService.swift; sourceTree = "<group>"; };
-		D98F7F25627277625B2F14C2 /* RemetTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RemetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D98F7F25627277625B2F14C2 /* RemetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB022EFE9C7518DDC463911D /* ColorHexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHexTests.swift; sourceTree = "<group>"; };
 		E30ED42B24103A43975FD067 /* PracticeHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHomeView.swift; sourceTree = "<group>"; };
 		E36DCBF646425C64EF72E8F7 /* EncounterReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterReviewView.swift; sourceTree = "<group>"; };
@@ -430,6 +434,7 @@
 				C0C28E7CAED511D78436A26E /* FaceEmbeddingService.swift */,
 				715D225B9A8BCA6D846A33C8 /* FaceMatchingService.swift */,
 				06694C451E6DDB1A90961B56 /* LimitChecker.swift */,
+				6FA7D1B39C839737DA368B82 /* ProfileSharingService.swift */,
 				F91805FC28853BED76D5E325 /* PhotoLibraryScannerService.swift */,
 				21DC5026712FFB5F28A9702A /* SilentScanCameraManager.swift */,
 				B856B1DF9748538B71D376A8 /* SubscriptionLimits.swift */,
@@ -571,6 +576,7 @@
 				8506C97A0F1D2A3A3C3BDD51 /* PeopleListView.swift */,
 				4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */,
 				C5B4989BAE409B9E5E6111CA /* PersonMergeView.swift */,
+				B3C73D24F634D2F095384DC1 /* ProfileImportView.swift */,
 			);
 			path = People;
 			sourceTree = "<group>";
@@ -652,11 +658,9 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					27217AC6BEC03FBFB0FE8516 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					4B671A7987202F63BC07022B = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -674,7 +678,6 @@
 			);
 			mainGroup = 20042DC4FE02B0C15373FA0E;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -739,6 +742,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E072960EA47A28DD669706C /* ProfileSharingService.swift in Sources */,
 				72D39DB749E6FC3EB11A91F3 /* AccountView.swift in Sources */,
 				B85503DE06870526E2A5476C /* AddPersonView.swift in Sources */,
 				03B50051A96CA35C700C2A76 /* AddView.swift in Sources */,
@@ -803,6 +807,7 @@
 				C30F9E41870DF68EB50DEC93 /* Person.swift in Sources */,
 				D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */,
 				BD7E54D0A7B38467EE4F2CD5 /* PersonMergeView.swift in Sources */,
+				391EE956F8C771C2B1218FC1 /* ProfileImportView.swift in Sources */,
 				60126316EDBE2CB1FEF6EB6C /* PhotoImportView.swift in Sources */,
 				09C25603D1D5B39E492CE4DD /* PhotoImportViewModel.swift in Sources */,
 				457C0CB01FC45D37EB6B5B59 /* PhotoLibraryScannerService.swift in Sources */,
@@ -846,6 +851,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -867,7 +873,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";
@@ -889,7 +895,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1038,6 +1044,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1056,7 +1063,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1078,7 +1085,7 @@
 				CODE_SIGN_ENTITLEMENTS = Remet/Remet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RX44K7NF89;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Remet/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Remet needs camera access to capture photos for face identification.";

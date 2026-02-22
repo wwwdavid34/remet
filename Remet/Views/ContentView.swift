@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var showAddActions = false
     @State private var showQuickCapture = false
     @State private var showPhotoImport = false
+    @State private var profileImportName: String?
+    @State private var profileImportImage: UIImage?
     @Environment(AppState.self) private var appState: AppState?
 
     var body: some View {
@@ -33,6 +35,32 @@ struct ContentView: View {
         .onChange(of: appState?.shouldProcessSharedImages) { _, shouldProcess in
             if shouldProcess == true {
                 showPhotoImport = true
+            }
+        }
+        .onChange(of: appState?.pendingProfileImportURL) { _, url in
+            guard let url else { return }
+            do {
+                let parsed = try ProfileSharingService.parseProfile(from: url)
+                profileImportName = parsed.name
+                profileImportImage = parsed.faceImage
+            } catch {
+                print("Failed to parse .remet file: \(error)")
+            }
+            appState?.pendingProfileImportURL = nil
+        }
+        .sheet(isPresented: Binding(
+            get: { profileImportName != nil && profileImportImage != nil },
+            set: { if !$0 { profileImportName = nil; profileImportImage = nil } }
+        )) {
+            if let name = profileImportName, let image = profileImportImage {
+                ProfileImportView(
+                    name: name,
+                    faceImage: image,
+                    onImported: { _ in
+                        profileImportName = nil
+                        profileImportImage = nil
+                    }
+                )
             }
         }
     }
