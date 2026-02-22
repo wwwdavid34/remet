@@ -19,6 +19,8 @@ struct PersonDetailView: View {
     @State private var selectedTags: [Tag] = []
     @State private var showEncountersTimeline = false
     @State private var expandedSections: Set<String> = ["talkingPoints", "timeline"]
+    @State private var showShareSheet = false
+    @State private var shareFileURL: URL?
 
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 12)
@@ -92,6 +94,14 @@ struct PersonDetailView: View {
                     }
 
                     Menu {
+                        if person.profileEmbedding != nil {
+                            Button {
+                                shareProfile()
+                            } label: {
+                                Label(String(localized: "Share Profile"), systemImage: "square.and.arrow.up")
+                            }
+                        }
+
                         Button {
                             showEditSheet = true
                         } label: {
@@ -174,8 +184,18 @@ struct PersonDetailView: View {
                 dismiss()
             }
         }
+        .sheet(isPresented: $showShareSheet, onDismiss: {
+            // Clean up temp file
+            if let url = shareFileURL {
+                try? FileManager.default.removeItem(at: url)
+                shareFileURL = nil
+            }
+        }) {
+            if let url = shareFileURL {
+                ShareSheet(activityItems: [url])
+            }
+        }
     }
-
     // MARK: - Helper Methods
     private func addTalkingPoint() {
         let alert = UIAlertController(title: "Add Talking Point", message: nil, preferredStyle: .alert)
@@ -241,6 +261,16 @@ struct PersonDetailView: View {
             viewController.present(alert, animated: true)
         }
     }
+
+    private func shareProfile() {
+        do {
+            shareFileURL = try ProfileSharingService.exportProfile(for: person)
+            showShareSheet = true
+        } catch {
+            // Button only shown when profile face exists, so this shouldn't happen
+        }
+    }
+
 
     private func deleteNote(_ note: InteractionNote) {
         modelContext.delete(note)
