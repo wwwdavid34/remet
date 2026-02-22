@@ -18,6 +18,7 @@ struct OnboardingFirstMemoryView: View {
     @State private var isProcessing = false
     @State private var detectedFaces: [DetectedFace] = []
     @State private var encounterSaved = false
+    @State private var showReviewIntro = true
 
     var body: some View {
         VStack(spacing: 24) {
@@ -128,7 +129,9 @@ struct OnboardingFirstMemoryView: View {
                 onComplete()
             }
         }) {
-            if let image = selectedImage {
+            if showReviewIntro {
+                reviewIntroView
+            } else if let image = selectedImage {
                 EncounterReviewView(
                     scannedPhoto: ScannedPhoto(
                         id: UUID().uuidString,
@@ -159,6 +162,96 @@ struct OnboardingFirstMemoryView: View {
         }
     }
 
+    // MARK: - Review Intro
+
+    @ViewBuilder
+    private var reviewIntroView: some View {
+        NavigationStack {
+            VStack(spacing: 28) {
+                Spacer()
+
+                Image(systemName: "person.crop.rectangle.stack")
+                    .font(.system(size: 56))
+                    .foregroundStyle(AppColors.teal)
+
+                VStack(spacing: 8) {
+                    if detectedFaces.isEmpty {
+                        Text(String(localized: "No faces detected"))
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Text(String(localized: "You can manually tap where you see a face in the next screen."))
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    } else {
+                        Text(String(localized: "We found \(detectedFaces.count) face(s)!"))
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 16) {
+                    reviewIntroRow(
+                        icon: "hand.tap",
+                        text: String(localized: "Tap a face to assign a name")
+                    )
+                    reviewIntroRow(
+                        icon: "person.badge.plus",
+                        text: String(localized: "Add new people or match existing ones")
+                    )
+                    reviewIntroRow(
+                        icon: "calendar.badge.plus",
+                        text: String(localized: "Optionally add occasion and location")
+                    )
+                }
+                .padding(.horizontal, 40)
+
+                Spacer()
+
+                Button {
+                    showReviewIntro = false
+                } label: {
+                    Text(String(localized: "Continue"))
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(AppColors.coral)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 40)
+            }
+            .navigationTitle(String(localized: "Review Your Photo"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(String(localized: "Cancel")) {
+                        showFaceReview = false
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func reviewIntroRow(icon: String, text: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(AppColors.teal)
+                .frame(width: 28)
+
+            Text(text)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+        }
+    }
+
+    // MARK: - Actions
+
     private func detectFacesAndShowReview() {
         guard let image = selectedImage else { return }
         isProcessing = true
@@ -171,6 +264,7 @@ struct OnboardingFirstMemoryView: View {
                 detectedFaces = faces
                 isProcessing = false
                 encounterSaved = false
+                showReviewIntro = true
                 showFaceReview = true
             }
         }
