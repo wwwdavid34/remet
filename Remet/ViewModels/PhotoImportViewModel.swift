@@ -24,43 +24,6 @@ final class PhotoImportViewModel {
 
     private let faceDetectionService = FaceDetectionService()
 
-    func processPickedPhoto(image: UIImage, assetIdentifier: String?, modelContext: ModelContext) async {
-        isProcessing = true
-        errorMessage = nil
-        self.assetIdentifier = assetIdentifier
-
-        // Check if this photo was already imported
-        if let assetId = assetIdentifier, isAssetAlreadyImported(assetId, modelContext: modelContext) {
-            isProcessing = false
-            showAlreadyImportedAlert = true
-            return
-        }
-
-        importedImage = image
-
-        // Extract date and location from PHAsset metadata
-        if let assetId = assetIdentifier {
-            let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
-            if let asset = fetchResult.firstObject {
-                photoDate = asset.creationDate
-                photoLocation = asset.location
-            }
-        }
-
-        do {
-            detectedFaces = try await faceDetectionService.detectFaces(in: image)
-            showFaceReview = !detectedFaces.isEmpty
-
-            if detectedFaces.isEmpty {
-                errorMessage = "No faces detected in this photo"
-            }
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-
-        isProcessing = false
-    }
-
     func processPickedPhotos(images: [(image: UIImage, assetId: String?)], modelContext: ModelContext) async {
         isProcessing = true
         errorMessage = nil
@@ -85,24 +48,25 @@ final class PhotoImportViewModel {
             }
 
             // Run face detection
+            var faces: [DetectedFace] = []
             do {
-                let faces = try await faceDetectionService.detectFaces(in: image)
-                let scannedPhoto = ScannedPhoto(
-                    id: assetId ?? UUID().uuidString,
-                    asset: nil,
-                    image: image,
-                    detectedFaces: faces,
-                    date: date,
-                    location: location
-                )
-                photos.append(scannedPhoto)
+                faces = try await faceDetectionService.detectFaces(in: image)
             } catch {
-                // Continue with other photos if one fails
+                // Include photo with empty faces so user can manually tag
             }
+            let scannedPhoto = ScannedPhoto(
+                id: assetId ?? UUID().uuidString,
+                asset: nil,
+                image: image,
+                detectedFaces: faces,
+                date: date,
+                location: location
+            )
+            photos.append(scannedPhoto)
         }
 
         if photos.isEmpty {
-            errorMessage = "No faces detected in the selected photos"
+            errorMessage = "All selected photos have already been imported"
             isProcessing = false
             return
         }
