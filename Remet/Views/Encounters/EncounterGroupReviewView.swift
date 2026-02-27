@@ -264,8 +264,16 @@ struct EncounterGroupReviewView: View {
                                     .foregroundStyle(.secondary)
                             }
 
-                            Text(person.name)
-                                .fontWeight(.medium)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(person.name)
+                                    .fontWeight(.medium)
+
+                                if createdPersons.contains(where: { $0.id == person.id }) {
+                                    Text("New face")
+                                        .font(.caption)
+                                        .foregroundStyle(.green)
+                                }
+                            }
 
                             Spacer()
 
@@ -797,7 +805,8 @@ struct EncounterGroupReviewView: View {
             for box in boxes {
                 if let personId = box.personId, !personIds.contains(personId) {
                     personIds.insert(personId)
-                    if let person = people.first(where: { $0.id == personId }) {
+                    if let person = people.first(where: { $0.id == personId })
+                        ?? createdPersons.first(where: { $0.id == personId }) {
                         uniquePeople.append(person)
                     }
                 }
