@@ -36,11 +36,11 @@ struct PhotoImportView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    // Single photo picker
+                    // Photo picker
                     Button {
                         viewModel.showPhotoPicker = true
                     } label: {
-                        Label("Choose Single Photo", systemImage: "photo.on.rectangle")
+                        Label("Choose Photos", systemImage: "photo.on.rectangle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -71,23 +71,16 @@ struct PhotoImportView: View {
             }
             .navigationTitle("Remet")
             .sheet(isPresented: $viewModel.showPhotoPicker, onDismiss: {
-                // Process after picker sheet fully dismisses to avoid sheet conflict
-                guard let image = viewModel.pendingImage else { return }
-                let assetId = viewModel.pendingAssetId
-                viewModel.pendingImage = nil
-                viewModel.pendingAssetId = nil
+                guard !viewModel.pendingImages.isEmpty else { return }
+                let images = viewModel.pendingImages
+                viewModel.pendingImages = []
                 Task {
-                    await viewModel.processPickedPhoto(
-                        image: image,
-                        assetIdentifier: assetId,
-                        modelContext: modelContext
-                    )
+                    await viewModel.processPickedPhotos(images: images, modelContext: modelContext)
                 }
             }) {
-                SinglePhotoPicker(
-                    onPick: { image, assetIdentifier in
-                        viewModel.pendingImage = image
-                        viewModel.pendingAssetId = assetIdentifier
+                PhotoPicker(
+                    onPick: { results in
+                        viewModel.pendingImages = results.map { (image: $0.0, assetId: $0.1) }
                         viewModel.showPhotoPicker = false
                     },
                     onCancel: {
@@ -95,24 +88,16 @@ struct PhotoImportView: View {
                     }
                 )
             }
-            .sheet(isPresented: $viewModel.showFaceReview) {
-                if let image = viewModel.importedImage {
-                    EncounterReviewView(
-                        scannedPhoto: ScannedPhoto(
-                            id: viewModel.assetIdentifier ?? UUID().uuidString,
-                            asset: nil,
-                            image: image,
-                            detectedFaces: viewModel.detectedFaces,
-                            date: viewModel.photoDate ?? Date(),
-                            location: viewModel.photoLocation
-                        ),
-                        people: people,
-                        onSave: { encounter in
-                            modelContext.insert(encounter)
-                            try? modelContext.save()
-                            viewModel.reset()
-                        }
-                    )
+            .sheet(isPresented: $viewModel.showGroupReview) {
+                if let group = viewModel.photoGroup {
+                    EncounterGroupReviewView(
+                        photoGroup: group,
+                        people: people
+                    ) { encounter in
+                        modelContext.insert(encounter)
+                        try? modelContext.save()
+                        viewModel.reset()
+                    }
                 }
             }
             .alert("Already Imported", isPresented: $viewModel.showAlreadyImportedAlert) {
@@ -137,41 +122,43 @@ struct PhotoImportView: View {
     private func processAnyPendingSharedImages() {
         guard let paths = appState?.pendingSharedImagePaths, !paths.isEmpty else { return }
 
-        // Take the first pending image; remaining will be processed after review
-        let path = paths[0]
-
-        appState?.pendingSharedImagePaths = Array(paths.dropFirst())
-        if appState?.pendingSharedImagePaths.isEmpty == true {
-            appState?.shouldProcessSharedImages = false
-        }
-
-        let url = URL(fileURLWithPath: path)
+        // Take all pending images at once
+        let allPaths = paths
+        appState?.pendingSharedImagePaths = []
+        appState?.shouldProcessSharedImages = false
 
         Task {
-            defer {
-                // Clean up the shared file
-                try? FileManager.default.removeItem(at: url)
+            var images: [(image: UIImage, assetId: String?)] = []
+
+            for path in allPaths {
+                let url = URL(fileURLWithPath: path)
+                defer { try? FileManager.default.removeItem(at: url) }
+
+                guard let data = try? Data(contentsOf: url),
+                      let image = UIImage(data: data) else {
+                    continue
+                }
+                images.append((image: image, assetId: nil))
             }
 
-            guard let data = try? Data(contentsOf: url),
-                  let image = UIImage(data: data) else {
-                viewModel.errorMessage = "Could not load shared image"
+            guard !images.isEmpty else {
+                viewModel.errorMessage = "Could not load shared images"
                 return
             }
 
-            await viewModel.processPickedPhoto(image: image, assetIdentifier: nil, modelContext: modelContext)
+            await viewModel.processPickedPhotos(images: images, modelContext: modelContext)
         }
     }
 }
 
-// MARK: - PHPicker Wrapper (provides assetIdentifier for dedup)
-struct SinglePhotoPicker: UIViewControllerRepresentable {
-    let onPick: (UIImage, String?) -> Void
+// MARK: - PHPicker Wrapper (multi-select, provides assetIdentifier for dedup)
+struct PhotoPicker: UIViewControllerRepresentable {
+    let onPick: ([(UIImage, String?)]) -> Void
     var onCancel: (() -> Void)? = nil
 
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration(photoLibrary: .shared())
-        config.selectionLimit = 1
+        config.selectionLimit = 10
         config.filter = .images
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
@@ -185,26 +172,41 @@ struct SinglePhotoPicker: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let onPick: (UIImage, String?) -> Void
+        let onPick: ([(UIImage, String?)]) -> Void
         let onCancel: (() -> Void)?
 
-        init(onPick: @escaping (UIImage, String?) -> Void, onCancel: (() -> Void)?) {
+        init(onPick: @escaping ([(UIImage, String?)]) -> Void, onCancel: (() -> Void)?) {
             self.onPick = onPick
             self.onCancel = onCancel
         }
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            guard let result = results.first else {
+            guard !results.isEmpty else {
                 DispatchQueue.main.async { self.onCancel?() }
                 return
             }
-            let assetId = result.assetIdentifier
 
-            result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
-                guard let image = object as? UIImage else { return }
-                DispatchQueue.main.async {
-                    self.onPick(image, assetId)
+            let group = DispatchGroup()
+            var collected: [(Int, UIImage, String?)] = []
+
+            for (index, result) in results.enumerated() {
+                let assetId = result.assetIdentifier
+                group.enter()
+                result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                    if let image = object as? UIImage {
+                        DispatchQueue.main.async {
+                            collected.append((index, image, assetId))
+                            group.leave()
+                        }
+                    } else {
+                        group.leave()
+                    }
                 }
+            }
+
+            group.notify(queue: .main) {
+                let sorted = collected.sorted { $0.0 < $1.0 }
+                self.onPick(sorted.map { ($0.1, $0.2) })
             }
         }
     }
