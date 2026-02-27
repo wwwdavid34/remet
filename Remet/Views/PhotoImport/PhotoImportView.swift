@@ -164,14 +164,14 @@ struct PhotoImportView: View {
     }
 }
 
-// MARK: - PHPicker Wrapper (provides assetIdentifier for dedup)
-struct SinglePhotoPicker: UIViewControllerRepresentable {
-    let onPick: (UIImage, String?) -> Void
+// MARK: - PHPicker Wrapper (multi-select, provides assetIdentifier for dedup)
+struct PhotoPicker: UIViewControllerRepresentable {
+    let onPick: ([(UIImage, String?)]) -> Void
     var onCancel: (() -> Void)? = nil
 
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration(photoLibrary: .shared())
-        config.selectionLimit = 1
+        config.selectionLimit = 10
         config.filter = .images
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
@@ -185,26 +185,41 @@ struct SinglePhotoPicker: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let onPick: (UIImage, String?) -> Void
+        let onPick: ([(UIImage, String?)]) -> Void
         let onCancel: (() -> Void)?
 
-        init(onPick: @escaping (UIImage, String?) -> Void, onCancel: (() -> Void)?) {
+        init(onPick: @escaping ([(UIImage, String?)]) -> Void, onCancel: (() -> Void)?) {
             self.onPick = onPick
             self.onCancel = onCancel
         }
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            guard let result = results.first else {
+            guard !results.isEmpty else {
                 DispatchQueue.main.async { self.onCancel?() }
                 return
             }
-            let assetId = result.assetIdentifier
 
-            result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
-                guard let image = object as? UIImage else { return }
-                DispatchQueue.main.async {
-                    self.onPick(image, assetId)
+            let group = DispatchGroup()
+            var collected: [(Int, UIImage, String?)] = []
+
+            for (index, result) in results.enumerated() {
+                let assetId = result.assetIdentifier
+                group.enter()
+                result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                    if let image = object as? UIImage {
+                        DispatchQueue.main.async {
+                            collected.append((index, image, assetId))
+                            group.leave()
+                        }
+                    } else {
+                        group.leave()
+                    }
                 }
+            }
+
+            group.notify(queue: .main) {
+                let sorted = collected.sorted { $0.0 < $1.0 }
+                self.onPick(sorted.map { ($0.1, $0.2) })
             }
         }
     }
