@@ -142,29 +142,31 @@ struct PhotoImportView: View {
     private func processAnyPendingSharedImages() {
         guard let paths = appState?.pendingSharedImagePaths, !paths.isEmpty else { return }
 
-        // Take the first pending image; remaining will be processed after review
-        let path = paths[0]
-
-        appState?.pendingSharedImagePaths = Array(paths.dropFirst())
-        if appState?.pendingSharedImagePaths.isEmpty == true {
-            appState?.shouldProcessSharedImages = false
-        }
-
-        let url = URL(fileURLWithPath: path)
+        // Take all pending images at once
+        let allPaths = paths
+        appState?.pendingSharedImagePaths = []
+        appState?.shouldProcessSharedImages = false
 
         Task {
-            defer {
-                // Clean up the shared file
-                try? FileManager.default.removeItem(at: url)
+            var images: [(image: UIImage, assetId: String?)] = []
+
+            for path in allPaths {
+                let url = URL(fileURLWithPath: path)
+                defer { try? FileManager.default.removeItem(at: url) }
+
+                guard let data = try? Data(contentsOf: url),
+                      let image = UIImage(data: data) else {
+                    continue
+                }
+                images.append((image: image, assetId: nil))
             }
 
-            guard let data = try? Data(contentsOf: url),
-                  let image = UIImage(data: data) else {
-                viewModel.errorMessage = "Could not load shared image"
+            guard !images.isEmpty else {
+                viewModel.errorMessage = "Could not load shared images"
                 return
             }
 
-            await viewModel.processPickedPhoto(image: image, assetIdentifier: nil, modelContext: modelContext)
+            await viewModel.processPickedPhotos(images: images, modelContext: modelContext)
         }
     }
 }
