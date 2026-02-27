@@ -36,11 +36,11 @@ struct PhotoImportView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    // Single photo picker
+                    // Photo picker
                     Button {
                         viewModel.showPhotoPicker = true
                     } label: {
-                        Label("Choose Single Photo", systemImage: "photo.on.rectangle")
+                        Label("Choose Photos", systemImage: "photo.on.rectangle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -71,23 +71,16 @@ struct PhotoImportView: View {
             }
             .navigationTitle("Remet")
             .sheet(isPresented: $viewModel.showPhotoPicker, onDismiss: {
-                // Process after picker sheet fully dismisses to avoid sheet conflict
-                guard let image = viewModel.pendingImage else { return }
-                let assetId = viewModel.pendingAssetId
-                viewModel.pendingImage = nil
-                viewModel.pendingAssetId = nil
+                guard !viewModel.pendingImages.isEmpty else { return }
+                let images = viewModel.pendingImages
+                viewModel.pendingImages = []
                 Task {
-                    await viewModel.processPickedPhoto(
-                        image: image,
-                        assetIdentifier: assetId,
-                        modelContext: modelContext
-                    )
+                    await viewModel.processPickedPhotos(images: images, modelContext: modelContext)
                 }
             }) {
-                SinglePhotoPicker(
-                    onPick: { image, assetIdentifier in
-                        viewModel.pendingImage = image
-                        viewModel.pendingAssetId = assetIdentifier
+                PhotoPicker(
+                    onPick: { results in
+                        viewModel.pendingImages = results.map { (image: $0.0, assetId: $0.1) }
                         viewModel.showPhotoPicker = false
                     },
                     onCancel: {
@@ -113,6 +106,18 @@ struct PhotoImportView: View {
                             viewModel.reset()
                         }
                     )
+                }
+            }
+            .sheet(isPresented: $viewModel.showGroupReview) {
+                if let group = viewModel.photoGroup {
+                    EncounterGroupReviewView(
+                        photoGroup: group,
+                        people: people
+                    ) { encounter in
+                        modelContext.insert(encounter)
+                        try? modelContext.save()
+                        viewModel.reset()
+                    }
                 }
             }
             .alert("Already Imported", isPresented: $viewModel.showAlreadyImportedAlert) {
