@@ -106,10 +106,12 @@ struct EncounterGroupReviewView: View {
             .tabViewStyle(.page(indexDisplayMode: .automatic))
             .frame(height: 350)
 
-            // Photo indicator
-            Text("\(selectedPhotoIndex + 1) of \(photoGroup.photos.count) photos")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            // Photo indicator (hide for single photo)
+            if photoGroup.photos.count > 1 {
+                Text("\(selectedPhotoIndex + 1) of \(photoGroup.photos.count) photos")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -329,6 +331,11 @@ struct EncounterGroupReviewView: View {
                 HStack {
                     Image(systemName: "location.fill")
                     Text(String(format: "%.5f, %.5f", loc.coordinate.latitude, loc.coordinate.longitude))
+                    Spacer()
+                    if let url = URL(string: "https://maps.apple.com/?ll=\(loc.coordinate.latitude),\(loc.coordinate.longitude)") {
+                        Link("Open Map", destination: url)
+                            .font(.caption)
+                    }
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)

@@ -88,26 +88,6 @@ struct PhotoImportView: View {
                     }
                 )
             }
-            .sheet(isPresented: $viewModel.showFaceReview) {
-                if let image = viewModel.importedImage {
-                    EncounterReviewView(
-                        scannedPhoto: ScannedPhoto(
-                            id: viewModel.assetIdentifier ?? UUID().uuidString,
-                            asset: nil,
-                            image: image,
-                            detectedFaces: viewModel.detectedFaces,
-                            date: viewModel.photoDate ?? Date(),
-                            location: viewModel.photoLocation
-                        ),
-                        people: people,
-                        onSave: { encounter in
-                            modelContext.insert(encounter)
-                            try? modelContext.save()
-                            viewModel.reset()
-                        }
-                    )
-                }
-            }
             .sheet(isPresented: $viewModel.showGroupReview) {
                 if let group = viewModel.photoGroup {
                     EncounterGroupReviewView(

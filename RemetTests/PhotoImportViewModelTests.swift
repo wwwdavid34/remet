@@ -39,7 +39,7 @@ final class PhotoImportViewModelTests: XCTestCase {
     // MARK: - Single Photo Routing
 
     @MainActor
-    func testSinglePhoto_routesToSingleReview() async {
+    func testSinglePhoto_routesToGroupReview() async {
         let image = makeTestImage()
 
         await sut.processPickedPhotos(
@@ -47,10 +47,9 @@ final class PhotoImportViewModelTests: XCTestCase {
             modelContext: context
         )
 
-        XCTAssertTrue(sut.showFaceReview, "Single photo should route to single review")
-        XCTAssertFalse(sut.showGroupReview, "Single photo should not trigger group review")
-        XCTAssertNotNil(sut.importedImage, "importedImage should be set for single photo")
-        XCTAssertNil(sut.photoGroup, "photoGroup should be nil for single photo")
+        XCTAssertTrue(sut.showGroupReview, "Single photo should route to group review")
+        XCTAssertNotNil(sut.photoGroup, "photoGroup should be set for single photo")
+        XCTAssertEqual(sut.photoGroup?.photos.count, 1)
         XCTAssertEqual(sut.scannedPhotos.count, 1)
         XCTAssertFalse(sut.isProcessing)
     }
@@ -68,11 +67,9 @@ final class PhotoImportViewModelTests: XCTestCase {
         await sut.processPickedPhotos(images: images, modelContext: context)
 
         XCTAssertTrue(sut.showGroupReview, "Multiple photos should route to group review")
-        XCTAssertFalse(sut.showFaceReview, "Multiple photos should not trigger single review")
         XCTAssertNotNil(sut.photoGroup, "photoGroup should be set")
         XCTAssertEqual(sut.photoGroup?.photos.count, 3)
         XCTAssertEqual(sut.scannedPhotos.count, 3)
-        XCTAssertNil(sut.importedImage, "importedImage should not be set for multi-photo")
         XCTAssertFalse(sut.isProcessing)
     }
 
@@ -104,7 +101,6 @@ final class PhotoImportViewModelTests: XCTestCase {
         )
 
         XCTAssertNotNil(sut.errorMessage, "Should show error when all photos already imported")
-        XCTAssertFalse(sut.showFaceReview)
         XCTAssertFalse(sut.showGroupReview)
         XCTAssertFalse(sut.isProcessing)
     }
@@ -130,7 +126,7 @@ final class PhotoImportViewModelTests: XCTestCase {
     }
 
     @MainActor
-    func testMixedImported_singleRemaining_routesToSingleReview() async {
+    func testMixedImported_singleRemaining_routesToGroupReview() async {
         // Pre-import two photos
         _ = TestHelpers.makeEncounterPhoto(assetIdentifier: "imported-1", in: context)
         _ = TestHelpers.makeEncounterPhoto(assetIdentifier: "imported-2", in: context)
@@ -144,10 +140,11 @@ final class PhotoImportViewModelTests: XCTestCase {
 
         await sut.processPickedPhotos(images: images, modelContext: context)
 
-        // Only 1 new photo remains → single review
+        // Only 1 new photo remains → still uses group review
         XCTAssertEqual(sut.scannedPhotos.count, 1)
-        XCTAssertTrue(sut.showFaceReview)
-        XCTAssertFalse(sut.showGroupReview)
+        XCTAssertTrue(sut.showGroupReview)
+        XCTAssertNotNil(sut.photoGroup)
+        XCTAssertEqual(sut.photoGroup?.photos.count, 1)
     }
 
     // MARK: - Shared Images (nil assetId)
@@ -197,18 +194,12 @@ final class PhotoImportViewModelTests: XCTestCase {
         // Reset
         sut.reset()
 
-        XCTAssertNil(sut.importedImage)
-        XCTAssertTrue(sut.detectedFaces.isEmpty)
         XCTAssertNil(sut.errorMessage)
-        XCTAssertFalse(sut.showFaceReview)
-        XCTAssertNil(sut.assetIdentifier)
         XCTAssertFalse(sut.showAlreadyImportedAlert)
         XCTAssertTrue(sut.pendingImages.isEmpty)
         XCTAssertFalse(sut.showGroupReview)
         XCTAssertTrue(sut.scannedPhotos.isEmpty)
         XCTAssertNil(sut.photoGroup)
-        XCTAssertNil(sut.photoDate)
-        XCTAssertNil(sut.photoLocation)
     }
 
     // MARK: - Empty Input
@@ -218,7 +209,6 @@ final class PhotoImportViewModelTests: XCTestCase {
         await sut.processPickedPhotos(images: [], modelContext: context)
 
         XCTAssertNotNil(sut.errorMessage)
-        XCTAssertFalse(sut.showFaceReview)
         XCTAssertFalse(sut.showGroupReview)
         XCTAssertFalse(sut.isProcessing)
     }

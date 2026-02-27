@@ -1,22 +1,14 @@
 import SwiftUI
 import PhotosUI
 import SwiftData
-import CoreLocation
 
 @Observable
 final class PhotoImportViewModel {
-    var importedImage: UIImage?
-    var detectedFaces: [DetectedFace] = []
     var isProcessing = false
     var errorMessage: String?
-    var showFaceReview = false
-    var assetIdentifier: String?
     var showAlreadyImportedAlert = false
     var showPhotoPicker = false
-    var photoDate: Date?
-    var photoLocation: CLLocation?
 
-    // Multi-photo state
     var pendingImages: [(image: UIImage, assetId: String?)] = []
     var showGroupReview = false
     var scannedPhotos: [ScannedPhoto] = []
@@ -72,20 +64,8 @@ final class PhotoImportViewModel {
         }
 
         scannedPhotos = photos
-
-        if photos.count == 1 {
-            // Single photo — use existing single-photo review
-            importedImage = photos[0].image
-            detectedFaces = photos[0].detectedFaces
-            assetIdentifier = photos[0].id
-            photoDate = photos[0].date
-            photoLocation = photos[0].location
-            showFaceReview = true
-        } else {
-            // Multiple photos — use group review
-            photoGroup = PhotoGroup(id: UUID(), photos: photos)
-            showGroupReview = true
-        }
+        photoGroup = PhotoGroup(id: UUID(), photos: photos)
+        showGroupReview = true
 
         isProcessing = false
     }
@@ -97,17 +77,11 @@ final class PhotoImportViewModel {
     }
 
     func reset() {
-        importedImage = nil
-        detectedFaces = []
         errorMessage = nil
-        showFaceReview = false
-        assetIdentifier = nil
         showAlreadyImportedAlert = false
         pendingImages = []
         showGroupReview = false
         scannedPhotos = []
         photoGroup = nil
-        photoDate = nil
-        photoLocation = nil
     }
 }

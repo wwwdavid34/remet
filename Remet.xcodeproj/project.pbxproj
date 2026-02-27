@@ -62,7 +62,6 @@
 		72419CAA7C9B73ADA651A889 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D861C627201D8E3E06B3961 /* CameraCaptureView.swift */; };
 		72D39DB749E6FC3EB11A91F3 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6505A4C614E769EDF977BC /* AccountView.swift */; };
 		7702051B9C47A5D782F8C7F8 /* PeopleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8506C97A0F1D2A3A3C3BDD51 /* PeopleListView.swift */; };
-		7992B1B55425C654B5657E21 /* EncounterReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36DCBF646425C64EF72E8F7 /* EncounterReviewView.swift */; };
 		79C55B7889310F87CB336EF7 /* ColorHexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB022EFE9C7518DDC463911D /* ColorHexTests.swift */; };
 		7B66142C94ED303278D8AD93 /* EmbeddingIntegrityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0107DF9822D775E6836A17 /* EmbeddingIntegrityService.swift */; };
 		7BB9C52E50DB52299554FE24 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B521FB26BC25023710F2EEB8 /* Tag.swift */; };
@@ -110,6 +109,7 @@
 		D362EA332267D1BAC1A7400C /* StatusBarFadeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BDF2135D94032DC6847188 /* StatusBarFadeOverlay.swift */; };
 		D6A570580E60E71D14B5ECDD /* PersonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4786E3FC85DB983E4FB2854C /* PersonDetailView.swift */; };
 		E00EC07AADAEBE2072EA08D6 /* EncounterGroupReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2AC37A21CA31106498C6E2 /* EncounterGroupReviewView.swift */; };
+		F1A2B3C4D5E6F7081920FACE /* FaceBoundingBoxOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718FACE0001 /* FaceBoundingBoxOverlay.swift */; };
 		E5ACDBB8475B68E28F2D1556 /* FaceEmbeddingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A9B64402DA029A390B3202 /* FaceEmbeddingServiceTests.swift */; };
 		E6FBB221BB4D06F4D2B5587F /* FaceEmbedding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D05649D084EFCC1C8068A96 /* FaceEmbedding.swift */; };
 		E9A063887364C98257DFE000 /* QuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C14C63E0B42A203E30E62 /* QuizAttempt.swift */; };
@@ -173,6 +173,7 @@
 		275884DFCC2635212988A3B1 /* EncounterManagementServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterManagementServiceTests.swift; sourceTree = "<group>"; };
 		2907A35F3C58431802E23AFA /* LimitReachedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitReachedView.swift; sourceTree = "<group>"; };
 		2B2AC37A21CA31106498C6E2 /* EncounterGroupReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterGroupReviewView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718FACE0001 /* FaceBoundingBoxOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceBoundingBoxOverlay.swift; sourceTree = "<group>"; };
 		2B9E28301BCA0F763F5285CB /* QuickCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCaptureView.swift; sourceTree = "<group>"; };
 		2CE8B109DE6A181FD8C19B88 /* SpacedRepetitionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionData.swift; sourceTree = "<group>"; };
 		2E23F39895AF9B13A0FDC41D /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
@@ -260,7 +261,6 @@
 		D98F7F25627277625B2F14C2 /* RemetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB022EFE9C7518DDC463911D /* ColorHexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHexTests.swift; sourceTree = "<group>"; };
 		E30ED42B24103A43975FD067 /* PracticeHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeHomeView.swift; sourceTree = "<group>"; };
-		E36DCBF646425C64EF72E8F7 /* EncounterReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterReviewView.swift; sourceTree = "<group>"; };
 		E798EB7B7389D8A599B35F96 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		E9AADB81CA4ED80C0A1A76CA /* EncounterFilterSortTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterFilterSortTests.swift; sourceTree = "<group>"; };
 		EEEDB0F855F394A057747129 /* SpacedRepetitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionTests.swift; sourceTree = "<group>"; };
@@ -531,9 +531,9 @@
 				429F386BA20D6758F12C7C05 /* EncounterDetailView.swift */,
 				49021AC39EB69B1086AA70A3 /* EncounterEditView.swift */,
 				2B2AC37A21CA31106498C6E2 /* EncounterGroupReviewView.swift */,
+				A1B2C3D4E5F60718FACE0001 /* FaceBoundingBoxOverlay.swift */,
 				A34165AA81501FB69A901176 /* EncounterListView.swift */,
 				C9D24F41340C91A1BBBC9A23 /* EncounterMergeView.swift */,
-				E36DCBF646425C64EF72E8F7 /* EncounterReviewView.swift */,
 				B0512CDA3964ECC764E2D568 /* EncounterScannerView.swift */,
 				1B0A7AA33B94802BE85E716E /* MovePhotosDestinationView.swift */,
 			);
@@ -765,11 +765,11 @@
 				6BEF893F1BE0172D2153280D /* EncounterDetailView.swift in Sources */,
 				18182FF9265696E81E0E1E21 /* EncounterEditView.swift in Sources */,
 				E00EC07AADAEBE2072EA08D6 /* EncounterGroupReviewView.swift in Sources */,
+				F1A2B3C4D5E6F7081920FACE /* FaceBoundingBoxOverlay.swift in Sources */,
 				1D2EDB550A1BB254B63D880A /* EncounterListView.swift in Sources */,
 				B0758D2B27D769F9FD2489E8 /* EncounterManagementService.swift in Sources */,
 				C951BDA4E801E59D8E8A866D /* EncounterMergeView.swift in Sources */,
 				3FA1923B4B59DC9E25887975 /* EncounterPhoto.swift in Sources */,
-				7992B1B55425C654B5657E21 /* EncounterReviewView.swift in Sources */,
 				34610B0333056FF80044B18B /* EncounterScannerView.swift in Sources */,
 				36D96658ABC7433A1D56F799 /* EphemeralMatchView.swift in Sources */,
 				EB41B6B1018B498CF1B4907E /* FAQView.swift in Sources */,

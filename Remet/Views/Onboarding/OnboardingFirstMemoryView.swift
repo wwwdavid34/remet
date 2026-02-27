@@ -132,14 +132,19 @@ struct OnboardingFirstMemoryView: View {
             if showReviewIntro {
                 reviewIntroView
             } else if let image = selectedImage {
-                EncounterReviewView(
-                    scannedPhoto: ScannedPhoto(
-                        id: UUID().uuidString,
-                        asset: nil,
-                        image: image,
-                        detectedFaces: detectedFaces,
-                        date: Date(),
-                        location: nil
+                EncounterGroupReviewView(
+                    photoGroup: PhotoGroup(
+                        id: UUID(),
+                        photos: [
+                            ScannedPhoto(
+                                id: UUID().uuidString,
+                                asset: nil,
+                                image: image,
+                                detectedFaces: detectedFaces,
+                                date: Date(),
+                                location: nil
+                            )
+                        ]
                     ),
                     people: people,
                     onSave: { encounter in

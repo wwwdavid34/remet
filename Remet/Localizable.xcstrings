@@ -1031,6 +1031,7 @@
       }
     },
     "• %@ need names" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ja" : {
           "stringUnit" : {
