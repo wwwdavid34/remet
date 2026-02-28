@@ -58,7 +58,7 @@ final class PhotoImportViewModel {
         }
 
         if photos.isEmpty {
-            errorMessage = "All selected photos have already been imported"
+            errorMessage = String(localized: "All selected photos have already been imported")
             isProcessing = false
             return
         }

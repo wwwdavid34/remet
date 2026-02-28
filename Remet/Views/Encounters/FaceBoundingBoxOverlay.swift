@@ -83,16 +83,16 @@ struct FaceRowView: View {
 
                     if let confidence = box.confidence {
                         HStack(spacing: 4) {
-                            Text("\(Int(confidence * 100))% match")
+                            Text(String(localized: "\(Int(confidence * 100))% match"))
                             if box.isAutoAccepted {
-                                Text("• Auto-accepted")
+                                Text(String(localized: "• Auto-accepted"))
                             }
                         }
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     }
                 } else {
-                    Text("Unknown person")
+                    Text(String(localized: "Unknown person"))
                         .foregroundStyle(.secondary)
                 }
             }

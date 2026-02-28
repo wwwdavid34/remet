@@ -65,18 +65,18 @@ struct EncounterGroupReviewView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Review Encounter")
+            .navigationTitle(String(localized: "Review Encounter"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(String(localized: "Cancel")) {
                         cleanupCreatedPersons()
                         dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(String(localized: "Save")) {
                         saveEncounter()
                     }
                     .disabled(isProcessing)
@@ -108,7 +108,7 @@ struct EncounterGroupReviewView: View {
 
             // Photo indicator (hide for single photo)
             if photoGroup.photos.count > 1 {
-                Text("\(selectedPhotoIndex + 1) of \(photoGroup.photos.count) photos")
+                Text(String(localized: "\(selectedPhotoIndex + 1) of \(photoGroup.photos.count) photos"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -152,10 +152,10 @@ struct EncounterGroupReviewView: View {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.5)
-                    Text("Loading photo...")
+                    Text(String(localized: "Loading photo..."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Text("Photo may be downloading from iCloud")
+                    Text(String(localized: "Photo may be downloading from iCloud"))
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
@@ -171,7 +171,7 @@ struct EncounterGroupReviewView: View {
     private var facesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("People in this encounter")
+                Text(String(localized: "People in this encounter"))
                     .font(.headline)
 
                 Spacer()
@@ -190,7 +190,7 @@ struct EncounterGroupReviewView: View {
                         } else {
                             Image(systemName: locateFaceMode ? "xmark.circle" : "person.crop.rectangle")
                         }
-                        Text(locateFaceMode ? "Cancel" : "Missing faces?")
+                        Text(locateFaceMode ? String(localized: "Cancel") : String(localized: "Missing faces?"))
                     }
                     .font(.caption)
                     .foregroundStyle(locateFaceMode ? AppColors.coral : AppColors.teal)
@@ -203,7 +203,7 @@ struct EncounterGroupReviewView: View {
                 VStack(spacing: 4) {
                     HStack(spacing: 6) {
                         Image(systemName: "hand.tap")
-                        Text("Tap where you see a face in the photo above")
+                        Text(String(localized: "Tap where you see a face in the photo above"))
                     }
                     .font(.caption)
                     .fontWeight(.medium)
@@ -228,7 +228,7 @@ struct EncounterGroupReviewView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.uturn.backward")
-                        Text("Undo last added face")
+                        Text(String(localized: "Undo last added face"))
                     }
                     .font(.caption)
                     .foregroundStyle(AppColors.warning)
@@ -239,14 +239,14 @@ struct EncounterGroupReviewView: View {
             if isProcessing || isLocatingFace {
                 HStack {
                     ProgressView()
-                    Text(isLocatingFace ? "Looking for face..." : "Analyzing faces...")
+                    Text(isLocatingFace ? String(localized: "Looking for face...") : String(localized: "Analyzing faces..."))
                         .foregroundStyle(.secondary)
                 }
             } else if !locateFaceMode {
                 // Show unique people across all photos
                 let allPeople = collectUniquePeople()
                 if allPeople.isEmpty {
-                    Text("No faces identified yet. Tap faces to identify.")
+                    Text(String(localized: "No faces identified yet. Tap faces to identify."))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(allPeople, id: \.id) { person in
@@ -269,7 +269,7 @@ struct EncounterGroupReviewView: View {
                                     .fontWeight(.medium)
 
                                 if createdPersons.contains(where: { $0.id == person.id }) {
-                                    Text("New face")
+                                    Text(String(localized: "New face"))
                                         .font(.caption)
                                         .foregroundStyle(.green)
                                 }
@@ -295,7 +295,7 @@ struct EncounterGroupReviewView: View {
                     HStack {
                         Image(systemName: "questionmark.circle.fill")
                             .foregroundStyle(.orange)
-                        Text("\(unidentifiedCount) unidentified face\(unidentifiedCount == 1 ? "" : "s")")
+                        Text(String(localized: "\(unidentifiedCount) unidentified face\(unidentifiedCount == 1 ? "" : "s")"))
                             .foregroundStyle(.secondary)
                     }
                     .font(.subheadline)
@@ -307,16 +307,16 @@ struct EncounterGroupReviewView: View {
     @ViewBuilder
     private var encounterDetailsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Encounter Details")
+            Text(String(localized: "Encounter Details"))
                 .font(.headline)
 
-            TextField("Occasion (e.g., Team lunch, Conference)", text: $occasion)
+            TextField(String(localized: "Occasion (e.g., Team lunch, Conference)"), text: $occasion)
                 .textFieldStyle(.roundedBorder)
 
-            TextField("Location", text: $location)
+            TextField(String(localized: "Location"), text: $location)
                 .textFieldStyle(.roundedBorder)
 
-            Text("Notes")
+            Text(String(localized: "Notes"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
@@ -341,7 +341,7 @@ struct EncounterGroupReviewView: View {
                     Text(String(format: "%.5f, %.5f", loc.coordinate.latitude, loc.coordinate.longitude))
                     Spacer()
                     if let url = URL(string: "https://maps.apple.com/?ll=\(loc.coordinate.latitude),\(loc.coordinate.longitude)") {
-                        Link("Open Map", destination: url)
+                        Link(String(localized: "Open Map"), destination: url)
                             .font(.caption)
                     }
                 }
@@ -384,7 +384,7 @@ struct EncounterGroupReviewView: View {
 
                 // Suggested matches
                 if isLoadingMatches {
-                    Section("Finding Matches...") {
+                    Section(String(localized: "Finding Matches...")) {
                         HStack {
                             Spacer()
                             ProgressView()
@@ -392,7 +392,7 @@ struct EncounterGroupReviewView: View {
                         }
                     }
                 } else if !potentialMatches.isEmpty {
-                    Section("Suggested Matches") {
+                    Section(String(localized: "Suggested Matches")) {
                         ForEach(potentialMatches, id: \.person.id) { match in
                             Button {
                                 assignPerson(match.person)
@@ -445,7 +445,7 @@ struct EncounterGroupReviewView: View {
                         showPersonPicker = false
                         showNewPersonSheet = true
                     } label: {
-                        Label("Add New Person", systemImage: "person.badge.plus")
+                        Label(String(localized: "Add New Person"), systemImage: "person.badge.plus")
                     }
                 }
 
@@ -459,7 +459,7 @@ struct EncounterGroupReviewView: View {
                 }
 
                 if !otherPeople.isEmpty {
-                    Section("Other People") {
+                    Section(String(localized: "Other People")) {
                         ForEach(otherPeople) { person in
                             Button {
                                 assignPerson(person)
@@ -503,17 +503,17 @@ struct EncounterGroupReviewView: View {
                         Button(role: .destructive) {
                             removePersonFromFace()
                         } label: {
-                            Label("Remove Label", systemImage: "xmark.circle")
+                            Label(String(localized: "Remove Label"), systemImage: "xmark.circle")
                         }
                     }
                 }
             }
-            .searchable(text: $labelSearchText, prompt: "Search people")
-            .navigationTitle("Who is this?")
+            .searchable(text: $labelSearchText, prompt: String(localized: "Search people"))
+            .navigationTitle(String(localized: "Who is this?"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(String(localized: "Cancel")) {
                         showPersonPicker = false
                         selectedFaceCrop = nil
                         potentialMatches = []

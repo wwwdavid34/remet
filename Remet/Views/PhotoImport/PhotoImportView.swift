@@ -18,11 +18,11 @@ struct PhotoImportView: View {
                     .font(.system(size: 80))
                     .foregroundStyle(.secondary)
 
-                Text("Import Photos")
+                Text(String(localized: "Import Photos"))
                     .font(.title2)
                     .fontWeight(.semibold)
 
-                Text("Add photos to identify faces")
+                Text(String(localized: "Add photos to identify faces"))
                     .foregroundStyle(.secondary)
 
                 VStack(spacing: 16) {
@@ -30,7 +30,7 @@ struct PhotoImportView: View {
                     Button {
                         showScanner = true
                     } label: {
-                        Label("Scan Photo Library", systemImage: "photo.stack")
+                        Label(String(localized: "Scan Photo Library"), systemImage: "photo.stack")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
@@ -40,7 +40,7 @@ struct PhotoImportView: View {
                     Button {
                         viewModel.showPhotoPicker = true
                     } label: {
-                        Label("Choose Photos", systemImage: "photo.on.rectangle")
+                        Label(String(localized: "Choose Photos"), systemImage: "photo.on.rectangle")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -50,7 +50,7 @@ struct PhotoImportView: View {
 
                 // Description text
                 VStack(spacing: 8) {
-                    Text("Scan finds photos with faces and groups them into encounters")
+                    Text(String(localized: "Scan finds photos with faces and groups them into encounters"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -58,7 +58,7 @@ struct PhotoImportView: View {
                 .padding(.horizontal, 40)
 
                 if viewModel.isProcessing {
-                    ProgressView("Detecting faces...")
+                    ProgressView(String(localized: "Detecting faces..."))
                 }
 
                 if let error = viewModel.errorMessage {
@@ -100,10 +100,10 @@ struct PhotoImportView: View {
                     }
                 }
             }
-            .alert("Already Imported", isPresented: $viewModel.showAlreadyImportedAlert) {
-                Button("OK", role: .cancel) {}
+            .alert(String(localized: "Already Imported"), isPresented: $viewModel.showAlreadyImportedAlert) {
+                Button(String(localized: "OK"), role: .cancel) {}
             } message: {
-                Text("This photo has already been imported.")
+                Text(String(localized: "This photo has already been imported."))
             }
             .sheet(isPresented: $showScanner) {
                 EncounterScannerView()
@@ -142,7 +142,7 @@ struct PhotoImportView: View {
             }
 
             guard !images.isEmpty else {
-                viewModel.errorMessage = "Could not load shared images"
+                viewModel.errorMessage = String(localized: "Could not load shared images")
                 return
             }
 
