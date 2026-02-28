@@ -1556,7 +1556,6 @@
       }
     },
     "Add New Person": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4687,7 +4686,6 @@
       }
     },
     "Detecting faces...": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -9467,7 +9465,6 @@
       }
     },
     "Missing faces?": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -10973,7 +10970,6 @@
       }
     },
     "Occasion (e.g., Team lunch, Conference)": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -10996,7 +10992,6 @@
       }
     },
     "OK": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13665,7 +13660,6 @@
       }
     },
     "Save": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13916,7 +13910,6 @@
       }
     },
     "Scan Photo Library": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14216,7 +14209,6 @@
       }
     },
     "Search people": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {

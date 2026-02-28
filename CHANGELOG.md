@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1] - 2026-02-27
+
+### Fixed
+- All new UI strings in encounter review, photo import, and face labeling now wrapped in `String(localized:)` for i18n
+- Added ja, zh-Hans, zh-Hant translations for all new strings ("New face", "Open Map", "Choose Photos", etc.)
+- Fixed zh-Hans/zh-Hant differentiation: "Finding Matches..." used simplified 查找 for both variants, Hant now uses 尋找
+- Fixed pre-existing zh-Hant error: "Maybe" used simplified 也许 instead of traditional 也許
+- Cleaned up stale localization extraction state for active string keys
+
 ## [1.2] - 2026-02-27
 
 ### Added
