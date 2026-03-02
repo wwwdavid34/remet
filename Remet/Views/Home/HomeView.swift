@@ -68,7 +68,7 @@ struct HomeView: View {
                         )
 
                         HomeStatCard(
-                            title: reviewsDueToday > 0 ? "Due Today" : "On Track",
+                            title: reviewsDueToday > 0 ? LocalizedStringKey("Due Today") : LocalizedStringKey("On Track"),
                             value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "✓",
                             icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
                             color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
@@ -78,7 +78,7 @@ struct HomeView: View {
 
                     // Quick Actions
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Quick Actions")
+                        Text(String(localized: "Quick Actions"))
                             .font(.headline)
                             .padding(.horizontal)
 
@@ -94,7 +94,7 @@ struct HomeView: View {
 
                             HomeActionButton(
                                 title: "Practice",
-                                subtitle: peopleWithFaces.isEmpty ? "Add 3 faces to unlock" : "Train your memory",
+                                subtitle: peopleWithFaces.isEmpty ? LocalizedStringKey("Add 3 faces to unlock") : LocalizedStringKey("Train your memory"),
                                 icon: "brain.head.profile",
                                 gradient: [AppColors.teal, AppColors.teal.opacity(0.7)],
                                 isLocked: peopleWithFaces.isEmpty
@@ -116,11 +116,11 @@ struct HomeView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: "clock.badge.exclamationmark")
                                         .foregroundStyle(AppColors.warning)
-                                    Text("Needs Your Attention")
+                                    Text(String(localized: "Needs Your Attention"))
                                         .font(.headline)
                                 }
                                 Spacer()
-                                Text("\(peopleNeedingReview.count) waiting")
+                                Text(String(localized: "\(peopleNeedingReview.count) waiting"))
                                     .font(.caption)
                                     .foregroundStyle(AppColors.textSecondary)
                                     .padding(.horizontal, 10)
@@ -153,14 +153,14 @@ struct HomeView: View {
                                 HStack(spacing: 6) {
                                     Image(systemName: "clock.arrow.circlepath")
                                         .foregroundStyle(AppColors.teal)
-                                    Text("Recent Encounters")
+                                    Text(String(localized: "Recent Encounters"))
                                         .font(.headline)
                                 }
                                 Spacer()
                                 NavigationLink {
                                     EncounterListView()
                                 } label: {
-                                    Text("See All")
+                                    Text(String(localized: "See All"))
                                         .font(.subheadline)
                                         .foregroundStyle(AppColors.coral)
                                 }
@@ -187,7 +187,7 @@ struct HomeView: View {
                             icon: "face.smiling",
                             title: WittyCopy.emptyPeopleTitle,
                             subtitle: WittyCopy.emptyPeopleSubtitle,
-                            actionTitle: "Add Your First Person",
+                            actionTitle: String(localized: "Add Your First Person"),
                             action: { showQuickCapture = true }
                         )
                         .padding(.top, 20)
@@ -223,7 +223,7 @@ struct HomeView: View {
                     EncounterDetailView(encounter: encounter)
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") {
+                                Button(String(localized: "Done")) {
                                     selectedEncounter = nil
                                 }
                             }
@@ -244,7 +244,7 @@ struct HomeView: View {
                     AccountView()
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") {
+                                Button(String(localized: "Done")) {
                                     showAccount = false
                                 }
                             }
@@ -432,7 +432,7 @@ struct RecentEncounterRow: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(encounter.occasion ?? "Encounter")
+                Text(encounter.occasion ?? String(localized: "Encounter"))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)

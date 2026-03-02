@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2] - 2026-03-02
+
+### Fixed
+- **Comprehensive i18n pass**: Wrapped all remaining hardcoded English strings in `String(localized:)` across HomeView, PeopleHomeView, PaywallView, LimitWarningBanner, LimitReachedView, SettingsView, AccountView, PrivacyInfoView, and LimitChecker
+- Added ja, zh-Hans, zh-Hant translations for ~80 new string keys (dashboard stats, subscription UI, settings, privacy page, data management, search, empty states)
+- Fixed 10 zh-Hant entries using simplified Chinese characters (自动→自動, 分数→分數, 存储→存儲, 关注→關注, 识→識, 点→點, 开→開, 时→時, 来→來, 远→遠)
+
 ## [1.2.1] - 2026-02-27
 
 ### Fixed

@@ -12,18 +12,18 @@ struct LimitWarningBanner: View {
                     .foregroundStyle(AppColors.warmYellow)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(current) of \(limit) people")
+                    Text(String(localized: "\(current) of \(limit) people"))
                         .font(.subheadline)
                         .fontWeight(.medium)
 
-                    Text("Upgrade for unlimited")
+                    Text(String(localized: "Upgrade for unlimited"))
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
                 }
 
                 Spacer()
 
-                Button("Upgrade") {
+                Button(String(localized: "Upgrade")) {
                     onUpgrade()
                 }
                 .font(.subheadline)
@@ -64,7 +64,7 @@ struct PremiumBadge: View {
         HStack(spacing: 3) {
             Image(systemName: "crown.fill")
                 .font(.caption2)
-            Text("Premium")
+            Text(String(localized: "Premium"))
                 .font(.caption2)
                 .fontWeight(.semibold)
         }

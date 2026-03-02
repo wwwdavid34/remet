@@ -21,7 +21,7 @@ struct SettingsView: View {
                 developerSection
                 #endif
             }
-            .navigationTitle("Settings")
+            .navigationTitle(String(localized: "Settings"))
         }
     }
 
@@ -37,10 +37,10 @@ struct SettingsView: View {
                 HStack {
                     Image(systemName: "crown.fill")
                         .foregroundStyle(AppColors.warmYellow)
-                    Text("Premium Active")
+                    Text(String(localized: "Premium Active"))
                         .fontWeight(.medium)
                     Spacer()
-                    Text("Manage")
+                    Text(String(localized: "Manage"))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.teal)
                 }
@@ -49,21 +49,21 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "crown.fill")
                             .foregroundStyle(AppColors.warmYellow)
-                        Text("Upgrade to Premium")
+                        Text(String(localized: "Upgrade to Premium"))
                             .fontWeight(.semibold)
                     }
 
                     VStack(alignment: .leading, spacing: 6) {
-                        PremiumFeatureRow(icon: "icloud", text: "Cloud sync across devices")
-                        PremiumFeatureRow(icon: "infinity", text: "Unlimited people & encounters")
-                        PremiumFeatureRow(icon: "chart.bar", text: "Advanced analytics")
-                        PremiumFeatureRow(icon: "calendar.badge.clock", text: "Calendar integration")
+                        PremiumFeatureRow(icon: "icloud", text: String(localized: "Cloud sync across devices"))
+                        PremiumFeatureRow(icon: "infinity", text: String(localized: "Unlimited people & encounters"))
+                        PremiumFeatureRow(icon: "chart.bar", text: String(localized: "Advanced analytics"))
+                        PremiumFeatureRow(icon: "calendar.badge.clock", text: String(localized: "Calendar integration"))
                     }
 
                     Button {
                         // TODO: Show subscription options
                     } label: {
-                        Text("View Plans")
+                        Text(String(localized: "View Plans"))
                             .fontWeight(.medium)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -82,7 +82,7 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
             }
         } header: {
-            Text("Subscription")
+            Text(String(localized: "Subscription"))
         }
     }
 
@@ -107,7 +107,7 @@ struct SettingsView: View {
     @ViewBuilder
     private var photoStorageSection: some View {
         Section {
-            Picker("Photo Quality", selection: Binding(
+            Picker(String(localized: "Photo Quality"), selection: Binding(
                 get: { settings.photoStorageQuality },
                 set: { settings.photoStorageQuality = $0 }
             )) {
@@ -121,20 +121,20 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                Text("Resolution: \(Int(settings.photoResolution))px")
+                Text(String(localized: "Resolution: \(Int(settings.photoResolution))px"))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 4)
 
-            Toggle("Save Photos to Camera Roll", isOn: Binding(
+            Toggle(String(localized: "Save Photos to Camera Roll"), isOn: Binding(
                 get: { settings.savePhotosToCameraRoll },
                 set: { settings.savePhotosToCameraRoll = $0 }
             ))
         } header: {
-            Text("Photo Storage")
+            Text(String(localized: "Photo Storage"))
         } footer: {
-            Text("Higher quality uses more storage but preserves more detail. When enabled, photos taken with Remet are also saved to your Photos app.")
+            Text(String(localized: "Higher quality uses more storage but preserves more detail. When enabled, photos taken with Remet are also saved to your Photos app."))
         }
     }
 
@@ -145,7 +145,7 @@ struct SettingsView: View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Auto-Accept Threshold")
+                    Text(String(localized: "Auto-Accept Threshold"))
                     Spacer()
                     Text("\(Int(settings.autoAcceptThreshold * 100))%")
                         .foregroundStyle(.secondary)
@@ -161,19 +161,19 @@ struct SettingsView: View {
                 )
             }
 
-            Toggle("Show Confidence Scores", isOn: Binding(
+            Toggle(String(localized: "Show Confidence Scores"), isOn: Binding(
                 get: { settings.showConfidenceScores },
                 set: { settings.showConfidenceScores = $0 }
             ))
 
-            Toggle("Show Face Boxes", isOn: Binding(
+            Toggle(String(localized: "Show Face Boxes"), isOn: Binding(
                 get: { settings.showBoundingBoxes },
                 set: { settings.showBoundingBoxes = $0 }
             ))
         } header: {
-            Text("Face Matching")
+            Text(String(localized: "Face Matching"))
         } footer: {
-            Text("Faces matched above the threshold are automatically labeled. Face boxes are always shown when editing.")
+            Text(String(localized: "Faces matched above the threshold are automatically labeled. Face boxes are always shown when editing."))
         }
     }
 
@@ -215,18 +215,18 @@ struct SettingsView: View {
 
     @ViewBuilder
     private var aboutSection: some View {
-        Section("About") {
+        Section(String(localized: "About")) {
             HStack {
-                Label("Version", systemImage: "info.circle")
+                Label(String(localized: "Version"), systemImage: "info.circle")
                 Spacer()
-                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")
+                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? String(localized: "Unknown"))
                     .foregroundStyle(.secondary)
             }
 
             NavigationLink {
                 PrivacyInfoView()
             } label: {
-                Label("Privacy", systemImage: "hand.raised")
+                Label(String(localized: "Privacy"), systemImage: "hand.raised")
             }
         }
     }
@@ -241,10 +241,10 @@ struct SettingsView: View {
                 settings.hasCompletedOnboarding = false
             } label: {
                 HStack {
-                    Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
+                    Label(String(localized: "Reset Onboarding"), systemImage: "arrow.counterclockwise")
                     Spacer()
                     if !settings.hasCompletedOnboarding {
-                        Text("Will show on next launch")
+                        Text(String(localized: "Will show on next launch"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -252,9 +252,9 @@ struct SettingsView: View {
             }
             .foregroundStyle(AppColors.coral)
         } header: {
-            Text("Developer")
+            Text(String(localized: "Developer"))
         } footer: {
-            Text("Debug options. Reset onboarding to test the first-run wizard without losing data.")
+            Text(String(localized: "Debug options. Reset onboarding to test the first-run wizard without losing data."))
         }
     }
     #endif
@@ -301,43 +301,43 @@ struct PrivacyInfoView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("On-Device Processing", systemImage: "iphone")
+                    Label(String(localized: "On-Device Processing"), systemImage: "iphone")
                         .font(.headline)
-                    Text("All face detection and recognition happens entirely on your device. Your photos and face data are never uploaded to any server.")
+                    Text(String(localized: "All face detection and recognition happens entirely on your device. Your photos and face data are never uploaded to any server."))
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Local-First Storage", systemImage: "internaldrive")
+                    Label(String(localized: "Local-First Storage"), systemImage: "internaldrive")
                         .font(.headline)
-                    Text("Face embeddings and photos are stored in the app's private storage on your device. No biometric data is ever uploaded to our servers.")
+                    Text(String(localized: "Face embeddings and photos are stored in the app's private storage on your device. No biometric data is ever uploaded to our servers."))
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Optional iCloud Sync", systemImage: "icloud.fill")
+                    Label(String(localized: "Optional iCloud Sync"), systemImage: "icloud.fill")
                         .font(.headline)
-                    Text("Premium users can sync data via iCloud, stored in your private CloudKit container. This data is encrypted and accessible only to your Apple ID. We cannot access your iCloud data.")
+                    Text(String(localized: "Premium users can sync data via iCloud, stored in your private CloudKit container. This data is encrypted and accessible only to your Apple ID. We cannot access your iCloud data."))
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("No Tracking", systemImage: "hand.raised.fill")
+                    Label(String(localized: "No Tracking"), systemImage: "hand.raised.fill")
                         .font(.headline)
-                    Text("No advertising or analytics SDKs are integrated. No device fingerprinting or user profiling. Your data is used solely to help you remember people.")
+                    Text(String(localized: "No advertising or analytics SDKs are integrated. No device fingerprinting or user profiling. Your data is used solely to help you remember people."))
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Photo Library Access", systemImage: "photo.on.rectangle")
+                    Label(String(localized: "Photo Library Access"), systemImage: "photo.on.rectangle")
                         .font(.headline)
-                    Text("The app requests access to your photo library only to scan for faces. Photos are copied into the app for offline access.")
+                    Text(String(localized: "The app requests access to your photo library only to scan for faces. Photos are copied into the app for offline access."))
                         .foregroundStyle(.secondary)
                 }
             }
             .padding()
         }
-        .navigationTitle("Privacy")
+        .navigationTitle(String(localized: "Privacy"))
         .navigationBarTitleDisplayMode(.inline)
     }
 }

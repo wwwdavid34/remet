@@ -22,11 +22,11 @@ struct LimitReachedView: View {
 
             // Message
             VStack(spacing: 12) {
-                Text("Free Limit Reached")
+                Text(String(localized: "Free Limit Reached"))
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("You've saved \(SubscriptionLimits.freePeopleLimit) people - that's awesome! Upgrade to Premium for unlimited people and cloud sync.")
+                Text(String(localized: "You've saved \(SubscriptionLimits.freePeopleLimit) people - that's awesome! Upgrade to Premium for unlimited people and cloud sync."))
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -40,7 +40,7 @@ struct LimitReachedView: View {
                 Button {
                     onViewPlans()
                 } label: {
-                    Text("View Premium Plans")
+                    Text(String(localized: "View Premium Plans"))
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -55,7 +55,7 @@ struct LimitReachedView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
-                Button("Maybe Later") {
+                Button(String(localized: "Maybe Later")) {
                     dismiss()
                 }
                 .foregroundStyle(AppColors.textSecondary)

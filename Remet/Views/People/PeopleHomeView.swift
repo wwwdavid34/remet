@@ -155,7 +155,7 @@ struct PeopleHomeView: View {
                     EncounterDetailView(encounter: encounter)
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { selectedEncounter = nil }
+                                Button(String(localized: "Done")) { selectedEncounter = nil }
                             }
                         }
                 }
@@ -165,7 +165,7 @@ struct PeopleHomeView: View {
                     AccountView()
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { showAccount = false }
+                                Button(String(localized: "Done")) { showAccount = false }
                             }
                         }
                 }
@@ -180,7 +180,7 @@ struct PeopleHomeView: View {
                     PracticeHomeView()
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") { showPractice = false }
+                                Button(String(localized: "Done")) { showPractice = false }
                             }
                         }
                 }
@@ -205,7 +205,7 @@ struct PeopleHomeView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
 
-                    TextField("Search people, encounters, tags...", text: $searchText)
+                    TextField(String(localized: "Search people, encounters, tags..."), text: $searchText)
                         .textFieldStyle(.plain)
                         .focused($searchFieldFocused)
                         .submitLabel(.search)
@@ -229,7 +229,7 @@ struct PeopleHomeView: View {
                 Button {
                     dismissSearch()
                 } label: {
-                    Text("Cancel")
+                    Text(String(localized: "Cancel"))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.coral)
                 }
@@ -327,7 +327,7 @@ struct PeopleHomeView: View {
             } label: {
                 DashboardStatCard(
                     value: "\(people.filter { !$0.isMe || showMe }.count)",
-                    label: "People",
+                    label: String(localized: "People"),
                     icon: "person.3.fill",
                     color: AppColors.coral
                 )
@@ -339,7 +339,7 @@ struct PeopleHomeView: View {
             } label: {
                 DashboardStatCard(
                     value: "\(encounters.count)",
-                    label: "Encounters",
+                    label: String(localized: "Encounters"),
                     icon: "person.2.crop.square.stack",
                     color: AppColors.teal
                 )
@@ -351,7 +351,7 @@ struct PeopleHomeView: View {
             } label: {
                 DashboardStatCard(
                     value: reviewsDueToday > 0 ? "\(reviewsDueToday)" : "0",
-                    label: reviewsDueToday > 0 ? "Due" : "Caught Up",
+                    label: reviewsDueToday > 0 ? String(localized: "Due") : String(localized: "Caught Up"),
                     icon: reviewsDueToday > 0 ? "brain.head.profile" : "checkmark.circle.fill",
                     color: reviewsDueToday > 0 ? AppColors.warning : AppColors.success
                 )
@@ -368,7 +368,7 @@ struct PeopleHomeView: View {
             HStack(spacing: 6) {
                 Image(systemName: "brain.head.profile")
                     .foregroundStyle(AppColors.warning)
-                Text("Practice These")
+                Text(String(localized: "Practice These"))
                     .font(.subheadline)
                     .fontWeight(.semibold)
             }
@@ -409,7 +409,7 @@ struct PeopleHomeView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "clock")
                         .foregroundStyle(AppColors.teal)
-                    Text("Recent Encounters")
+                    Text(String(localized: "Recent Encounters"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Image(systemName: "chevron.right")
@@ -454,7 +454,7 @@ struct PeopleHomeView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "person.badge.plus")
                         .foregroundStyle(AppColors.coral)
-                    Text("Recent Met")
+                    Text(String(localized: "Recently Met"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Image(systemName: "chevron.right")
@@ -501,7 +501,7 @@ struct PeopleHomeView: View {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 50))
                         .foregroundStyle(AppColors.textMuted)
-                    Text("Search people, encounters, and tags")
+                    Text(String(localized: "Search people, encounters, and tags"))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                     Spacer()
@@ -514,10 +514,10 @@ struct PeopleHomeView: View {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 50))
                         .foregroundStyle(AppColors.textMuted)
-                    Text("No Results")
+                    Text(String(localized: "No Results"))
                         .font(.title3)
                         .fontWeight(.semibold)
-                    Text("No matches for \"\(searchText)\"")
+                    Text(String(localized: "No matches for \"\(searchText)\""))
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                     Spacer()
@@ -525,7 +525,7 @@ struct PeopleHomeView: View {
                 .frame(minHeight: 300)
             } else {
                 // Results with tab picker
-                Picker("Category", selection: $selectedSearchTab) {
+                Picker(String(localized: "Category"), selection: $selectedSearchTab) {
                     ForEach(SearchTab.allCases, id: \.self) { tab in
                         Text(searchTabLabel(for: tab)).tag(tab)
                     }
@@ -538,7 +538,7 @@ struct PeopleHomeView: View {
                 if (selectedSearchTab == .all || selectedSearchTab == .people) && !searchFilteredPeople.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         if selectedSearchTab == .all {
-                            Label("People (\(searchFilteredPeople.count))", systemImage: "person.fill")
+                            Label(String(localized: "People (\(searchFilteredPeople.count))"), systemImage: "person.fill")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(AppColors.coral)
@@ -567,7 +567,7 @@ struct PeopleHomeView: View {
                 if (selectedSearchTab == .all || selectedSearchTab == .encounters) && !searchFilteredEncounters.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         if selectedSearchTab == .all {
-                            Label("Encounters (\(searchFilteredEncounters.count))", systemImage: "person.2.crop.square.stack")
+                            Label(String(localized: "Encounters (\(searchFilteredEncounters.count))"), systemImage: "person.2.crop.square.stack")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(AppColors.teal)
@@ -599,11 +599,11 @@ struct PeopleHomeView: View {
         switch tab {
         case .all:
             let total = searchFilteredPeople.count + searchFilteredEncounters.count
-            return total > 0 ? "All (\(total))" : "All"
+            return total > 0 ? String(localized: "All (\(total))") : String(localized: "All")
         case .people:
-            return searchFilteredPeople.count > 0 ? "People (\(searchFilteredPeople.count))" : "People"
+            return searchFilteredPeople.count > 0 ? String(localized: "People (\(searchFilteredPeople.count))") : String(localized: "People")
         case .encounters:
-            return searchFilteredEncounters.count > 0 ? "Encounters (\(searchFilteredEncounters.count))" : "Encounters"
+            return searchFilteredEncounters.count > 0 ? String(localized: "Encounters (\(searchFilteredEncounters.count))") : String(localized: "Encounters")
         }
     }
 
@@ -631,11 +631,11 @@ struct PeopleHomeView: View {
             }
 
             VStack(spacing: 8) {
-                Text("No People Yet")
+                Text(String(localized: "No People Yet"))
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Tap the camera button below to add someone you've met")
+                Text(String(localized: "Tap the camera button below to add someone you've met"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -737,7 +737,7 @@ struct CompactEncounterCard: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(encounter.occasion ?? "Encounter")
+                Text(encounter.occasion ?? String(localized: "Encounter"))
                     .font(.caption)
                     .fontWeight(.medium)
                     .lineLimit(1)
@@ -836,7 +836,7 @@ struct EnhancedEncounterCard: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(encounter.occasion ?? "Encounter")
+                Text(encounter.occasion ?? String(localized: "Encounter"))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .lineLimit(1)

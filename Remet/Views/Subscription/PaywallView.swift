@@ -19,11 +19,11 @@ struct PaywallView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Premium")
+            .navigationTitle(String(localized: "Premium"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button(String(localized: "Close")) { dismiss() }
                 }
             }
             .task {
@@ -31,10 +31,10 @@ struct PaywallView: View {
                 // Pre-select yearly as default
                 selectedProduct = subscriptionManager.yearlyProduct
             }
-            .alert("Purchase Error", isPresented: $showError) {
-                Button("OK") { }
+            .alert(String(localized: "Purchase Error"), isPresented: $showError) {
+                Button(String(localized: "OK")) { }
             } message: {
-                Text(subscriptionManager.purchaseError ?? "An error occurred.")
+                Text(subscriptionManager.purchaseError ?? String(localized: "An error occurred."))
             }
         }
     }
@@ -67,11 +67,11 @@ struct PaywallView: View {
             }
 
             VStack(spacing: 8) {
-                Text("Upgrade to Premium")
+                Text(String(localized: "Upgrade to Premium"))
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Unlock unlimited people, cloud sync, and more")
+                Text(String(localized: "Unlock unlimited people, cloud sync, and more"))
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -117,11 +117,11 @@ struct PaywallView: View {
                 ProgressView()
                     .padding()
             } else if subscriptionManager.products.isEmpty {
-                Text("Unable to load subscription options")
+                Text(String(localized: "Unable to load subscription options"))
                     .foregroundStyle(AppColors.textSecondary)
                     .padding()
 
-                Button("Retry") {
+                Button(String(localized: "Retry")) {
                     Task { await subscriptionManager.loadProducts() }
                 }
                 .buttonStyle(.bordered)
@@ -131,7 +131,7 @@ struct PaywallView: View {
                     ProductOptionCard(
                         product: yearly,
                         isSelected: selectedProduct?.id == yearly.id,
-                        badge: "Save \(subscriptionManager.yearlySavingsPercent)%",
+                        badge: String(localized: "Save \(subscriptionManager.yearlySavingsPercent)%"),
                         onSelect: { selectedProduct = yearly }
                     )
                 }
@@ -155,7 +155,7 @@ struct PaywallView: View {
                             ProgressView()
                                 .tint(.white)
                         } else {
-                            Text("Subscribe Now")
+                            Text(String(localized: "Subscribe Now"))
                         }
                     }
                     .fontWeight(.semibold)
@@ -175,7 +175,7 @@ struct PaywallView: View {
                 .padding(.top, 8)
 
                 // Restore purchases
-                Button("Restore Purchases") {
+                Button(String(localized: "Restore Purchases")) {
                     Task {
                         await subscriptionManager.restorePurchases()
                         if subscriptionManager.purchaseError != nil {
@@ -194,13 +194,13 @@ struct PaywallView: View {
     @ViewBuilder
     private var legalSection: some View {
         VStack(spacing: 8) {
-            Text("Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period.")
+            Text(String(localized: "Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period."))
                 .font(.caption2)
                 .foregroundStyle(AppColors.textMuted)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 16) {
-                Button("Terms of Service") {
+                Button(String(localized: "Terms of Service")) {
                     if let url = URL(string: "https://remet-app.com/terms") {
                         UIApplication.shared.open(url)
                     }
@@ -208,7 +208,7 @@ struct PaywallView: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.teal)
 
-                Button("Privacy Policy") {
+                Button(String(localized: "Privacy Policy")) {
                     if let url = URL(string: "https://remet-app.com/privacy") {
                         UIApplication.shared.open(url)
                     }
@@ -337,10 +337,10 @@ private struct PaywallFeatureRow: View {
 extension Product.SubscriptionPeriod {
     var displayUnit: String {
         switch unit {
-        case .day: return value == 1 ? "per day" : "per \(value) days"
-        case .week: return value == 1 ? "per week" : "per \(value) weeks"
-        case .month: return value == 1 ? "per month" : "per \(value) months"
-        case .year: return value == 1 ? "per year" : "per \(value) years"
+        case .day: return value == 1 ? String(localized: "per day") : String(localized: "per \(value) days")
+        case .week: return value == 1 ? String(localized: "per week") : String(localized: "per \(value) weeks")
+        case .month: return value == 1 ? String(localized: "per month") : String(localized: "per \(value) months")
+        case .year: return value == 1 ? String(localized: "per year") : String(localized: "per \(value) years")
         @unknown default: return ""
         }
     }

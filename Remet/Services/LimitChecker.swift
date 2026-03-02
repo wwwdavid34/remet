@@ -132,9 +132,9 @@ final class LimitChecker {
             case .allowed:
                 return nil
             case .approachingLimit(let limit, let current):
-                return "\(current)/\(limit) people"
+                return String(localized: "\(current)/\(limit) people")
             case .hardLimitReached(let limit, _):
-                return "\(limit)/\(limit) people (limit reached)"
+                return String(localized: "\(limit)/\(limit) people (limit reached)")
             }
         }
     }

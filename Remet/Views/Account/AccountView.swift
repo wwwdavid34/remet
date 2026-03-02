@@ -43,7 +43,7 @@ struct AccountView: View {
                 developerSection
                 #endif
             }
-            .navigationTitle("Account")
+            .navigationTitle(String(localized: "Account"))
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }
@@ -373,7 +373,7 @@ struct AccountView: View {
             HStack {
                 Label(String(localized: "Version"), systemImage: "info.circle")
                 Spacer()
-                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")
+                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? String(localized: "Unknown"))
                     .foregroundStyle(.secondary)
             }
 
@@ -483,10 +483,10 @@ struct AccountView: View {
                 settings.hasCompletedOnboarding = false
             } label: {
                 HStack {
-                    Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
+                    Label(String(localized: "Reset Onboarding"), systemImage: "arrow.counterclockwise")
                     Spacer()
                     if !settings.hasCompletedOnboarding {
-                        Text("Will show on next launch")
+                        Text(String(localized: "Will show on next launch"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -503,7 +503,7 @@ struct AccountView: View {
                 }
             } label: {
                 HStack {
-                    Label("Load Demo Data", systemImage: "square.and.arrow.down")
+                    Label(String(localized: "Load Demo Data"), systemImage: "square.and.arrow.down")
                     Spacer()
                     if isLoadingDemoData {
                         ProgressView()
@@ -516,13 +516,13 @@ struct AccountView: View {
             Button {
                 DemoDataService.clearAllData(modelContext: modelContext)
             } label: {
-                Label("Clear All Data", systemImage: "trash")
+                Label(String(localized: "Clear All Data"), systemImage: "trash")
             }
             .foregroundStyle(AppColors.error)
         } header: {
-            Text("Developer")
+            Text(String(localized: "Developer"))
         } footer: {
-            Text("Debug options for testing. Load Demo Data will clear existing data and add sample profiles and encounters for App Store screenshots.")
+            Text(String(localized: "Debug options for testing. Load Demo Data will clear existing data and add sample profiles and encounters for App Store screenshots."))
         }
     }
     #endif

@@ -778,6 +778,35 @@
         }
       }
     },
+    "%lld of %lld photos": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld of %2$lld photos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%2$lld枚中%1$lld枚の写真"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld / %2$lld 张照片"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld / %2$lld 張照片"
+          }
+        }
+      }
+    },
     "%lld of %lld photos with %@": {
       "extractionState": "stale",
       "localizations": {
@@ -889,6 +918,35 @@
           "stringUnit": {
             "state": "translated",
             "value": "發現 %lld 個可能的相遇"
+          }
+        }
+      }
+    },
+    "%lld unidentified face%@": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld unidentified face%2$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 件の未識別の顔"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 张未识别人脸"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 張未識別人臉"
           }
         }
       }
@@ -1054,6 +1112,7 @@
       }
     },
     "• Auto-accepted": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1167,7 +1226,6 @@
       }
     },
     "About": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1282,7 +1340,6 @@
       }
     },
     "Account": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1420,7 +1477,6 @@
       }
     },
     "Add 3 faces to unlock": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1556,6 +1612,7 @@
       }
     },
     "Add New Person": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1692,6 +1749,7 @@
       }
     },
     "Add photos to identify faces": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -1731,7 +1789,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "先添加一些面孔，等大腦準備好鍛鍊时再回来。"
+            "value": "先添加一些面孔，等大腦準備好鍛鍊時再回來。"
           }
         }
       }
@@ -1897,7 +1955,6 @@
       }
     },
     "Add Your First Person": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -2011,7 +2068,6 @@
       }
     },
     "Advanced analytics": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -2210,7 +2266,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "所有人臉檢測和識別完全在您的裝置上進行。您的照片和人臉資料永远不会上傳到任何服务器。"
+            "value": "所有人臉檢測和識別完全在您的裝置上進行。您的照片和人臉資料永遠不會上傳到任何伺服器。"
           }
         }
       }
@@ -2284,6 +2340,29 @@
         }
       }
     },
+    "All selected photos have already been imported": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した写真はすべてインポート済みです"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有选中的照片均已导入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有選取的照片均已匯入"
+          }
+        }
+      }
+    },
     "All Time": {
       "extractionState": "stale",
       "localizations": {
@@ -2330,7 +2409,53 @@
         }
       }
     },
+    "Already Imported": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "インポート済み"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已导入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已匯入"
+          }
+        }
+      }
+    },
     "Analyzing face...": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顔を分析中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在分析人脸..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在分析人臉..."
+          }
+        }
+      }
+    },
+    "Analyzing faces...": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -2620,7 +2745,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "自动接受閾值"
+            "value": "自動接受閾值"
           }
         }
       }
@@ -2969,7 +3094,6 @@
       }
     },
     "Calendar integration": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3129,7 +3253,6 @@
       }
     },
     "Capture someone new": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3450,6 +3573,29 @@
         }
       }
     },
+    "Choose Photos": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を選択"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择照片"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇照片"
+          }
+        }
+      }
+    },
     "Choose Single Photo": {
       "extractionState": "stale",
       "localizations": {
@@ -3587,7 +3733,6 @@
       }
     },
     "Close": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3656,7 +3801,6 @@
       }
     },
     "Cloud sync across devices": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3861,7 +4005,6 @@
       }
     },
     "Contact Support": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -3930,7 +4073,6 @@
       }
     },
     "Context Types": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4137,6 +4279,29 @@
       }
     },
     "Could not load shared image": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "共有画像を読み込めませんでした"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法加载共享图片"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法載入共享圖片"
+          }
+        }
+      }
+    },
+    "Could not load shared images": {
       "extractionState": "stale",
       "localizations": {
         "ja": {
@@ -4437,7 +4602,6 @@
       }
     },
     "Customization": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4686,6 +4850,7 @@
       }
     },
     "Detecting faces...": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -4889,7 +5054,6 @@
       }
     },
     "Due Today": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5141,7 +5305,6 @@
       }
     },
     "Encounters": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5392,7 +5555,6 @@
       }
     },
     "Estimated Storage": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -5478,7 +5640,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "每一段美好的關係都有一個起点。开始捕捉那些时刻吧！"
+            "value": "每一段美好的關係都有一個起點。開始捕捉那些時刻吧！"
           }
         }
       }
@@ -5880,7 +6042,6 @@
       }
     },
     "Face Samples": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -6040,7 +6201,6 @@
       }
     },
     "Faces matched above the threshold are automatically labeled. Lower values match more aggressively but may cause false positives.": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -6109,7 +6269,6 @@
       }
     },
     "FAQ": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -6267,6 +6426,29 @@
         }
       }
     },
+    "Finding Matches...": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マッチを検索中..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在查找匹配..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在尋找匹配..."
+          }
+        }
+      }
+    },
     "Finish": {
       "extractionState": "stale",
       "localizations": {
@@ -6376,7 +6558,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "重点練習"
+            "value": "重點練習"
           }
         }
       }
@@ -7251,7 +7433,6 @@
       }
     },
     "Higher quality uses more storage but preserves more detail. Changes apply to newly imported photos only.": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -7359,7 +7540,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "相识經過"
+            "value": "相識經過"
           }
         }
       }
@@ -7639,6 +7820,7 @@
       }
     },
     "Import Photos": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -8666,6 +8848,7 @@
       }
     },
     "Loading photo...": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -8842,6 +9025,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "看你多棒！"
+          }
+        }
+      }
+    },
+    "Looking for face...": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顔を探しています..."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在寻找人脸..."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在尋找人臉..."
           }
         }
       }
@@ -9465,6 +9671,7 @@
       }
     },
     "Missing faces?": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -9777,13 +9984,13 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "需要您的关注"
+            "value": "需要您的關注"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "需要您的关注"
+            "value": "需要您的關注"
           }
         }
       }
@@ -9835,6 +10042,7 @@
       }
     },
     "New face": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -9857,7 +10065,6 @@
       }
     },
     "New Face": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -10291,6 +10498,7 @@
       }
     },
     "No faces identified yet. Tap faces to identify.": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -10970,6 +11178,7 @@
       }
     },
     "Occasion (e.g., Team lunch, Conference)": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11014,7 +11223,6 @@
       }
     },
     "On Track": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11037,7 +11245,6 @@
       }
     },
     "On-Device Processing": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11173,6 +11380,29 @@
         }
       }
     },
+    "Open Map": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "地図を開く"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开地图"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打開地圖"
+          }
+        }
+      }
+    },
     "Open Settings": {
       "extractionState": "stale",
       "localizations": {
@@ -11282,6 +11512,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "不受限制地整理"
+          }
+        }
+      }
+    },
+    "Other People": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その他の人"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他人物"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他人物"
           }
         }
       }
@@ -11468,7 +11721,6 @@
       }
     },
     "per month": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11491,7 +11743,6 @@
       }
     },
     "per year": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11674,7 +11925,6 @@
       }
     },
     "Photo Library Access": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11765,6 +12015,7 @@
       }
     },
     "Photo may be downloading from iCloud": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11787,7 +12038,6 @@
       }
     },
     "Photo Quality": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -11826,7 +12076,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "照片存储"
+            "value": "照片存儲"
           }
         }
       }
@@ -12150,7 +12400,6 @@
       }
     },
     "Practice": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -12378,7 +12627,6 @@
       }
     },
     "Privacy": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -12401,7 +12649,6 @@
       }
     },
     "Privacy Policy": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13130,7 +13377,6 @@
       }
     },
     "Relationship Types": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13288,6 +13534,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "要將 %@ 從此偶遇中移除嗎？這會取消其所有人臉標籤與此相遇的連結。"
+          }
+        }
+      }
+    },
+    "Remove Label": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ラベルを削除"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除标签"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除標籤"
           }
         }
       }
@@ -13476,7 +13745,6 @@
       }
     },
     "Restore Purchases": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13568,7 +13836,6 @@
       }
     },
     "Retry": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13609,6 +13876,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "查看"
+          }
+        }
+      }
+    },
+    "Review Encounter": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンカウンターを確認"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看相遇"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看相遇"
           }
         }
       }
@@ -13660,6 +13950,7 @@
       }
     },
     "Save": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13705,7 +13996,6 @@
       }
     },
     "Save Photos to Camera Roll": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13865,6 +14155,7 @@
       }
     },
     "Scan finds photos with faces and groups them into encounters": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -13910,6 +14201,7 @@
       }
     },
     "Scan Photo Library": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14209,6 +14501,7 @@
       }
     },
     "Search people": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14255,7 +14548,6 @@
       }
     },
     "Search people, encounters, tags...": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14640,7 +14932,6 @@
       }
     },
     "Settings": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14778,7 +15069,6 @@
       }
     },
     "Show Confidence Scores": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -14795,13 +15085,12 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "顯示置信度分数"
+            "value": "顯示置信度分數"
           }
         }
       }
     },
     "Show Face Boxes": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -15469,7 +15758,6 @@
       }
     },
     "Storage Usage": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -15623,6 +15911,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "成功"
+          }
+        }
+      }
+    },
+    "Suggested Matches": {
+      "extractionState": "stale",
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "おすすめのマッチ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建议匹配"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建議匹配"
           }
         }
       }
@@ -16103,7 +16414,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "話題要点"
+            "value": "話題要點"
           }
         }
       }
@@ -16356,7 +16667,6 @@
       }
     },
     "Terms of Service": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -16724,6 +17034,7 @@
     },
     "This photo has already been imported.": {
       "comment": "An alert message that appears when a user tries to import a photo that has already been imported.",
+      "extractionState": "stale",
       "isCommentAutoGenerated": true,
       "localizations": {
         "ja": {
@@ -17166,7 +17477,6 @@
       }
     },
     "Train your memory": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -17393,7 +17703,6 @@
       }
     },
     "Unknown": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -17416,6 +17725,7 @@
       }
     },
     "Unknown person": {
+      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -17461,7 +17771,6 @@
       }
     },
     "Unlimited people & encounters": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -17575,7 +17884,6 @@
       }
     },
     "Upgrade": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -17824,7 +18132,6 @@
       }
     },
     "Version": {
-      "extractionState": "stale",
       "localizations": {
         "ja": {
           "stringUnit": {
@@ -19012,322 +19319,574 @@
         }
       }
     },
-    "Review Encounter": {
+    "Due": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "エンカウンターを確認"
+            "value": "要復習"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "查看相遇"
+            "value": "待复习"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "查看相遇"
+            "value": "待複習"
           }
         }
       }
     },
-    "Looking for face...": {
+    "Caught Up": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "顔を探しています..."
+            "value": "完了"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在寻找人脸..."
+            "value": "已完成"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在尋找人臉..."
+            "value": "已完成"
           }
         }
       }
     },
-    "Analyzing faces...": {
+    "Recently Met": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "顔を分析中..."
+            "value": "最近会った人"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在分析人脸..."
+            "value": "最近认识"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在分析人臉..."
+            "value": "最近認識"
           }
         }
       }
     },
-    "Open Map": {
+    "Category": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "地図を開く"
+            "value": "カテゴリ"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开地图"
+            "value": "分类"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "打開地圖"
+            "value": "分類"
           }
         }
       }
     },
-    "Finding Matches...": {
+    "Purchase Error": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "マッチを検索中..."
+            "value": "購入エラー"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在查找匹配..."
+            "value": "购买错误"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在尋找匹配..."
+            "value": "購買錯誤"
           }
         }
       }
     },
-    "Suggested Matches": {
+    "An error occurred.": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "おすすめのマッチ"
+            "value": "エラーが発生しました。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "建议匹配"
+            "value": "发生了错误。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "建議匹配"
+            "value": "發生了錯誤。"
           }
         }
       }
     },
-    "Other People": {
+    "per day": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "その他の人"
+            "value": "日額"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "其他人物"
+            "value": "每天"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "其他人物"
+            "value": "每天"
           }
         }
       }
     },
-    "Remove Label": {
+    "per week": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ラベルを削除"
+            "value": "週額"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "移除标签"
+            "value": "每周"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "移除標籤"
+            "value": "每週"
           }
         }
       }
     },
-    "Choose Photos": {
+    "Maybe Later": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "写真を選択"
+            "value": "後で"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择照片"
+            "value": "以后再说"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "選擇照片"
+            "value": "以後再說"
           }
         }
       }
     },
-    "Already Imported": {
+    "Reset Onboarding": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "インポート済み"
+            "value": "オンボーディングをリセット"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已导入"
+            "value": "重置引导"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已匯入"
+            "value": "重置引導"
           }
         }
       }
     },
-    "All selected photos have already been imported": {
+    "Local-First Storage": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "選択した写真はすべてインポート済みです"
+            "value": "ローカル優先ストレージ"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "所有选中的照片均已导入"
+            "value": "本地优先存储"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "所有選取的照片均已匯入"
+            "value": "本地優先存儲"
           }
         }
       }
     },
-    "Could not load shared images": {
+    "Optional iCloud Sync": {
       "localizations": {
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "共有画像を読み込めませんでした"
+            "value": "オプションのiCloud同期"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法加载共享图片"
+            "value": "可选iCloud同步"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "無法載入共享圖片"
+            "value": "可選iCloud同步"
           }
         }
       }
     },
-    "%lld of %lld photos": {
+    "No Tracking": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld of %2$lld photos"
-          }
-        },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%2$lld枚中%1$lld枚の写真"
+            "value": "トラッキングなし"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld / %2$lld 张照片"
+            "value": "无追踪"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld / %2$lld 張照片"
+            "value": "無追蹤"
           }
         }
       }
     },
-    "%lld unidentified face%@": {
+    "Load Demo Data": {
       "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$lld unidentified face%2$@"
-          }
-        },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld 件の未識別の顔"
+            "value": "デモデータを読み込む"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld 张未识别人脸"
+            "value": "加载演示数据"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld 張未識別人臉"
+            "value": "載入展示資料"
+          }
+        }
+      }
+    },
+    "Clear All Data": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのデータを消去"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除所有数据"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除所有資料"
+          }
+        }
+      }
+    },
+    "Display": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表示"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示"
+          }
+        }
+      }
+    },
+    "Data Management": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "データ管理"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "数据管理"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資料管理"
+          }
+        }
+      }
+    },
+    "Delete All My Data": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのデータを削除"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除我的所有数据"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除我的所有資料"
+          }
+        }
+      }
+    },
+    "This will permanently delete all your people, encounters, and photos. This action cannot be undone.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべての人物、出会い、写真が永久に削除されます。この操作は元に戻せません。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这将永久删除您所有的人物、相遇和照片。此操作无法撤销。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這將永久刪除您所有的人物、相遇和照片。此操作無法撤銷。"
+          }
+        }
+      }
+    },
+    "This will permanently delete all your people, encounters, photos, and practice history. This cannot be undone.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべての人物、出会い、写真、練習履歴が永久に削除されます。この操作は元に戻せません。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这将永久删除您所有的人物、相遇、照片和练习记录。此操作无法撤销。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這將永久刪除您所有的人物、相遇、照片和練習記錄。此操作無法撤銷。"
+          }
+        }
+      }
+    },
+    "Redeem Promo Code": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロモコードを利用"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "兑换促销代码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "兌換促銷代碼"
+          }
+        }
+      }
+    },
+    "Slide to Delete": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スライドして削除"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑动以删除"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑動以刪除"
+          }
+        }
+      }
+    },
+    "Slide to delete all data": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スライドしてすべてのデータを削除"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑动以删除所有数据"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑動以刪除所有資料"
+          }
+        }
+      }
+    },
+    "Double-tap to confirm deletion": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダブルタップで削除を確認"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双击确认删除"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雙擊確認刪除"
+          }
+        }
+      }
+    },
+    "Delete All Data?": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのデータを削除しますか？"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除所有数据？"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除所有資料？"
+          }
+        }
+      }
+    },
+    "Unlimited tags": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無制限のタグ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无限标签"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無限標籤"
           }
         }
       }
